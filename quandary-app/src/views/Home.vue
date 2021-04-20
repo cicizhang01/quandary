@@ -9,10 +9,6 @@
         <h2 class="subtitle">
           Make sure you check out our upcoming events below
         </h2>
-        <div class="button-block">
-          <button v-if="!$auth.isAuthenticated" @click="login" class="button is-xl is-dark">Sign Up to Browse Events</button>
-          <h3 v-if="$auth.isAuthenticated" class="is-size-3 has-background-dark welcome">Welcome, {{ $auth.user.name }}!</h3>
-        </div>
       </div>
     </div>
   </section>
@@ -37,10 +33,6 @@ export default {
 <style lang="scss" scoped>
   .hero {
     text-align: center;
-    background-image: url('https://cdn.auth0.com/blog/vue-meetup/event-banner.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     height: 400px;
   }
   .hero-body .title {
