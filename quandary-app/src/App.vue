@@ -49,14 +49,12 @@ export default {
 }
 </script>
 <style lang="scss">
-
-// Import fonts from the Google Font API
-@import url('https://fonts.googleapis.com/css?family=Source+Sans|Open+Sans|Muli');
+@import "assets/colors";
 
 #app {
   font-family: 'Muli', 'Source Sans', 'Open Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: $dark;
 }
 </style>

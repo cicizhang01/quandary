@@ -49,6 +49,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+@import "../../assets/colors";
   nav {
     margin-top: 25px;
     margin-bottom: 25px;
@@ -56,9 +57,9 @@ export default {
     margin-right: 25px;
     a {
       font-weight: bold;
-      color: #2c3e50;
+      color: $dark;
       &.router-link-exact-active {
-        color: #d88d00;
+        color: $primary;
       }
     }
   }

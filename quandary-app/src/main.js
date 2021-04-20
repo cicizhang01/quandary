@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import 'bulma/css/bulma.css';
+require('@/assets/main.scss');
 
 // Import the Auth0 configuration
 import { domain, clientId, audience } from "../auth_config.json";
