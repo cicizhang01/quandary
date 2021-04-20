@@ -1,18 +1,27 @@
 <template>
 <div class="home">
-  <section class="hero is-dark">
-    <div class="hero-body">
+  <section class="main is-dark">
+    <div class="main-body">
       <div class="container">
         <h1 class="title">
-          Welcome to the Animal Rescue League
+          Welcome to Quandary
         </h1>
         <h2 class="subtitle">
-          Make sure you check out our upcoming events below
+          Fill out your profile details below
         </h2>
       </div>
     </div>
   </section>
-  <QuandaryList />
+  <section class="form">
+    <h1 class="form-body">
+      <QuandaryList />
+    </h1>
+    <h2 class="button-block">
+        <button class="button is-dark is-rounded">
+          Next
+        </button>
+    </h2>
+  </section>
 </div>
 </template>
 <script>
@@ -31,39 +40,26 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  .hero {
+  .main {
     text-align: center;
-    height: 400px;
+    height: 250px;
   }
-  .hero-body .title {
-    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.6);
-    padding: 40px 0 20px 0;
-    font-size: 60px;
+  .main-body .title {
+    padding: 60px 0 20px 0;
+    font-size: 55px;
   }
   .subtitle {
-    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.7);
-    font-size: 30px;
-  }
-  .button-block {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    width: 100%;
-    position: absolute;
-    bottom: -150px;
-    .button {
-      margin-right: 50px;
-      padding-left: 50px;
-      padding-right: 50px;
-    }
-    .welcome {
-      width: 400px;
-      padding: 10px;
-      margin-left: auto;
-      margin-right: auto;
-    }
+    font-size: 27px;
   }
   .is-xl {
     font-size: 1.7rem;
+  }
+  .form {
+    text-align: center;
+    height: 350px;
+    padding: 0px 200px 0px 200px;
+  }
+  .form-body {
+    padding: 20px 20px 20px 20px;
   }
 </style>

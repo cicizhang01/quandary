@@ -1,4 +1,28 @@
 <template>
+  <div class="field">
+    <label class="label is-medium">First Name</label>
+    <div class="control">
+      <input class="input" type="text" placeholder="e.g Jane ">
+    </div>
+    <label class="label is-medium">Last Name</label>
+    <div class="control">
+      <input class="input" type="text" placeholder="e.g Doe">
+    </div>
+  </div>
+  
+</template>
+
+<style lang="scss">
+  .label {
+    padding: 20px 0px 0px 0px;
+  }
+  .control {
+    padding: 0px 300px 20px 300px;
+  }
+</style>
+
+<!--
+<template>
   <div class="events container">
     <h2 class="subtitle is-3">
     Check out our upcoming events
@@ -48,3 +72,4 @@ export default {
     text-align: center;
   }
 </style>
+-->
