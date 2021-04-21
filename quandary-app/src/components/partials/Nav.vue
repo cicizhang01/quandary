@@ -16,16 +16,29 @@
       <router-link to="/about" class="navbar-item">About</router-link>
     </div>
     <div class="navbar-end">
-      <div class="navbar-item">
-        <div class="buttons">
-          <!-- Check that the SDK client is not currently loading before accessing is methods -->
-          <div v-if="!$auth.loading">
-            <!-- show login when not authenticated -->
-            <div v-if="!$auth.isAuthenticated" @click="login" class="button is-dark is-rounded">Sign in</div>
-            <!-- show logout when authenticated -->
-            <div v-if="$auth.isAuthenticated" @click="logout" class="button is-dark is-rounded">Log out</div>
+      <!-- Check that the SDK client is not currently loading before accessing is methods -->
+      <div v-if="!$auth.loading">
+        <!-- show login when not authenticated -->
+        <div v-if="!$auth.isAuthenticated" @click="login" class="navbar-item">
+          <div class="button is-dark is-rounded">Sign in</div>
+        </div>
+        <!-- show logout when authenticated -->
+        <div v-if="$auth.isAuthenticated" class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More
+          </a>
+          
+          <div class="navbar-dropdown is-right is-boxed">
+            <a class="navbar-item" @click="profile">
+              Profile
+            </a>
+            <hr class="navbar-divider">
+            <a class="navbar-item" @click="logout">
+            <div class="button is-dark is-rounded is-outlined">Log out</div>
+            </a>
           </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -44,6 +57,9 @@ export default {
       this.$auth.logout({
         returnTo: window.location.origin
       });
+    },
+    profile() {
+      this.$router.push({ name: 'profile' });
     }
   }
 }
@@ -62,5 +78,8 @@ export default {
         color: $primary;
       }
     }
+  }
+  .navbar-end {
+    padding-top: 8px;
   }
 </style>

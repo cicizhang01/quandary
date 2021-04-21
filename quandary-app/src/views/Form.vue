@@ -13,16 +13,27 @@
     </div>
   </section>
   <section class="form-block">
-    <QuandaryList />
+
+    <div class="container-form has-background-grey-lighter">
+        <FormGeneral/>
+        <div class="next-button">
+            <button class="button is-dark is-rounded">
+            Next
+            </button>
+        </div>
+    </div>
   </section>
 </div>
 </template>
 <script>
-import QuandaryList from '../components/QuandaryList';
+import FormGeneral from '../components/FormGeneral';
+
+// import FormTopics from '../components/FormTopics';
+
 export default {
   name: 'form',
   components: {
-    QuandaryList
+    FormGeneral
   },
   methods: {
     // Log the user in
@@ -31,6 +42,7 @@ export default {
     }
   }
 }
+
 </script>
 <style lang="scss" scoped>
   .main {
@@ -49,7 +61,10 @@ export default {
   }
   .form-block {
     text-align: center;
-    height: 350px;
-    // margin: auto;
+  }
+  .container-form {
+    margin: 0px 100px 40px 100px;
+    padding: 60px 0px 60px 0px;
+    border-radius: 25px;
   }
 </style>
