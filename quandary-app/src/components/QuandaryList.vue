@@ -1,23 +1,59 @@
 <template>
-  <div class="field">
-    <label class="label is-medium">First Name</label>
-    <div class="control">
-      <input class="input" type="text" placeholder="e.g Jane ">
+  <div class="container-form has-background-grey-lighter">
+    <div class="field is-horizontal is-grouped is-grouped-centered">
+      <div class="field">
+        <label class="label is-medium">First Name</label>
+        <div class="control">
+          <input class="input is-light" type="text" placeholder="e.g Jane ">
+        </div>
+      </div>
+      
+      <div class="field-last-name">
+        <label class="label is-medium">Last Name</label>
+        <div class="control">
+          <input class="input is-light" type="text" placeholder="e.g Doe ">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label is-medium">Pronouns</label>
+        <span class="select is-light">
+          <select>
+            <option selected></option>
+            <option>she/her/hers</option>
+            <option>he/him/his</option>
+            <option>they/them</option>
+          </select>
+        </span>
+      </div>
     </div>
-    <label class="label is-medium">Last Name</label>
-    <div class="control">
-      <input class="input" type="text" placeholder="e.g Doe">
+    
+    <div class="next-button">
+        <button class="button is-dark is-rounded">
+          Next
+        </button>
     </div>
   </div>
-  
 </template>
 
 <style lang="scss">
-  .label {
-    padding: 20px 0px 0px 0px;
+@import "../assets/colors";
+  .container-form {
+    margin: 0px 100px 40px 100px;
+    padding: 60px 0px 60px 0px;
+    border-radius: 25px;
+  }
+  .field {
+    padding: 0px 30px 0px 30px;
+  }
+  .field-last-name {
+    padding: 0px 70px 0px 0px;
   }
   .control {
-    padding: 0px 300px 20px 300px;
+    padding: 0px 0px 20px 0px;
+  }
+  .next-button {
+    margin-top: 90px;
   }
 </style>
 
