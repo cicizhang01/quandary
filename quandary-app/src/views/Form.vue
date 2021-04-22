@@ -97,33 +97,18 @@
                   <select multiple v-model="formData.minor">
                     <option selected></option>
                     <option>ACM</option>
-                    <option>Applied Physics</option>
-                    <option>Astrophysics</option>
-                    <option>Bioengineering</option>
-                    <option>Biology</option>
-                    <option>Business, Economics & Management</option>
-                    <option>Chemical Engineering</option>
+                    <option>Aerospace</option>
                     <option>Chemistry</option>
-                    <option>Computational and Neural Systems</option>
                     <option>Computer Science</option>
-                    <option>Economics</option>
-                    <option>Electrical Engineering</option>
-                    <option>Engineering and Applied Science</option>
+                    <option>Control and Dynamical Systems</option>
                     <option>English</option>
-                    <option>Geobiology</option>
-                    <option>Geochemistry</option>
-                    <option>Geology</option>
-                    <option>Geophysics</option>
+                    <option>Environmental Science and Engineering</option>
+                    <option>Geological and Planetary Systems</option>
                     <option>History</option>
                     <option>History and Philosophy of Science</option>
                     <option>Information and Data Sciences</option>
-                    <option>Materials Science</option>
-                    <option>Mathematics</option>
-                    <option>Mechanical Engineering</option>
                     <option>Philosophy</option>
-                    <option>Physics</option>
-                    <option>Planetary Science</option>
-                    <option>Political Science</option>
+                    <option>Structural Mechanics</option>
                   </select>
                 </span>
               </div>
@@ -148,6 +133,52 @@
                     <option v-for="n in 61" :key="n"> {{ n + 1979 }} </option>
                   </select>
                 </span>
+              </div>
+            </div>
+
+            <div id="student-status" class="field">
+              <label class="label is-medium">Are you a current student?</label>
+              <div class="control">
+                <label class="radio">
+                  <input type="radio" name="curr-student" value="1" v-model="formData.currStudent">
+                  Yes
+                </label>
+                <label class="radio">
+                  <input type="radio" name="curr-student" value="0" v-model="formData.currStudent">
+                  No
+                </label>
+              </div>
+            </div>
+ 
+            <div id="student-status" class="field" v-if="formData.currStudent === '1'">
+              <label class="label is-medium">Are you an undergraduate or graduate student?</label>
+              <div class="control">
+                <label class="radio">
+                  <input type="radio" value="0" name="student">
+                  Undergraduate
+                </label>
+                <label class="radio">
+                  <input type="radio" value="1" name="student">
+                  Graduate
+                </label>
+              </div>
+            </div>
+
+            <div id="student-status" class="field" v-if="formData.currStudent === '0'">
+              <label class="label is-medium">Were you an undergraduate student, graduate student, or both?</label>
+              <div class="control">
+                <label class="radio">
+                  <input type="radio" value="0" name="alumni-student">
+                  Undergraduate
+                </label>
+                <label class="radio">
+                  <input type="radio" value="1" name="alumni-student">
+                  Graduate
+                </label>
+                <label class="radio">
+                  <input type="radio" value="2" name="alumni-student">
+                  Both
+                </label>
               </div>
             </div>
         </tab-content>
@@ -191,7 +222,9 @@ export default {
             major: null,
             minor: null,
             incomingYear: null,
-            gradYear: null
+            gradYear: null,
+            currStudent: null,
+            studentLevel: null, // undergrad, grad, or both
         },
         validationRules:[
           {firstName: {required}, lastName: {required}},
@@ -247,5 +280,12 @@ export default {
   }
   #year {
     width: 150px;
+  }
+  #student-status {
+    padding: 10px 0 0 30px;
+  }
+  .radio {
+    padding-right: 30px;
+    font-size: 18px;
   }
 </style>

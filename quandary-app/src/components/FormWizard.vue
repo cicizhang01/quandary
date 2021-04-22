@@ -184,11 +184,12 @@ export default {
     margin: 0px 15px 0px 15px;
     background-color: $lightest-gray;
     border-radius: 10px;
-    padding: 10px 14px 10px 10px;
+    padding: 10px 20px 10px 10px;
     list-style-type: none;
   }
   .step-pills .step-item a {
     text-decoration: none;
+    margin: 0 0 0 2px;
     color: $dark;
   }
   .step-pills .step-item.active {
@@ -200,7 +201,7 @@ export default {
   .step-body {
     background-color: white;
     // text-align: center;
-    padding: 45px 20px 45px 20px;
+    padding: 30px 20px 45px 20px;
     border-radius: 1rem;
     box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
   }
