@@ -36,14 +36,17 @@
               </div>
 
               <div class="field">
-                <label class="label is-medium">Pronouns</label>
+                <label class="label is-medium">Pronouns *</label>
                 <span class="select is-light">
-                  <select v-model="formData.pronouns">
+                  <select :class="hasError('pronouns') ? 'is-invalid': ''" v-model="formData.pronouns">
                     <option selected></option>
                     <option>she/her/hers</option>
                     <option>he/him/his</option>
                     <option>they/them</option>
                   </select>
+                  <div v-if="hasError('pronouns')" class="invalid-feedback">
+                      <p class="help is-danger" v-if="!$v.formData.pronouns.required">Please choose a pronoun.</p>
+                  </div>
                 </span>
               </div>
             </div>
@@ -116,71 +119,107 @@
             
           <div class="field is-horizontal is-grouped is-grouped-left-aligned">
               <div id="incoming-year" class="field">
-                <label class="label is-medium">Incoming Year</label>
+                <label class="label is-medium">Incoming Year *</label>
                 <span class="select is-light">
-                  <select id="year" v-model="formData.incomingYear">
+                  <select id="year" :class="hasError('incomingYear') ? 'is-invalid': ''" v-model="formData.incomingYear">
                     <option selected></option>
                     <option v-for="n in 61" :key="n"> {{ n + 1979 }} </option>
                   </select>
+                  <div v-if="hasError('incomingYear')" class="invalid-feedback">
+                    <p class="help is-danger" v-if="!$v.formData.incomingYear.required">Required</p>
+                  </div>
                 </span>
               </div>
               
               <div id="grad-year" class="field">
-                <label class="label is-medium">Graduation Year</label>
+                <label class="label is-medium">Graduation Year *</label>
                 <span class="select is-light">
-                  <select id="year" v-model="formData.gradYear">
+                  <select id="year" :class="hasError('gradYear') ? 'is-invalid': ''" v-model="formData.gradYear">
                     <option selected></option>
                     <option v-for="n in 61" :key="n"> {{ n + 1979 }} </option>
                   </select>
+                  <div v-if="hasError('gradYear')" class="invalid-feedback">
+                    <p class="help is-danger" v-if="!$v.formData.gradYear.required">Required</p>
+                  </div>
                 </span>
               </div>
             </div>
 
-            <div id="student-status" class="field">
-              <label class="label is-medium">Are you a current student?</label>
-              <div class="control">
-                <label class="radio">
-                  <input type="radio" name="curr-student" value="1" v-model="formData.currStudent">
-                  Yes
-                </label>
-                <label class="radio">
-                  <input type="radio" name="curr-student" value="0" v-model="formData.currStudent">
-                  No
-                </label>
+            <div class="field is-horizontal is-grouped is-grouped-left-aligned">
+              <div id="student-status" class="field">
+                <label class="label is-medium">Are you a current student? *</label>
+                <div class="control" :class="hasError('currStudent') ? 'is-invalid': ''">
+                  <label class="radio">
+                    <input type="radio" name="curr-student" value="1" v-model="formData.currStudent">
+                    Yes
+                  </label>
+                  <label class="radio">
+                    <input type="radio" name="curr-student" value="0" v-model="formData.currStudent">
+                    No
+                  </label>
+                  <div v-if="hasError('currStudent')" class="invalid-feedback">
+                    <p class="help is-danger" v-if="!$v.formData.currStudent.required">Required</p>
+                  </div>
+                </div>
+              </div>
+
+              <div id="student-status" class="field">
+                <label class="label is-medium">Are / were you a transfer student? *</label>
+                <div class="control" :class="hasError('isTransfer') ? 'is-invalid': ''">
+                  <label class="radio">
+                    <input type="radio" name="curr-student" value="1" v-model="formData.isTransfer">
+                    Yes
+                  </label>
+                  <label class="radio">
+                    <input type="radio" name="curr-student" value="0" v-model="formData.isTransfer">
+                    No
+                  </label>
+                  <div v-if="hasError('isTransfer')" class="invalid-feedback">
+                    <p class="help is-danger" v-if="!$v.formData.isTransfer.required">Required</p>
+                  </div>
+                </div>
               </div>
             </div>
- 
+
             <div id="student-status" class="field" v-if="formData.currStudent === '1'">
-              <label class="label is-medium">Are you an undergraduate or graduate student?</label>
-              <div class="control">
+              <label class="label is-medium">Are you an undergraduate or graduate student? *</label>
+              <div class="control" :class="hasError('studentLevel') ? 'is-invalid': ''">
                 <label class="radio">
-                  <input type="radio" value="0" name="student">
+                  <input type="radio" name="student" value="0" v-model="formData.studentLevel">
                   Undergraduate
                 </label>
                 <label class="radio">
-                  <input type="radio" value="1" name="student">
+                  <input type="radio" name="student" value="1" v-model="formData.studentLevel">
                   Graduate
                 </label>
+                <div v-if="hasError('studentLevel')" class="invalid-feedback">
+                  <p id="radio-error" class="help is-danger" v-if="!$v.formData.studentLevel.required">Required</p>
+                </div>
               </div>
             </div>
 
             <div id="student-status" class="field" v-if="formData.currStudent === '0'">
-              <label class="label is-medium">Were you an undergraduate student, graduate student, or both?</label>
-              <div class="control">
+              <label class="label is-medium">Were you an undergraduate student, graduate student, or both? *</label>
+              <div class="control" :class="hasError('studentLevel') ? 'is-invalid': ''">
                 <label class="radio">
-                  <input type="radio" value="0" name="alumni-student">
+                  <input type="radio" name="alumni-student" value="0" v-model="formData.studentLevel">
                   Undergraduate
                 </label>
                 <label class="radio">
-                  <input type="radio" value="1" name="alumni-student">
+                  <input type="radio" name="alumni-student" value="1" v-model="formData.studentLevel">
                   Graduate
                 </label>
                 <label class="radio">
-                  <input type="radio" value="2" name="alumni-student">
+                  <input type="radio" name="alumni-student" value="2" v-model="formData.studentLevel">
                   Both
                 </label>
+                <div v-if="hasError('studentLevel')" class="invalid-feedback">
+                  <p id="radio-error" class="help is-danger" v-if="!$v.formData.studentLevel.required">Required</p>
+                </div>
               </div>
             </div>
+
+            <div id="required"> (*) Required </div>
         </tab-content>
 
         <tab-content title="Topic Interests"> 
@@ -224,11 +263,12 @@ export default {
             incomingYear: null,
             gradYear: null,
             currStudent: null,
+            isTransfer: null,
             studentLevel: null, // undergrad, grad, or both
         },
         validationRules:[
-          {firstName: {required}, lastName: {required}},
-          {major: {}, minor: {}},
+          {firstName: {required}, lastName: {required}, pronouns: {required}},
+          {major: {}, minor: {}, incomingYear: {required}, gradYear: {required}, currStudent: {required}, isTransfer: {required}, studentLevel: {required}},
           {},
           {terms: {checked}}
         ]
@@ -278,17 +318,19 @@ export default {
     padding-left: 30px;
   }
   #incoming-year {
-    padding-left: 30px;
-    padding-right: 70px;
+    padding: 0 70px 20px 30px;
   }
   #year {
     width: 150px;
   }
   #student-status {
-    padding: 10px 0 0 30px;
+    padding: 0px 30px 0 30px;
   }
   .radio {
     padding-right: 30px;
     font-size: 18px;
+  }
+  #radio-error {
+    padding-top: 4px;
   }
 </style>
