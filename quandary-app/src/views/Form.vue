@@ -268,7 +268,7 @@ export default {
   }
   #major {
     padding-left: 30px;
-    padding-right: 55px;
+    padding-right: 58px;
   }
   #required {
     margin-top: 20px;
