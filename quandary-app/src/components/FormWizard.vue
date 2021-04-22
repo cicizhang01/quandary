@@ -187,19 +187,19 @@ export default {
     color: $dark;
   }
   .step-pills .step-item.active {
-    background-color: $light-green;
+    background-color: $light-pink;
   }
   .step-pills .step-item.validated {
-    background-color: $lighter-green;
+    background-color: $lighter-pink;
   }
   .step-body {
     background-color: white;
-    padding: 1rem;
+    padding: 20px 20px 25px 20px;
     border-radius: 1rem;
     box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
   }
   .step-footer {
-    padding: 3rem;
+    padding: 60px 0 40px 0;
     border-radius: 1rem;
     margin: 0rem 0rem;
     text-align: center;

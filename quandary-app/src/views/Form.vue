@@ -1,4 +1,17 @@
 <template>
+  <div>
+    <section class="main">
+      <div class="main-body">
+        <div class="container">
+          <h1 class="title">
+            Welcome to Quandary
+          </h1>
+          <h2 class="subtitle">
+            Fill out your profile details below
+          </h2>
+        </div>
+      </div>
+    </section>
     <form-wizard ref="formwizard" @onComplete="onComplete" @onNextStep="nextStep" @onPreviousStep="previousStep" @onReset="reset">
         <tab-content title="General Info" :selected="true">
             <div class="field is-horizontal is-grouped is-grouped-centered">
@@ -7,7 +20,7 @@
                 <div class="control">
                   <input class="input is-light" type="text" :class="hasError('firstName') ? 'is-invalid': ''" placeholder="e.g Jane" v-model="formData.firstName">
                   <div v-if="hasError('firstName')" class="invalid-feedback">
-                      <div class="help is-danger" v-if="!$v.formData.firstName.required">Please provide a valid first name.</div>
+                      <p class="help is-danger" v-if="!$v.formData.firstName.required">Please provide a valid first name.</p>
                   </div>
                 </div>
               </div>
@@ -17,7 +30,7 @@
                 <div class="control">
                   <input class="input is-light" type="text" :class="hasError('lastName') ? 'is-invalid': ''" placeholder="e.g Doe" v-model="formData.lastName">
                   <div v-if="hasError('lastName')" class="invalid-feedback">
-                      <div class="help is-danger" v-if="!$v.formData.lastName.required">Please provide a valid last name.</div>
+                      <p class="help is-danger" v-if="!$v.formData.lastName.required">Please provide a valid last name.</p>
                   </div>
                 </div>
               </div>
@@ -40,11 +53,12 @@
                 <input type="checkbox" :class="hasError('terms') ? 'is-invalid' : ''" class="form-check-input" v-model="formData.terms">
                 I agree to the <a href="#">terms and conditions</a>
                 <div v-if="hasError('terms')" class="invalid-feedback">
-                    <div class="error" v-if="!$v.formData.terms.required">Please select terms and conditions.</div>
+                    <p class="help is-danger" v-if="!$v.formData.terms.required">Please select the terms and conditions.</p>
                 </div>
             </div>
         </tab-content>
     </form-wizard>
+  </div>
 </template>
 
 <script>
@@ -77,7 +91,7 @@ export default {
     },
     methods:{
         onComplete(){
-            alert("Submitting Form ! Rock On");
+            // alert("Submitting Form!");
             this.$refs.formwizard.changeStatus();
         },
         reset(){
@@ -97,6 +111,11 @@ export default {
 
 <style lang="scss">
 @import "../assets/colors";
+  .main {
+    text-align: center;
+    margin: 40px 0 40px 0;
+
+  }
   .field {
     padding: 10px 30px 0px 30px;
   }
