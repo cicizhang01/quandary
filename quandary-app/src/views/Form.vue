@@ -4,17 +4,17 @@
       <div class="main-body">
         <div class="container">
           <h1 class="title">
-            Welcome to Quandary
+            Welcome to Quandary!
           </h1>
           <h2 class="subtitle">
-            Fill out your profile details below
+            Fill out your profile details below.
           </h2>
         </div>
       </div>
     </section>
     <form-wizard ref="formwizard" @onComplete="onComplete" @onNextStep="nextStep" @onPreviousStep="previousStep" @onReset="reset">
         <tab-content title="General Info" :selected="true">
-            <div id="first-row" class="field is-horizontal is-grouped is-grouped-centered">
+            <div id="first-row" class="field is-horizontal is-grouped is-left-aligned">
               <div class="field">
                 <label class="label is-medium">First Name *</label>
                 <div class="control">
@@ -260,12 +260,15 @@ export default {
     text-align: center;
     margin: 40px 0 40px 0;
   }
+  #first-row {
+    padding-left: 30px;
+  }
   #last-name {
     padding: 0px 100px 0px 30px;
   }
   #major {
     padding-left: 30px;
-    padding-right: 70px;
+    padding-right: 55px;
   }
   #required {
     margin-top: 20px;
