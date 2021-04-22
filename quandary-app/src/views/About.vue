@@ -1,9 +1,9 @@
 <template>
   <div class="about">
-    <div class="hero is-primary">
+    <div class="hero is-light">
       <div class="hero-body">
         <div class="container">
-          <h1 class="title is-size-1">About Animal Rescue League</h1>
+          <h1 class="title is-size-1">About Quandary</h1>
         </div>
       </div>
     </div>

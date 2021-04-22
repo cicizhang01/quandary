@@ -1,9 +1,10 @@
 <template>
-<nav class="navbar container" role="navigation" aria-label="main navigation">
+<nav class="navbar is-transparent" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
     <a class="navbar-item" href="/">
-      <strong class="is-size-4">Animal Rescue League</strong>
+      <img src="../../images/cat.png">
     </a>
+    <!-- Navbar burger: hamburger menu that only appears on mobile devices -->
     <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
@@ -12,20 +13,35 @@
   </div>
   <div id="navbar" class="navbar-menu">
     <div class="navbar-start">
-      <router-link to="/" class="navbar-item">Home</router-link>
       <router-link to="/about" class="navbar-item">About</router-link>
     </div>
     <div class="navbar-end">
-      <div class="navbar-item">
-        <div class="buttons">
-          <!-- Check that the SDK client is not currently loading before accessing is methods -->
-          <div v-if="!$auth.loading">
-            <!-- show login when not authenticated -->
-            <a v-if="!$auth.isAuthenticated" @click="login" class="button is-dark"><strong>Sign in</strong></a>
-            <!-- show logout when authenticated -->
-            <a v-if="$auth.isAuthenticated" @click="logout" class="button is-dark"><strong>Log out</strong></a>
+      <!-- Check that the SDK client is not currently loading before accessing is methods -->
+      <div v-if="!$auth.loading">
+        <!-- show login when not authenticated -->
+        <div v-if="!$auth.isAuthenticated" @click="login" class="navbar-item">
+          <div class="button is-dark is-rounded">Sign in</div>
+        </div>
+        <!-- show logout when authenticated -->
+        <div v-if="$auth.isAuthenticated" class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More
+          </a>
+          
+          <div class="navbar-dropdown is-right is-boxed">
+            <a class="navbar-item" @click="profile">
+              <span class="menu-item">Profile</span>
+            </a>
+            <a class="navbar-item">
+              <span class="menu-item">Settings</span>
+            </a>
+            <hr class="navbar-divider">
+            <a class="navbar-item">
+              <div class="button is-dark is-rounded is-outlined" @click="logout">Log out</div>
+            </a>
           </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -44,20 +60,32 @@ export default {
       this.$auth.logout({
         returnTo: window.location.origin
       });
+    },
+    profile() {
+      this.$router.push({ name: 'profile' });
     }
   }
 }
 </script>
 <style lang="scss" scoped>
+@import "../../assets/colors";
   nav {
     margin-top: 25px;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
+    margin-left: 25px;
+    margin-right: 25px;
     a {
       font-weight: bold;
-      color: #2c3e50;
+      color: $dark;
       &.router-link-exact-active {
-        color: #d88d00;
+        color: $blue;
       }
     }
+  }
+  .navbar-end {
+    padding-top: 8px;
+  }
+  .menu-item {
+    font-size: medium;
   }
 </style>
