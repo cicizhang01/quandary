@@ -236,7 +236,7 @@ export default {
     },
     methods:{
         onComplete(){
-            // alert("Submitting Form!");
+            alert("Form submitted!");
             this.$refs.formwizard.changeStatus();
         },
         reset(){
