@@ -1,12 +1,16 @@
 // Set custom colors
 $pink: #e5989b;
+$lightest-gray: #e8ebf1;
 $lighter-gray: #c7cbd4;
 $light-gray: #757a8d;
 $gray: #3b3e47;
+$lighter-green: #b3d1c0;
 $light-green: #7eaf94;
+$light-blue: #8da8e9;
 
 // Also updates Bulma's global variables (when imported before Bulma)
 $light: $light-gray;
 $dark: $gray;
-$primary: $pink;
+$primary: $light-blue;
 $grey-lighter: $lighter-gray;
+$blue: #6e89c9;

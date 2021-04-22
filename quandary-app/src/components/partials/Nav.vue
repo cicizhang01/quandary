@@ -30,11 +30,14 @@
           
           <div class="navbar-dropdown is-right is-boxed">
             <a class="navbar-item" @click="profile">
-              Profile
+              <span class="menu-item">Profile</span>
+            </a>
+            <a class="navbar-item">
+              <span class="menu-item">Settings</span>
             </a>
             <hr class="navbar-divider">
-            <a class="navbar-item" @click="logout">
-            <div class="button is-dark is-rounded is-outlined">Log out</div>
+            <a class="navbar-item">
+              <div class="button is-dark is-rounded is-outlined" @click="logout">Log out</div>
             </a>
           </div>
         </div>
@@ -75,11 +78,14 @@ export default {
       font-weight: bold;
       color: $dark;
       &.router-link-exact-active {
-        color: $primary;
+        color: $blue;
       }
     }
   }
   .navbar-end {
     padding-top: 8px;
+  }
+  .menu-item {
+    font-size: medium;
   }
 </style>
