@@ -57,7 +57,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         db.run(`CREATE TABLE course (
             course_id INTEGER PRIMARY KEY AUTOINCREMENT,
             course_no INTEGER NOT NULL,
-            course_name NOT NULL
+            course_name TEXT NOT NULL
         )`,
 
         (err) => {
@@ -65,12 +65,15 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO course
+                (course_no, course_name)
+                VALUES (?, ?)`
+                db.run(insert, [121, "Databases"])
             }
         });
         db.run(`CREATE TABLE dept_course (
-            dept NOT NULL TEXT,
-            course_id NOT NULL INTEGER,
+            dept TEXT NOT NULL,
+            course_id INTEGER NOT NULL,
             PRIMARY KEY(dept, course_id),
             FOREIGN KEY(course_id) REFERENCES course(course_id)
         )`,
@@ -80,7 +83,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO dept_course
+                (dept, course_id)
+                VALUES (?, ?)`
+                db.run(insert, ['Comp Sci', 1])
             }
         });
         db.run(`CREATE TABLE instructor (
@@ -93,7 +99,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO instructor
+                (name)
+                VALUES (?)`
+                db.run(insert, ['Hovik'])
             }
         });
         db.run(`CREATE TABLE instructor_course (
@@ -101,7 +110,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             instructor_id INTEGER NOT NULL,
             PRIMARY KEY(course_id, instructor_id),
             FOREIGN KEY(course_id) REFERENCES course(course_id),
-            FOREIGN KEY(insructor_id) REFERENCES instructor(instructor_id)
+            FOREIGN KEY(instructor_id) REFERENCES instructor(instructor_id)
         )`,
 
         (err) => {
@@ -109,13 +118,16 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO instructor_course
+                (course_id, instructor_id)
+                VALUES (?,?)`
+                db.run(insert, [1, 1])
             }
         });
         db.run(`CREATE TABLE advisor (
             advisor_id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            dept TEXT NOT NULL,
+            dept TEXT NOT NULL
         )`,
 
         (err) => {
@@ -123,14 +135,16 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO advisor
+                (name, dept)
+                VALUES (?, ?)`
+                db.run(insert, ['Blank', 'Comp Sci'])
             }
         });
         db.run(`CREATE TABLE profile (
             user_id INTEGER PRIMARY KEY AUTOINCREMENT,
             first_name TEXT NOT NULL,
             last_name TEXT NOT NULL,
-            year INTEGER NOT NULL,
             advisor_id INTEGER,
             incoming_year INTEGER NOT NULL,
             grad_year INTEGER NOT NULL,
@@ -151,13 +165,16 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO profile
+                (first_name, last_name, advisor_id, incoming_year, grad_year, is_undergrad, is_grad, is_alum, is_transfer, pronouns)
+                VALUES (?,?,?,?,?,?,?,?,?,?)`
+                db.run(insert, ['Joe','Shmo', 1, 2018, 2022, 1, 0, 0, 0, 'he/him'])
             }
         });
         db.run(`CREATE TABLE student_course (
             course_id INTEGER NOT NULL,
             user_id INTEGER NOT NULL,
-            PRIMARY KEY(course_id, student_id),
+            PRIMARY KEY(course_id, user_id),
             FOREIGN KEY(course_id) REFERENCES course(course_id),
             FOREIGN KEY(user_id) REFERENCES profile(user_id)
         )`,
@@ -167,7 +184,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO student_course
+                (course_id, user_id)
+                VALUES (?,?)`
+                db.run(insert, [1,1])
             }
         });
         db.run(`CREATE TABLE labs (
@@ -181,7 +201,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO labs
+                (name, pi)
+                VALUES (?,?)`
+                db.run(insert, ['Lab Lab', 'Doctor Doctor'])
             }
         });
         db.run(`CREATE TABLE dept_lab (
@@ -196,7 +219,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO dept_lab
+                (dept, lab_id)
+                VALUES (?,?)`
+                db.run(insert, ['Comp Sci', 1])
             }
         });
         db.run(`CREATE TABLE student_to_lab (
@@ -212,13 +238,15 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO student_to_lab
+                (user_id, lab_id)
+                VALUES (?,?)`
+                db.run(insert, [1,1])
             }
         });
         db.run(`CREATE TABLE topic (
             topic_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            topic_name TEXT NOT NULL,
-            PRIMARY KEY (topic_id, topic_name)
+            topic_name TEXT NOT NULL
         )`,
 
         (err) => {
@@ -519,7 +547,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             question_id INTEGER PRIMARY KEY AUTOINCREMENT,
             question_body TEXT NOT NULL,
             date_created REAL DEFAULT (datetime('now', 'localtime')),
-            date_modified REAL DEFAULT (datetime('now', 'localtime')), // data and time don't have special datatypes
+            date_modified REAL DEFAULT (datetime('now', 'localtime')),
             count INTEGER DEFAULT 0
         )`,
 
@@ -528,14 +556,17 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO question
+                (question_body)
+                VALUES (?)`
+                db.run(insert, ['What is the question?'])
             }
         });
         db.run(`CREATE TABLE answer (
             answer_id INTEGER PRIMARY KEY AUTOINCREMENT,
             answer_body TEXT NOT NULL,
             date_created REAL DEFAULT (datetime('now', 'localtime')),
-            date_modified REAL DEFAULT (datetime('now', 'localtime')), // data and time don't have special datatypes
+            date_modified REAL DEFAULT (datetime('now', 'localtime')),
             count INTEGER DEFAULT 0
         )`,
 
@@ -544,12 +575,15 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO answer
+                (answer_body)
+                VALUES (?)`
+                db.run(insert, ['This is the answer'])
             }
         });
         db.run(`CREATE TABLE question_topic (
-            question_id,
-            topic_id,
+            question_id INTEGER NOT NULL,
+            topic_id INTEGER NOT NULL,
             PRIMARY KEY(question_id, topic_id),
             FOREIGN KEY(question_id) REFERENCES question(question_id),
             FOREIGN KEY(topic_id) REFERENCES topic(topic_name)
@@ -560,12 +594,15 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO question_topic
+                (question_id, topic_id)
+                VALUES (?,?)`
+                db.run(insert, [1,1])
             }
         });
         db.run(`CREATE TABLE qna (
-            answer_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            question_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            answer_id INTEGER PRIMARY KEY NOT NULL,
+            question_id INTEGER NOT NULL,
             FOREIGN KEY(answer_id) REFERENCES answer(answer_id),
             FOREIGN KEY(question_id) REFERENCES question(question_id)
         )`,
@@ -575,7 +612,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO qna
+                (answer_id, question_id)
+                VALUES (?,?)`
+                db.run(insert, [1,1])
             }
         });
         db.run(`CREATE TABLE user_upvotes_question (
@@ -591,7 +631,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO user_upvotes_question
+                (question_id, user_id)
+                VALUES (?,?)`
+                db.run(insert, [1,1])
             }
         });
         db.run(`CREATE TABLE user_upvotes_answer (
@@ -607,7 +650,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO user_upvotes_answer
+                (answer_id, user_id)
+                VALUES (?,?)`
+                db.run(insert, [1,1])
             }
         });
         db.run(`CREATE TABLE user_topics (
@@ -623,7 +669,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO user_topics
+                (user_id, topic_id)
+                VALUES (?,?)`
+                db.run(insert, [1,1])
             }
         });
         db.run(`CREATE TABLE house_memberships (
@@ -640,7 +689,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO house_memberships
+                (house, user_id, is_full)
+                VALUES (?,?,?)`
+                db.run(insert, ['Lloyd',1,1])
             }
         });
         db.run(`CREATE TABLE options (
@@ -656,15 +708,18 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO options
+                (option, has_major, has_minor)
+                VALUES (?,?,?)`
+                db.run(insert, ['Comp Sci', 1,1])
             }
         });
         db.run(`CREATE TABLE user_option (
             user_id INTEGER NOT NULL,
-            option TEXT NOT NULL,
+            option_id INTEGER NOT NULL,
             is_major INTEGER NOT NULL,
-            PRIMARY KEY(user_id, option),
-            FOREIGN KEY(option) REFERENCES options(option),
+            PRIMARY KEY(user_id, option_id),
+            FOREIGN KEY(option_id) REFERENCES options(option_id),
             CHECK (is_major = 0 OR is_major = 1)
         )`,
 
@@ -673,7 +728,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-
+                var insert = `INSERT INTO user_option
+                (user_id, option_id, is_major)
+                VALUES (?,?,?)`
+                db.run(insert, [1,1,1])
             }
         });
     }

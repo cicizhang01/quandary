@@ -1,12 +1,12 @@
 `CREATE TABLE course (
     course_id INTEGER PRIMARY KEY AUTOINCREMENT,
     course_no INTEGER NOT NULL,
-    course_name NOT NULL
+    course_name TEXT NOT NULL
 )`
 
 `CREATE TABLE dept_course (
-    dept NOT NULL TEXT,
-    course_id NOT NULL INTEGER,
+    dept TEXT NOT NULL,
+    course_id INTEGER NOT NULL,
     PRIMARY KEY(dept, course_id),
     FOREIGN KEY(course_id) REFERENCES course(course_id)
 )`
@@ -34,7 +34,6 @@
     user_id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
-    year INTEGER NOT NULL,
     advisor_id INTEGER,
     incoming_year INTEGER NOT NULL,
     grad_year INTEGER NOT NULL,
@@ -53,7 +52,7 @@
 `CREATE TABLE student_course (
     course_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
-    PRIMARY KEY(course_id, student_id),
+    PRIMARY KEY(course_id, user_id),
     FOREIGN KEY(course_id) REFERENCES course(course_id),
     FOREIGN KEY(user_id) REFERENCES profile(user_id)
 )`
@@ -81,8 +80,7 @@
 
 `CREATE TABLE topic (
     topic_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    topic_name TEXT NOT NULL,
-    PRIMARY KEY (topic_id, topic_name)
+    topic_name TEXT NOT NULL
 )`
 
 `CREATE TABLE topic_tree (
@@ -110,16 +108,16 @@
 )`
 
 `CREATE TABLE question_topic (
-    question_id,
-    topic_id,
+    question_id INTEGER NOT NULL,
+    topic_id INTEGER NOT NULL,
     PRIMARY KEY(question_id, topic_id),
     FOREIGN KEY(question_id) REFERENCES question(question_id),
     FOREIGN KEY(topic_id) REFERENCES topic(topic_name)
 )`
 
 `CREATE TABLE qna (
-    answer_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    question_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    answer_id INTEGER PRIMARY KEY NOT NULL,
+    question_id INTEGER NOT NULL,
     FOREIGN KEY(answer_id) REFERENCES answer(answer_id),
     FOREIGN KEY(question_id) REFERENCES question(question_id)
 )`
@@ -167,9 +165,9 @@
 
 `CREATE TABLE user_option (
     user_id INTEGER NOT NULL,
-    option TEXT NOT NULL,
+    option_id INTEGER NOT NULL,
     is_major INTEGER NOT NULL,
-    PRIMARY KEY(user_id, option),
-    FOREIGN KEY(option) REFERENCES options(option),
+    PRIMARY KEY(user_id, option_id),
+    FOREIGN KEY(option_id) REFERENCES options(option_id),
     CHECK (is_major = 0 OR is_major = 1)
 )`
