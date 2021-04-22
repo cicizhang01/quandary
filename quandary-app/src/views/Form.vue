@@ -318,7 +318,7 @@ export default {
     padding-left: 30px;
   }
   #incoming-year {
-    padding: 0 70px 20px 30px;
+    padding: 0 70px 10px 30px;
   }
   #year {
     width: 150px;
