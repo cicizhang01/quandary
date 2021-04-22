@@ -217,9 +217,9 @@ export default {
       height: 1.5rem;
       margin-right: .5rem;
       line-height: 1.5rem;
-      color: #fff;
+      color: white;
       text-align: center;
-      background: rgba(0,0,0,0.38);
+      background: $light-gray;
       border-radius: 50%;
   }
   #step-button {

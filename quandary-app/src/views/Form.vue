@@ -53,7 +53,7 @@
         </tab-content>
 
         <tab-content title="Caltech Info"> 
-          <div class="field is-grouped is-grouped-centered">
+          <div class="field is-grouped is-grouped-left-aligned">
               <div id="major" class="field">
                 <label class="label is-medium">Major</label>
                 <span class="select is-multiple is-light">
@@ -129,25 +129,34 @@
               </div>
             </div>
             
-          <div class="field is-horizontal is-grouped is-grouped-centered">
-              <div class="field">
+          <div class="field is-horizontal is-grouped is-grouped-left-aligned">
+              <div id="incoming-year" class="field">
                 <label class="label is-medium">Incoming Year</label>
-                <div class="control">
-                  
-                </div>
+                <span class="select is-light">
+                  <select id="year" v-model="formData.incomingYear">
+                    <option selected></option>
+                    <option v-for="n in 61" :key="n"> {{ n + 1979 }} </option>
+                  </select>
+                </span>
               </div>
               
-              <div id="last-name" class="field">
+              <div id="grad-year" class="field">
                 <label class="label is-medium">Graduation Year</label>
-                <div class="control">
-                  
-                </div>
+                <span class="select is-light">
+                  <select id="year" v-model="formData.gradYear">
+                    <option selected></option>
+                    <option v-for="n in 61" :key="n"> {{ n + 1979 }} </option>
+                  </select>
+                </span>
               </div>
             </div>
         </tab-content>
-      
+
         <tab-content title="Topic Interests"> 
-            <div class="field">
+        </tab-content>
+
+        <tab-content title="Finishing Up"> 
+            <div id="terms" class="field">
                 <input type="checkbox" :class="hasError('terms') ? 'is-invalid' : ''" class="form-check-input" v-model="formData.terms">
                 I agree to the <a href="#">terms and conditions</a>
                 <div v-if="hasError('terms')" class="invalid-feedback">
@@ -181,10 +190,13 @@ export default {
             pronouns: null,
             major: null,
             minor: null,
+            incomingYear: null,
+            gradYear: null
         },
         validationRules:[
           {firstName: {required}, lastName: {required}},
           {major: {}, minor: {}},
+          {},
           {terms: {checked}}
         ]
       }
@@ -215,17 +227,25 @@ export default {
     text-align: center;
     margin: 40px 0 40px 0;
   }
+  #last-name {
+    padding: 0px 100px 0px 30px;
+  }
+  #major {
+    padding-left: 30px;
+    padding-right: 70px;
+  }
   #required {
     margin-top: 20px;
     text-align: center;
   }
-  #major {
+  #terms {
+    padding-left: 30px;
+  }
+  #incoming-year {
+    padding-left: 30px;
     padding-right: 70px;
   }
-  #last-name {
-    padding: 0px 100px 0px 30px;
-  }
-  .next-button {
-    margin-top: 90px;
+  #year {
+    width: 150px;
   }
 </style>
