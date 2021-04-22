@@ -22,7 +22,7 @@
         <div class="step-footer">
             <div class="btn-group" role="group">
                 <template v-if="!submitSuccess">
-                  <button @click="previousTab" disabled v-if="currentTab === 0" id="step-button" class="button is-dark is-rounded is-outlined">Previous</button>
+                  <button @click="previousTab" v-if="currentTab > 0" id="step-button" class="button is-dark is-rounded is-outlined">Previous</button>
                   <button @click="nextTab" v-if="currentTab < totalTabs - 1" id="step-button" class="button is-dark is-rounded">Next</button>
                   <button @click="onSubmit" v-if="currentTab === totalTabs - 1" id="step-button" class="button is-primary is-rounded">Submit</button>
                 </template>
@@ -113,11 +113,16 @@ export default {
         this.$emit('onComplete');
       },
       _switchTab(index){
-        //Disable all tabs
+        // Disable all tabs
         this.tabs.forEach(tab => {
           tab.isActive = false;
         });
+        // Invalidate all tabs past current tab
+        for (let i = index; i < this.totalTabs; i++) {
+          this.tabs[i].isValidated = false;
+        }
         this.currentTab = index;
+        // Enable current tab
         this.tabs[index].isActive = true;
         this.progress = ((this.currentTab + 1) / this.totalTabs * 100);
       },
@@ -194,7 +199,8 @@ export default {
   }
   .step-body {
     background-color: white;
-    padding: 20px 20px 25px 20px;
+    // text-align: center;
+    padding: 45px 20px 45px 20px;
     border-radius: 1rem;
     box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
   }

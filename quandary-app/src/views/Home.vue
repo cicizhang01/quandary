@@ -1,15 +1,14 @@
 <template>
 <div class="home">
   <div v-if="!$auth.loading">
-    
-      <section class="hero">
-        <div class="hero-body">
-          <div class="container">
-    
-            <div v-if="!$auth.isAuthenticated" id="login-button" class="button is-white is-outlined is-rounded" @click="login"> <strong> Log in </strong> </div>
-          </div>
+    <section v-if="!$auth.isAuthenticated" class="hero">
+      <div class="hero-body">
+        <div class="container">
+          <div  id="login-button" class="button is-white is-outlined is-rounded" @click="login"> <strong> Log in </strong> </div>
         </div>
-      </section>
+      </div>
+    </section>
+
   </div>
 
   <div class="form-button">
