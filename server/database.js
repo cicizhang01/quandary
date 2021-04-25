@@ -617,7 +617,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             user_id INTEGER NOT NULL,
             topic_id INTEGER NOT NULL,
             PRIMARY KEY(user_id, topic_id),
-            FOREIGN KEY(user_id) REFERENCES profile(user_id),
+            FOREIGN KEY(user_id) REFERENCES profile(user_id) ON DELETE CASCADE,
             FOREIGN KEY(topic_id) REFERENCES topic(topic_id)
         )`,
 
