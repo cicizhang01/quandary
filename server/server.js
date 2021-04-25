@@ -262,10 +262,141 @@ app.delete("/remove_lab/:lab_id", (req, res) => {
 
 
 /* Add labs for an existing user. */
+// lab name + pi should uniquely identify a lab.
+// or, will we know the lab id? you can store a value?
+// Assuming we will know the lab id.
+app.put("/add_user_labs/:user_id", (req, res) => {
+  var data = {
+      user_id: req.params.user_id,
+      lab_ids: req.body.lab_ids
+  }
+
+  var i;
+  for (i = 0; i < data.lab_ids.length; i++){
+    var lab_id = data.lab_ids[i];
+    var sql ='INSERT INTO student_to_lab VALUES (?,?)'
+    var params =[data.user_id, lab_id]
+
+    db.run(sql, params, function (err, result) {
+      if (err){
+          res.status(400).json({"error": err.message})
+          return;
+      }
+    })
+  }
+  res.json({response: "Added labs for user."});
+});
 
 
+/* Remove certain labs for an existing user. 
+   Assumes that the lab_id's will be given. */
+app.delete("/delete_user_labs/:user_id", (req, res) => {
+  var data = {
+      user_id: req.params.user_id,
+      lab_ids: req.body.lab_ids
+  }
 
-/* Remove labs for an existing user. */
+  var i;
+  for (i = 0; i < data.lab_ids.length; i++){
+    var lab_id = data.lab_ids[i];
+    var sql ='DELETE FROM student_to_lab WHERE user_id = ? AND lab_id = ?'
+    var params =[data.user_id, lab_id]
+
+    db.run(sql, params, function (err, result) {
+      if (err){
+          res.status(400).json({"error": err.message})
+          return;
+      }
+    })
+  }
+  res.json({response: "Added labs for user."});
+});
+
+
+/* Add user house membership */
+app.put("/add_user_house/:user_id", (req, res) => {
+  var data = {
+    house: req.body.house,
+    user_id: req.params.user_id,
+    is_full: req.body.is_full
+  }
+  var sql ='INSERT INTO house_memberships VALUES (?,?,?)'
+  var params =[data.house, data.user_id, data.is_full]
+
+  db.run(sql, params, function (err, result) {
+    if (err){
+        res.status(400).json({"error": err.message})
+        return;
+    }
+    res.json({
+      "message": "Added new user house membership.",
+      "data": data
+    })
+  })
+});
+
+
+/* Update user house membership */
+app.put("/update_user_house/:user_id", (req, res) => {
+  var data = {
+    house: req.body.house,
+    user_id: req.params.user_id,
+    is_full: req.body.is_full
+  }
+  var sql ='UPDATE house_memberships SET is_full = ? \
+  WHERE user_id = ? AND house = ?'
+  var params =[data.is_full, data.user_id, data.house]
+
+  db.run(sql, params, function (err, result) {
+    if (err){
+        res.status(400).json({"error": err.message})
+        return;
+    }
+    res.json({
+      "message": "Updated a user house membership.",
+      "data": data
+    })
+  })
+});
+
+
+/* Remove user house membership */
+app.delete("/delete_user_house/:user_id", (req, res) => {
+  var data = {
+    house: req.body.house,
+    user_id: req.params.user_id
+  }
+  var sql ='DELETE FROM house_memberships WHERE user_id = ? AND house = ?'
+  var params =[data.user_id, data.house]
+
+  db.run(sql, params, function (err, result) {
+    if (err){
+        res.status(400).json({"error": err.message})
+        return;
+    }
+    res.json({
+      "message": "Deleted a user house membership.",
+      "data": data
+    })
+  })
+});
+
+/* Add user option */
+
+
+/* Remove user option */
+
+
+/* Add user course */
+
+
+/* Remove user course */
+
+
+/* Add instructor */
+
+
+/* Remove instructor */
 
 
 
