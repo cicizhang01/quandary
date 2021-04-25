@@ -35,8 +35,191 @@ const checkJwt = jwt({
   });
 
 
-app.get('/quandary', (req, res) => {
-    var sql = "select * from quandary"
+/* Quandary REST API */
+
+/* Insert new user into database. */
+app.put("/add_user", (req, res) => {
+  var errors=[]
+  if (!req.body.first_name){
+    errors.push("No first name specified");
+  }
+  if (!req.body.last_name){
+    errors.push("No last name specified");
+  }
+  if (!req.body.pronouns){
+    errors.push("No pronouns specified");
+  }
+  console.log(req.body.pronouns);
+  if (errors.length){
+      res.status(400).json({"error":errors.join(",")});
+      return;
+  }  
+  var data = {
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      advisor_id: req.body.advisor_id,
+      incoming_year: req.body.incoming_year,
+      grad_year: req.body.grad_year,
+      is_undergrad: req.body.is_undergrad,
+      is_grad: req.body.is_grad,
+      is_alum: req.body.is_alum,
+      is_transfer: req.body.is_transfer,
+      pronouns: req.body.pronouns
+  }
+  var sql ='INSERT INTO profile (first_name, last_name, advisor_id, \
+    incoming_year, grad_year, is_undergrad, is_grad, is_alum, \
+    is_transfer, pronouns) VALUES (?,?,?,?,?,?,?,?,?,?)'
+  
+  var params =[data.first_name, data.last_name, data.advisor_id,
+    data.incoming_year, data.grad_year, data.is_undergrad, 
+    data.is_grad, data.is_alum, data.is_transfer, data.pronouns]
+  
+  db.run(sql, params, function (err, result) {
+      if (err){
+          res.status(400).json({"error": err.message})
+          return;
+      }
+      res.json({
+          "message": "Added new user.",
+          "data": data,
+          "id" : this.lastID
+      })
+  });
+})
+
+
+/* Delete user from database given the user_id.
+   user_id should be passed in the body of the request. */
+app.delete("/delete_user", (req, res) => {
+  var errors=[]
+  if (!req.body.user_id){
+    errors.push("No first name specified");
+  }
+  if (errors.length){
+      res.status(400).json({"error":errors.join(",")});
+      return;
+  }  
+  var data = {
+      user_id: req.body.user_id
+  }
+  var sql = 'DELETE FROM profile WHERE user_id = ?'
+  var params = [data.user_id]
+  
+  db.run(sql, params, function (err, result) {
+      if (err){
+          res.status(400).json({"error": err.message})
+          return;
+      }
+      res.json({
+          "message": "Deleted a user.",
+      })
+  });
+})
+
+
+/* Delete all users from the database. */
+app.delete("/delete_all_users", (req, res) => {
+  var errors=[] 
+  var sql = 'DELETE FROM profile'
+  var params = []
+  db.run(sql, params, function (err, result) {
+      if (err){
+          res.status(400).json({"error": err.message})
+          return;
+      }
+      res.json({
+          "message": "Deleted all users.",
+      })
+  });
+})
+
+
+/* Add topics for new user given user_id and list of topic_id's.
+  topic_ids should be a comma-separated list. */
+app.put("/add_user_topics", (req, res) => {
+  var data = {
+      user_id: req.body.user_id,
+      topic_ids: req.body.topic_ids
+  }
+  var i;
+  for (i = 0; i < data.topic_ids.length; i++){
+    var topic_id = data.topic_ids[i];
+    var sql ='INSERT INTO user_topics VALUES (?,?)'
+    var params =[data.user_id, topic_id]
+
+    db.run(sql, params, function (err, result) {
+      if (err){
+          res.status(400).json({"error": err.message})
+          return;
+      }
+    })
+  }
+});
+
+
+/* Get topics for a user. */
+app.get('/get_user_topics/:id', (req, res) => {
+  var sql = "select * from user_topics where user_id = ?"
+    var params = [req.params.id]
+    db.get(sql, params, (err, row) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        res.json(row)
+      });
+});
+
+
+/* Get topics for all users. */
+app.get('/get_all_user_topics', (req, res) => {
+  var sql = "select * from user_topics"
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        res.send(rows)
+      });
+});
+
+
+/* Add topics for existing user. */
+app.put("/add_user_topics/:user_id", (req, res) => {
+  var data = {
+      user_id: req.params.user_id,
+      topic_ids: req.body.topic_ids
+  }
+
+  var i;
+  for (i = 0; i < data.topic_ids.length; i++){
+    var topic_id = data.topic_ids[i];
+    var sql ='INSERT INTO user_topics VALUES (?,?)'
+    var params =[data.user_id, topic_id]
+
+    db.run(sql, params, function (err, result) {
+      if (err){
+          res.status(400).json({"error": err.message})
+          return;
+      }
+    })
+  }
+  res.json({response: "Added topics for user."});
+});
+
+
+
+/* Update user in database given their user_id.
+   user_id should be given in the body of the request. */
+
+
+
+
+/* Get all users in the database. Returns profile information
+   (exclusing topic interests). */
+app.get('/get_all_users', (req, res) => {
+    var sql = "select * from profile"
       var params = []
       db.all(sql, params, (err, rows) => {
           if (err) {
