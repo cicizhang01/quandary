@@ -37,6 +37,8 @@ const checkJwt = jwt({
 
 /* Quandary REST API */
 
+
+
 /* Insert new user into database. */
 app.put("/add_user", (req, res) => { 
   var data = {
@@ -131,23 +133,33 @@ app.put("/add_user_topics", (req, res) => {
 });
 
 
-/* Get topics for a user. */
-app.get('/get_user_topics/:id', (req, res) => {
-  var sql = "select * from user_topics where user_id = ?"
-    var params = [req.params.id]
-    db.get(sql, params, (err, row) => {
+/* Get topics for a user. Returns a list of topic_name's. */
+app.get('/get_user_topics/:user_id', (req, res) => {
+  var sql = "select topic_name, topic_id from user_topics natural join topic \
+  where user_id = ?"
+    var params = [req.params.user_id]
+    db.all(sql, params, (err, rows) => {
         if (err) {
           res.status(400).json({"error":err.message});
           return;
         }
-        res.json(row)
+
+        // Create a list of topic names.
+        var i;
+        var topic_names = []
+        for (i = 0; i < rows.length; i++){
+          topic_names.push(rows[i].topic_name)
+        }
+        res.send(topic_names)
       });
 });
 
 
-/* Get topics for all users. */
+/* Get topics for all users for debugging purposes. 
+   Returns a list of json objects each having user_id, topic_id, 
+   and topic_name. */
 app.get('/get_all_user_topics', (req, res) => {
-  var sql = "select * from user_topics"
+  var sql = "select * from user_topics natural join topic"
     var params = []
     db.all(sql, params, (err, rows) => {
         if (err) {
@@ -159,7 +171,7 @@ app.get('/get_all_user_topics', (req, res) => {
 });
 
 
-/* Add topics for existing user. */
+/* Add topics for an existing user. */
 app.put("/add_user_topics/:user_id", (req, res) => {
   var data = {
       user_id: req.params.user_id,
@@ -206,7 +218,7 @@ app.delete("/delete_user_topics/:user_id", (req, res) => {
 });
 
 
-/* Remove all topics for existing user. */
+/* Remove all topics for an existing user. */
 app.delete("/delete_all_user_topics/:user_id", (req, res) => {
   var sql ='DELETE FROM user_topics WHERE user_id = ?'
   var params =[req.params.user_id]
@@ -221,7 +233,7 @@ app.delete("/delete_all_user_topics/:user_id", (req, res) => {
 });
 
 
-/* Add a lab */
+/* Add a lab. */
 app.put("/add_lab", (req, res) => {
   var data = {
       name: req.body.name,
@@ -244,7 +256,7 @@ app.put("/add_lab", (req, res) => {
 });
 
 
-/* Remove a lab */
+/* Remove a lab. */
 app.delete("/remove_lab/:lab_id", (req, res) => {
   var sql ='DELETE FROM labs WHERE lab_id = ?'
   var params =[req.params.lab_id]
@@ -313,7 +325,8 @@ app.delete("/delete_user_labs/:user_id", (req, res) => {
 });
 
 
-/* Add user house membership */
+/* Add user house membership.
+   Adds single house membership at a time. */
 app.put("/add_user_house/:user_id", (req, res) => {
   var data = {
     house: req.body.house,
@@ -336,7 +349,8 @@ app.put("/add_user_house/:user_id", (req, res) => {
 });
 
 
-/* Update user house membership */
+/* Update user house membership.
+   Updates a single house membershipt at a time. */
 app.put("/update_user_house/:user_id", (req, res) => {
   var data = {
     house: req.body.house,
@@ -360,7 +374,8 @@ app.put("/update_user_house/:user_id", (req, res) => {
 });
 
 
-/* Remove user house membership */
+/* Removes a user house membership.
+   Removes a single membership at a time. */
 app.delete("/delete_user_house/:user_id", (req, res) => {
   var data = {
     house: req.body.house,
@@ -381,7 +396,60 @@ app.delete("/delete_user_house/:user_id", (req, res) => {
   })
 });
 
-/* Add user option */
+
+/* Add user option(s) for existing user.
+   Users can add multiple options at a time. */
+app.put("/add_user_options/:user_id", (req, res) => {
+  var data = {
+      user_id: req.params.user_id,
+      option_ids: req.body.option_ids,
+      is_majors: req.body.is_majors
+  }
+
+  var i;
+  for (i = 0; i < data.option_ids.length; i++){
+    var option_id = data.option_ids[i];
+    var is_major = data.is_majors[i];
+    var sql ='INSERT INTO user_option VALUES (?,?,?)'
+    var params =[data.user_id, option_id, is_major]
+
+    db.run(sql, params, function (err, result) {
+      if (err){
+          res.status(400).json({"error": err.message})
+          return;
+      }
+    })
+  }
+  res.json({response: "Added option(s) for user."});
+});
+
+
+/* Get all options for an existing user.
+   Returns a list of options. */
+app.get('/get_all_user_options/:user_id', (req, res) => {
+  var sql = "select * from user_option where user_id = ?"
+  //var sql = "select * from user_topics natural join topic"
+  var params = [req.params.user_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    
+    /* Convert rows into a list of options. */
+    var i;
+    options = [];
+    for (i = 0; i < rows.length; i++){
+      if(rows[i].is_major == 0){
+        options.push(rows[i].option_id + " " + "Minor")
+      }
+      else{
+        options.push(rows[i].option_id + " " + "Major")
+      }
+    }
+    res.json(options);
+  })
+});
 
 
 /* Remove user option */
