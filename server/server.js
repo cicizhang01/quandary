@@ -41,7 +41,8 @@ const checkJwt = jwt({
 
 
 
-/* Insert new user into database. */
+/* Insert new user into database (mini profile version). 
+   For debugging purposes. */
 app.put("/add_user", (req, res) => { 
   var data = {
       first_name: req.body.first_name,
@@ -75,6 +76,135 @@ app.put("/add_user", (req, res) => {
       })
   });
 })
+
+
+/* Insert new user into database (full profile version). */
+app.put("/add_full_user", (req, res) => { 
+  var data = {
+      // profile table
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      advisor_id: req.body.advisor_id,
+      incoming_year: req.body.incoming_year,
+      grad_year: req.body.grad_year,
+      is_undergrad: req.body.is_undergrad,
+      is_grad: req.body.is_grad,
+      is_alum: req.body.is_alum,
+      is_transfer: req.body.is_transfer,
+      pronouns: req.body.pronouns,
+
+      // user_topics table
+      topic_ids: req.body.topic_ids,
+      lab_ids: req.body.lab_ids,
+
+      // house_memberships table
+      houses: req.body.houses,
+      is_fulls: req.body.is_fulls,
+
+      // user_option table
+      option_ids: req.body.option_ids,
+      is_majors: req.body.is_majors,
+
+      // student_course table
+      course_ids: req.body.course_ids
+  }
+
+  // profile
+  var user_id;
+  var sql_profile ='INSERT INTO profile (first_name, last_name, advisor_id, \
+    incoming_year, grad_year, is_undergrad, is_grad, is_alum, \
+    is_transfer, pronouns) VALUES (?,?,?,?,?,?,?,?,?,?)'
+  
+  var params =[data.first_name, data.last_name, data.advisor_id,
+    data.incoming_year, data.grad_year, data.is_undergrad, 
+    data.is_grad, data.is_alum, data.is_transfer, data.pronouns]
+  
+  db.run(sql_profile, params, function (err, result) {
+      if (err){
+          res.status(400).json({"error": err.message})
+          return;
+      }
+      user_id = this.lastID;
+
+      // topics
+      console.log("Adding user topics.")
+      var i;
+      for (i = 0; i < data.topic_ids.length; i++){
+        var topic_id = data.topic_ids[i];
+        console.log(topic_id)
+        var sql_topics ='INSERT INTO user_topics VALUES (?,?)'
+        var params_topics =[user_id, topic_id]
+
+        db.run(sql_topics, params_topics, function (err, result) {
+          if (err){
+              console.log("error in sql function" + err)
+              res.status(400).json({"error": err.message})
+              return;
+          }
+        })
+      }
+
+      // house memberships
+      console.log("Adding user houses.")
+      var i;
+      for (i = 0; i < data.houses.length; i++){
+        var house = data.houses[i];
+        var is_full = data.is_fulls[i];
+        var sql_houses ='INSERT INTO house_memberships VALUES (?,?,?)'
+        var params_houses =[house, user_id, is_full]
+
+        db.run(sql_houses, params_houses, function (err, result) {
+          if (err){
+              res.status(400).json({"error": err.message})
+              return;
+          }
+        })
+      }
+
+    
+      // options
+      console.log("Adding user options")
+      var i;
+      for (i = 0; i < data.option_ids.length; i++){
+        var option_id = data.option_ids[i];
+        var is_major = data.is_majors[i];
+        var sql_options ='INSERT INTO user_option VALUES (?,?,?)'
+        var params_options =[user_id, option_id, is_major]
+
+        db.run(sql_options, params_options, function (err, result) {
+          if (err){
+              res.status(400).json({"error": err.message})
+              return;
+          }
+        })
+      }
+
+      // courses
+      console.log("Adding user courses")
+      var i;
+      for (i = 0; i < data.course_ids.length; i++){
+        var course_id = data.course_ids[i];
+        var sql_courses ='INSERT INTO student_course VALUES (?,?)'
+        var params_courses =[course_id, user_id]
+
+        db.run(sql_courses, params_courses, function (err, result) {
+          if (err){
+              res.status(400).json({"error": err.message})
+              return;
+          }
+        })
+      }
+
+  });
+  
+  res.json({
+    "message": "Added new user.",
+    "data": data,
+    //"id" : user_id
+  })
+
+});
+
 
 
 /* Delete user from database given the user_id.
@@ -112,29 +242,6 @@ app.delete("/delete_all_users", (req, res) => {
 })
 
 
-/* Add topics for new user given user_id and list of topic_id's.
-  topic_ids should be a comma-separated list. */
-app.put("/add_user_topics", (req, res) => {
-  var data = {
-      user_id: req.body.user_id,
-      topic_ids: req.body.topic_ids
-  }
-  var i;
-  for (i = 0; i < data.topic_ids.length; i++){
-    var topic_id = data.topic_ids[i];
-    var sql ='INSERT INTO user_topics VALUES (?,?)'
-    var params =[data.user_id, topic_id]
-
-    db.run(sql, params, function (err, result) {
-      if (err){
-          res.status(400).json({"error": err.message})
-          return;
-      }
-    })
-  }
-});
-
-
 /* Get topics for a user. Returns a list of topic_name's. */
 app.get('/get_user_topics/:user_id', (req, res) => {
   var sql = "select topic_name, topic_id from user_topics natural join topic \
@@ -152,6 +259,7 @@ app.get('/get_user_topics/:user_id', (req, res) => {
         for (i = 0; i < rows.length; i++){
           topic_names.push(rows[i].topic_name)
         }
+        console.log(topic_names)
         res.send(topic_names)
       });
 });
@@ -168,6 +276,7 @@ app.get('/get_all_user_topics', (req, res) => {
           res.status(400).json({"error":err.message});
           return;
         }
+        console.log(rows)
         res.send(rows)
       });
 });
