@@ -8,6 +8,8 @@ const jwt = require("express-jwt");
 const jwksRsa = require("jwks-rsa");
 var db = require("./database.js");
 
+const Promise = require('bluebird')
+
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -426,7 +428,7 @@ app.put("/add_user_options/:user_id", (req, res) => {
 
 /* Get all options for an existing user.
    Returns a list of options. */
-app.get('/get_all_user_options/:user_id', (req, res) => {
+app.get('/get_user_options/:user_id', (req, res) => {
   var sql = "select * from user_option where user_id = ?"
   //var sql = "select * from user_topics natural join topic"
   var params = [req.params.user_id]
@@ -452,13 +454,133 @@ app.get('/get_all_user_options/:user_id', (req, res) => {
 });
 
 
-/* Remove user option */
+/* Remove user option.
+   Can remove multiple options at a time. */
+app.delete("/delete_user_options/:user_id", (req, res) => {
+var data = {
+    user_id: req.params.user_id,
+    option_ids: req.body.option_ids,
+    is_majors: req.body.is_majors
+}
+
+var i;
+for (i = 0; i < data.option_ids.length; i++){
+  var option_id = data.option_ids[i];
+  var is_major = data.is_majors[i];
+  var sql = 'DELETE FROM user_option WHERE user_id = ? AND option_id = ? AND is_major = ?'
+  //var sql ='INSERT INTO user_option VALUES (?,?,?)'
+  var params =[data.user_id, option_id, is_major]
+
+  db.run(sql, params, function (err, result) {
+    if (err){
+        res.status(400).json({"error": err.message})
+        return;
+    }
+  })
+}
+res.json({response: "Deleted option(s) for user."});
+
+});
 
 
-/* Add user course */
+/* Add a course.
+app.put("/add_course", (req, res) => {
+  var data = {
+      course_no: req.body.course_no,
+      course_name: req.body.course_name
+  }
+  var sql ='INSERT INTO course (course_no, course_name) VALUES (?,?)'
+  var params =[data.course_no, data.course_name]
+
+  db.run(sql, params, function (err, result) {
+    if (err){
+        res.status(400).json({"error": err.message})
+        return;
+    }
+    res.json({
+      "message": "Added new user.",
+      "data": data,
+      "id" : this.lastID
+    })
+  })
+});
+*/
+
+/* Add user course(s) for existing user.
+   Users can add multiple courses at a time. */
+app.put("/add_user_courses/:user_id", (req, res) => {
+var data = {
+    user_id: req.params.user_id,
+    course_ids: req.body.course_ids
+}
+
+var i;
+for (i = 0; i < data.course_ids.length; i++){
+  var course_id = data.course_ids[i];
+  var sql ='INSERT INTO student_course VALUES (?,?)'
+  var params =[course_id, data.user_id]
+
+  db.run(sql, params, function (err, result) {
+    if (err){
+        res.status(400).json({"error": err.message})
+        return;
+    }
+  })
+}
+res.json({response: "Added course(s) for user."});
+});
 
 
-/* Remove user course */
+
+/*
+Get user courses. Returns a list of courses.
+*/
+app.get('/get_user_courses/:user_id', (req, res) => {
+  var sql = "select * from student_course inner join course on user_id = ?"
+  var params = [req.params.user_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    
+    // Convert rows into a list of courses. 
+    var i;
+    courses = [];
+    for (i = 0; i < rows.length; i++){
+      courses.push(rows[i].course_name)
+    }
+    res.json(courses);
+    //res.json(rows)
+  })
+});
+
+
+/* Remove user course
+   Can remove multiple courses at a time. */
+app.delete("/delete_user_courses/:user_id", (req, res) => {
+var data = {
+    user_id: req.params.user_id,
+    course_ids: req.body.course_ids
+}
+
+var i;
+var num_courses = data.course_ids.length
+for (i = 0; i < num_courses; i++){
+  var course_id = data.course_ids[i];
+  var sql = 'DELETE FROM student_course WHERE user_id = ? AND course_id = ?'
+  var params =[data.user_id, course_id]
+
+  db.run(sql, params, function (err, result) {
+    if (err){
+        res.status(400).json({"error": err.message})
+        return;
+    }
+  })
+}
+res.json({response: `Deleted ${num_courses} course(s) for user.`});
+
+});
 
 
 /* Add instructor */
