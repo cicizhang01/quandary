@@ -10,50 +10,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
       throw err
     }else{
         console.log('Connected to the SQLite database.')
-        db.run(`CREATE TABLE quandary (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name text,
-            category text,
-            description text,
-            featuredImage text,
-            image text,
-            location text,
-            data text,
-            time text
-          )`, // NOTE: list in col would require something like pickle
-              // data and time don't have special datatypes
-
-        (err) => {
-            if (err) {
-                // Table already created
-            }else{
-                // Table just created, creating some rows
-                var insert_old = `INSERT INTO quandary
-                (name, category, description, featuredImage, image, location, data, time)
-                VALUES (?,?,?,?,?,?,?,?)`
-                db.run(insert_old,
-                    ['Charity Ball',
-                    'Fundraising',
-                    'Spend an elegant night of dinner and dancing with us as we raise money for our new rescue farm.',
-                    'https://placekitten.com/500/500',
-                    'https://placekitten.com/500/500',
-                    '1234 Fancy Ave',
-                    '12-25-2019',
-                    '11:30'
-                  ])
-                db.run(insert_old,
-                    ['Rescue Center Goods Drive',
-                    'Adoptions',
-                    'Come to our donation drive to help us replenish our stock of pet food, toys, bedding, etc. We will have live bands, games, food trucks, and much more.',
-                    'https://placekitten.com/500/500',
-                    'https://placekitten.com/500/500',
-                    '1234 Dog Alley',
-                    '11-21-2019',
-                    '12:00'
-                  ])
-            }
-        });
-
+       
         db.run(`CREATE TABLE course (
             course_id INTEGER PRIMARY KEY AUTOINCREMENT,
             course_no INTEGER NOT NULL,
@@ -660,7 +617,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             user_id INTEGER NOT NULL,
             topic_id INTEGER NOT NULL,
             PRIMARY KEY(user_id, topic_id),
-            FOREIGN KEY(user_id) REFERENCES profile(user_id),
+            FOREIGN KEY(user_id) REFERENCES profile(user_id) ON DELETE CASCADE,
             FOREIGN KEY(topic_id) REFERENCES topic(topic_id)
         )`,
 
@@ -748,10 +705,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         });
         db.run(`CREATE TABLE user_option (
             user_id INTEGER NOT NULL,
-            option_id INTEGER NOT NULL,
+            option TEXT NOT NULL,
             is_major INTEGER NOT NULL,
-            PRIMARY KEY(user_id, option_id),
-            FOREIGN KEY(option_id) REFERENCES options(option_id),
+            PRIMARY KEY(user_id, option),
+            FOREIGN KEY(option) REFERENCES options(option),
             CHECK (is_major = 0 OR is_major = 1)
         )`,
 
@@ -761,9 +718,9 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO user_option
-                (user_id, option_id, is_major)
+                (user_id, option, is_major)
                 VALUES (?,?,?)`
-                db.run(insert, [1,1,1])
+                db.run(insert, [1,'Comp Sci',1])
             }
         });
     }
