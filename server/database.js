@@ -617,7 +617,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             user_id INTEGER NOT NULL,
             topic_id INTEGER NOT NULL,
             PRIMARY KEY(user_id, topic_id),
-            FOREIGN KEY(user_id) REFERENCES profile(user_id),
+            FOREIGN KEY(user_id) REFERENCES profile(user_id) ON DELETE CASCADE,
             FOREIGN KEY(topic_id) REFERENCES topic(topic_id)
         )`,
 
@@ -705,10 +705,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         });
         db.run(`CREATE TABLE user_option (
             user_id INTEGER NOT NULL,
-            option_id TEXT NOT NULL,
+            option TEXT NOT NULL,
             is_major INTEGER NOT NULL,
-            PRIMARY KEY(user_id, option_id),
-            FOREIGN KEY(option_id) REFERENCES options(option_id),
+            PRIMARY KEY(user_id, option),
+            FOREIGN KEY(option) REFERENCES options(option),
             CHECK (is_major = 0 OR is_major = 1)
         )`,
 
@@ -718,7 +718,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO user_option
-                (user_id, option_id, is_major)
+                (user_id, option, is_major)
                 VALUES (?,?,?)`
                 db.run(insert, [1,'Comp Sci',1])
             }

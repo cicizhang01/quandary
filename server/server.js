@@ -107,7 +107,7 @@ app.put("/add_full_user", (req, res) => {
       is_fulls: req.body.is_fulls,
 
       // user_option table
-      option_ids: req.body.option_ids,
+      options: req.body.options,
       is_majors: req.body.is_majors,
 
       // student_course table
@@ -185,11 +185,11 @@ app.put("/add_full_user", (req, res) => {
       // options
       console.log("Adding user options")
       var i;
-      for (i = 0; i < data.option_ids.length; i++){
-        var option_id = data.option_ids[i];
+      for (i = 0; i < data.options.length; i++){
+        var option = data.options[i];
         var is_major = data.is_majors[i];
         var sql_options ='INSERT INTO user_option VALUES (?,?,?)'
-        var params_options =[user_id, option_id, is_major]
+        var params_options =[user_id, option, is_major]
 
         db.run(sql_options, params_options, function (err, result) {
           if (err){
@@ -327,22 +327,22 @@ app.put("/update_user_house/:user_id", (req, res) => {
 
 /* Add user option(s) for existing user.
    Users can add multiple options at a time.
-   Accepts a list of option_ids and their respective
-   is_major values in separate lists. Note, option_ids[i]
+   Accepts a list of option's and their respective
+   is_major values in separate lists. Note, options[i]
    corresponds to is_majors[i]. */
 app.put("/add_user_options/:user_id", (req, res) => {
   var data = {
       user_id: req.params.user_id,
-      option_ids: req.body.option_ids,
+      options: req.body.options,
       is_majors: req.body.is_majors
   }
 
   var i;
-  for (i = 0; i < data.option_ids.length; i++){
-    var option_id = data.option_ids[i];
+  for (i = 0; i < data.options.length; i++){
+    var option = data.options[i];
     var is_major = data.is_majors[i];
     var sql ='INSERT INTO user_option VALUES (?,?,?)'
-    var params =[data.user_id, option_id, is_major]
+    var params =[data.user_id, option, is_major]
 
     db.run(sql, params, function (err, result) {
       if (err){
@@ -545,17 +545,17 @@ app.delete("/delete_all_user_topics/:user_id", (req, res) => {
 app.delete("/delete_user_options/:user_id", (req, res) => {
 var data = {
     user_id: req.params.user_id,
-    option_ids: req.body.option_ids,
+    options: req.body.options,
     is_majors: req.body.is_majors
 }
 
 var i;
-for (i = 0; i < data.option_ids.length; i++){
-  var option_id = data.option_ids[i];
+for (i = 0; i < data.options.length; i++){
+  var option = data.options[i];
   var is_major = data.is_majors[i];
-  var sql = 'DELETE FROM user_option WHERE user_id = ? AND option_id = ? AND is_major = ?'
+  var sql = 'DELETE FROM user_option WHERE user_id = ? AND option = ? AND is_major = ?'
   //var sql ='INSERT INTO user_option VALUES (?,?,?)'
-  var params =[data.user_id, option_id, is_major]
+  var params =[data.user_id, option, is_major]
 
   db.run(sql, params, function (err, result) {
     if (err){
@@ -652,10 +652,10 @@ app.get('/get_user_options/:user_id', (req, res) => {
     options = [];
     for (i = 0; i < rows.length; i++){
       if(rows[i].is_major == 0){
-        options.push(rows[i].option_id + " " + "Minor")
+        options.push(rows[i].option + " " + "Minor")
       }
       else{
-        options.push(rows[i].option_id + " " + "Major")
+        options.push(rows[i].option + " " + "Major")
       }
     }
     res.json(options);
@@ -810,76 +810,6 @@ app.get('/get_topic_subtree', (req, res) => {
     res.send(rows)
   });
 });
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Add a course.
-app.put("/add_course", (req, res) => {
-  var data = {
-      course_no: req.body.course_no,
-      course_name: req.body.course_name
-  }
-  var sql ='INSERT INTO course (course_no, course_name) VALUES (?,?)'
-  var params =[data.course_no, data.course_name]
-
-  db.run(sql, params, function (err, result) {
-    if (err){
-        res.status(400).json({"error": err.message})
-        return;
-    }
-    res.json({
-      "message": "Added new user.",
-      "data": data,
-      "id" : this.lastID
-    })
-  })
-});
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Update user in database given their user_id.
-   user_id should be given in the body of the request. */
-
-
-
-/* Add instructor */
-
-
-/* Remove instructor */
-
-
-
-
-
-
-
 
 /* END Quandary REST API */
 
