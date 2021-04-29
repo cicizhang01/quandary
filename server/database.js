@@ -10,7 +10,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
       throw err
     }else{
         console.log('Connected to the SQLite database.')
-       
+
         db.run(`CREATE TABLE course (
             course_id INTEGER PRIMARY KEY AUTOINCREMENT,
             course_no INTEGER NOT NULL,
@@ -251,7 +251,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 db.run(insert, [37, 'Caltech Hillel'])
                 db.run(insert, [38, 'Caltech Muslim Student Association'])
                 db.run(insert, [39, 'Philosophy of Yoga'])
-                db.run(insert, [40, 'Science, Math, Engineering Clubs'])
+                db.run(insert, [40, 'Science Math Engineering Clubs'])
                 db.run(insert, [41, 'Aerospace AIAA'])
                 db.run(insert, [42, 'AICHE'])
                 db.run(insert, [43, 'Biotech Club'])
