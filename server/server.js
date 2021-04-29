@@ -779,9 +779,11 @@ app.get('/get_topic_tree', (req, res) => {
    Returns a list of JSON objects each having topic_id and topic_name.
 */
 app.get('/get_topic_tree_root', (req, res) => {
+  
   var sql = "select * from topic natural join \
   (select distinct parent as topic_id \
     from topic_tree where parent not in (select child from topic_tree))"
+
   var params = []
   db.all(sql, params, (err, rows) => {
     if (err) {
