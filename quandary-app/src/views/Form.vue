@@ -99,7 +99,6 @@
             <span class="select is-multiple is-light">
               <select multiple v-model="formData.minor">
                 <option selected></option>
-                <option>ACM</option>
                 <option>Aerospace</option>
                 <option>Chemistry</option>
                 <option>Computer Science</option>
@@ -220,7 +219,7 @@
           <div v-for="topic in topics" :key="topic.topic_id" class="column is-half">
             {{ getSubTopics(subtopics, topic.topic_id) }}
             <div class="header">
-              <input class="is-checkradio" :id="topic.topic_name" type="checkbox" name="checkbox" v-on:click="onClickTopic(topic.topic_id)">
+              <input class="is-checkradio" :id="topic.topic_name" type="checkbox" name="checkbox" :checked="interests.includes(topic.topic_id)" v-on:click="onClickTopic(topic.topic_id)">
               <label :for="topic.topic_name" id="header-text"><b>{{ topic.topic_name }}</b></label>
             </div>
 
@@ -228,14 +227,14 @@
               <div v-for="subtopic in subtopics[topic.topic_id]" :key="subtopic.topic_id" class="subtopics">
                 {{ getSubTopics(subsubtopics, subtopic.topic_id) }}
                 <div class="subheader">
-                  <input class="is-checkradio is-circle" :id="subtopic.topic_name" type="checkbox" name="checkbox" v-on:click="onClickTopic(subtopic.topic_id)">
+                  <input class="is-checkradio is-circle" :id="subtopic.topic_name" type="checkbox" name="checkbox" :checked="interests.includes(subtopic.topic_id)" v-on:click="onClickTopic(subtopic.topic_id)">
                   <label :for="subtopic.topic_name" id="subheader-text">{{ subtopic.topic_name }}</label>
                 </div>
 
                 <div class="column" v-show="interests.includes(subtopic.topic_id) && subsubtopics[subtopic.topic_id].length != 0">
                   <div v-for="subsubtopic in subsubtopics[subtopic.topic_id]" :key="subsubtopic.topic_id" class="subtopics">
                     <div class="subsubheader">
-                      <input class="is-checkradio is-circle" :id="subsubtopic.topic_name" type="checkbox" name="checkbox" v-on:click="onClickTopic(subsubtopic.topic_id)">
+                      <input class="is-checkradio is-circle" :id="subsubtopic.topic_name" type="checkbox" name="checkbox" :checked="interests.includes(subsubtopic.topic_id)" v-on:click="onClickTopic(subsubtopic.topic_id)">
                       <label :for="subsubtopic.topic_name" id="subsubheader-text">{{ subsubtopic.topic_name }}</label>
                     </div>
                   </div>
