@@ -148,15 +148,13 @@
             <div class="field is-horizontal is-grouped is-grouped-left-aligned">
               <div id="student-status" class="field">
                 <label class="label is-medium">Are you a current student? *</label>
-                <div class="control" :class="hasError('currStudent') ? 'is-invalid': ''">
-                  <label class="radio">
-                    <input type="radio" name="curr-student" value="1" v-model="formData.currStudent">
-                    Yes
-                  </label>
-                  <label class="radio">
-                    <input type="radio" name="curr-student" value="0" v-model="formData.currStudent">
-                    No
-                  </label>
+                <div class="field" :class="hasError('currStudent') ? 'is-invalid': ''">
+                  <div class="checkbox">
+                    <input class="is-checkradio" id="curr-student-yes" type="radio" name="curr-student" value="1" v-model="formData.currStudent">
+                    <label for="curr-student-yes" id="radio-text">Yes</label>
+                    <input class="is-checkradio" id="curr-student-no" type="radio" name="curr-student" value="0" v-model="formData.currStudent">
+                    <label for="curr-student-no" id="radio-text">No</label>
+                  </div>
                   <div v-if="hasError('currStudent')" class="invalid-feedback">
                     <p class="help is-danger" v-if="!$v.formData.currStudent.required">Required</p>
                   </div>
@@ -166,14 +164,12 @@
               <div id="student-status" class="field">
                 <label class="label is-medium">Are / were you a transfer student? *</label>
                 <div class="control" :class="hasError('isTransfer') ? 'is-invalid': ''">
-                  <label class="radio">
-                    <input type="radio" name="curr-student" value="1" v-model="formData.isTransfer">
-                    Yes
-                  </label>
-                  <label class="radio">
-                    <input type="radio" name="curr-student" value="0" v-model="formData.isTransfer">
-                    No
-                  </label>
+                  <div class="checkbox">
+                    <input class="is-checkradio" id="transfer-yes" type="radio" name="transfer" value="1" v-model="formData.isTransfer">
+                    <label for="transfer-yes" id="radio-text">Yes</label>
+                    <input class="is-checkradio" id="transfer-no" type="radio" name="transfer" value="0" v-model="formData.isTransfer">
+                    <label for="transfer-no" id="radio-text">No</label>
+                  </div>
                   <div v-if="hasError('isTransfer')" class="invalid-feedback">
                     <p class="help is-danger" v-if="!$v.formData.isTransfer.required">Required</p>
                   </div>
@@ -184,14 +180,12 @@
             <div id="student-status" class="field" v-if="formData.currStudent === '1'">
               <label class="label is-medium">Are you an undergraduate or graduate student? *</label>
               <div class="control" :class="hasError('studentLevel') ? 'is-invalid': ''">
-                <label class="radio">
-                  <input type="radio" name="student" value="0" v-model="formData.studentLevel">
-                  Undergraduate
-                </label>
-                <label class="radio">
-                  <input type="radio" name="student" value="1" v-model="formData.studentLevel">
-                  Graduate
-                </label>
+                <div class="checkbox">
+                  <input class="is-checkradio" id="level-undergrad" type="radio" name="level" value="0" v-model="formData.studentLevel">
+                  <label for="level-undergrad" id="radio-text">Undergraduate</label>
+                  <input class="is-checkradio" id="level-grad" type="radio" name="level" value="1" v-model="formData.studentLevel">
+                  <label for="level-grad" id="radio-text">Graduate</label>
+                </div>
                 <div v-if="hasError('studentLevel')" class="invalid-feedback">
                   <p id="radio-error" class="help is-danger" v-if="!$v.formData.studentLevel.required">Required</p>
                 </div>
@@ -201,18 +195,14 @@
             <div id="student-status" class="field" v-if="formData.currStudent === '0'">
               <label class="label is-medium">Were you an undergraduate student, graduate student, or both? *</label>
               <div class="control" :class="hasError('studentLevel') ? 'is-invalid': ''">
-                <label class="radio">
-                  <input type="radio" name="alumni-student" value="0" v-model="formData.studentLevel">
-                  Undergraduate
-                </label>
-                <label class="radio">
-                  <input type="radio" name="alumni-student" value="1" v-model="formData.studentLevel">
-                  Graduate
-                </label>
-                <label class="radio">
-                  <input type="radio" name="alumni-student" value="2" v-model="formData.studentLevel">
-                  Both
-                </label>
+                <div class="checkbox">
+                  <input class="is-checkradio" id="level-undergrad" type="radio" name="level" value="0" v-model="formData.studentLevel">
+                  <label for="level-undergrad" id="radio-text">Undergraduate</label>
+                  <input class="is-checkradio" id="level-grad" type="radio" name="level" value="1" v-model="formData.studentLevel">
+                  <label for="level-grad" id="radio-text">Graduate</label>
+                  <input class="is-checkradio" id="level-both" type="radio" name="level" value="2" v-model="formData.studentLevel">
+                  <label for="level-both" id="radio-text">Both</label>
+                </div>
                 <div v-if="hasError('studentLevel')" class="invalid-feedback">
                   <p id="radio-error" class="help is-danger" v-if="!$v.formData.studentLevel.required">Required</p>
                 </div>
@@ -222,7 +212,21 @@
             <div id="required"> (*) Required </div>
         </tab-content>
 
-        <tab-content title="Topic Interests"> 
+        <tab-content title="Topic Interests">
+          <h1 class="subtitle">
+            Select any topics you're interested in following.
+          </h1>
+          <div class="columns is-multiline">
+            <div v-for="topic in topics" :key="topic.topic_id" class="column is-half">
+
+            <div class="field">
+              <input class="is-checkradio" :id="topic.topic_name" type="checkbox" name="checkbox">
+              <label :for="topic.topic_name" id="header-text"><b>{{ topic.topic_name }}</b></label>
+            </div>
+
+                
+          </div>
+          </div>
         </tab-content>
 
         <tab-content title="Finishing Up"> 
@@ -230,7 +234,7 @@
                 <input type="checkbox" :class="hasError('terms') ? 'is-invalid' : ''" class="form-check-input" v-model="formData.terms">
                 I agree to the <a href="#">terms and conditions</a>
                 <div v-if="hasError('terms')" class="invalid-feedback">
-                    <p class="help is-danger" v-if="!$v.formData.terms.required">Please select the terms and conditions.</p>
+                  <p class="help is-danger" v-if="!$v.formData.terms.required">Please select the terms and conditions.</p>
                 </div>
             </div>
         </tab-content>
@@ -243,6 +247,7 @@ import FormWizard from '../components/FormWizard.vue';
 import TabContent from '../components/TabContent.vue';
 import ValidationHelper from '../components/ValidationHelper.vue';
 import { required } from 'vuelidate/lib/validators';
+import QuandaryService from '../services/QuandaryService.js';
 
 const checked = (value) => value === true;
 
@@ -252,9 +257,10 @@ export default {
         FormWizard, TabContent
     },
     mixins: [ValidationHelper],
-    data(){
+    data() {
       return {
-        formData:{
+        topics: {},
+        formData: {
             firstName: '',
             lastName: '',
             pronouns: null,
@@ -274,22 +280,36 @@ export default {
         ]
       }
     },
-    methods:{
-        onComplete(){
-            alert("Form submitted!");
-            this.$refs.formwizard.changeStatus();
-        },
-        reset(){
-            for(let field in this.formData){
-                this.formData[field] = null;
-            }
-        },
-        nextStep(){
-            //alert("On Next Step");
-        },
-        previousStep(){
-            //alert("On Previous Step");
-        }
+    created() {
+      this.getTopicsData();
+    },
+    methods: {
+      async getTopicsData() {
+        QuandaryService.getAllHeaderTopics()
+        .then(
+          (topics => {
+            this.$set(this, "topics", topics);
+          }).bind(this)
+        );
+      },
+      getSubTopics(topicId) {
+        return QuandaryService.getSubTopics(topicId)
+      },
+      onComplete() {
+          alert("Form submitted!");
+          this.$refs.formwizard.changeStatus();
+      },
+      reset() {
+          for(let field in this.formData){
+              this.formData[field] = null;
+          }
+      },
+      nextStep() {
+          //alert("On Next Step");
+      },
+      previousStep() {
+          //alert("On Previous Step");
+      }
     }
 }
 </script>
@@ -299,6 +319,9 @@ export default {
   .main {
     text-align: center;
     margin: 40px 0 40px 0;
+  }
+  .subtitle {
+    padding-left: 30px;
   }
   #first-row {
     padding-left: 30px;
@@ -326,11 +349,18 @@ export default {
   #student-status {
     padding: 0px 30px 0 30px;
   }
-  .radio {
-    padding-right: 30px;
-    font-size: 18px;
+  #radio-text {
+    padding: 0 0 0 2.2rem;
+    font-size: 1.1rem;
   }
   #radio-error {
     padding-top: 4px;
+  }
+  .columns {
+    padding: 0px 30px 0 30px;
+  }
+  #header-text {
+    padding: 0 0 0 2.2rem;
+    font-size: 1.2rem;
   }
 </style>
