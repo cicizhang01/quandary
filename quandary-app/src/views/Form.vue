@@ -12,7 +12,7 @@
         </div>
       </div>
     </section>
-    <form-wizard ref="formwizard" @onComplete="onComplete" @onNextStep="nextStep" @onPreviousStep="previousStep" @onReset="reset">
+    <form-wizard ref="formwizard" class="form" @onComplete="onComplete" @onNextStep="nextStep" @onPreviousStep="previousStep" @onReset="reset">
         <tab-content title="General Info" :selected="true">
             <div id="first-row" class="field is-horizontal is-grouped is-left-aligned">
               <div class="field">
@@ -218,21 +218,41 @@
           </h1>
           <div class="columns is-multiline">
             <div v-for="topic in topics" :key="topic.topic_id" class="column is-half">
+              {{ getSubTopics(subtopics, topic.topic_id) }}
+              <div class="header">
+                <input class="is-checkradio" :id="topic.topic_name" type="checkbox" name="checkbox" v-on:click="onClickTopic(topic.topic_id)">
+                <label :for="topic.topic_name" id="header-text"><b>{{ topic.topic_name }}</b></label>
+              </div>
 
-            <div class="field">
-              <input class="is-checkradio" :id="topic.topic_name" type="checkbox" name="checkbox">
-              <label :for="topic.topic_name" id="header-text"><b>{{ topic.topic_name }}</b></label>
+              <div class="column" v-if="interests.includes(topic.topic_id)">
+                <div v-for="subtopic in subtopics[topic.topic_id]" :key="subtopic.topic_id" class="subtopics">
+                  {{ getSubTopics(subsubtopics, subtopic.topic_id) }}
+                  <div class="subheader">
+                    <input class="is-checkradio is-circle" :id="subtopic.topic_name" type="checkbox" name="checkbox" v-on:click="onClickTopic(subtopic.topic_id)">
+                    <label :for="subtopic.topic_name" id="subheader-text">{{ subtopic.topic_name }}</label>
+                  </div>
+
+
+                  <div class="column" v-if="interests.includes(subtopic.topic_id)">
+                    <div v-for="subsubtopic in subsubtopics[subtopic.topic_id]" :key="subsubtopic.topic_id" class="subtopics">
+                      <div class="subsubheader">
+                        <input class="is-checkradio is-circle" :id="subsubtopic.topic_name" type="checkbox" name="checkbox" v-on:click="onClickTopic(subsubtopic.topic_id)">
+                        <label :for="subsubtopic.topic_name" id="subsubheader-text">{{ subsubtopic.topic_name }}</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-
-                
-          </div>
           </div>
         </tab-content>
 
         <tab-content title="Finishing Up"> 
             <div id="terms" class="field">
-                <input type="checkbox" :class="hasError('terms') ? 'is-invalid' : ''" class="form-check-input" v-model="formData.terms">
-                I agree to the <a href="#">terms and conditions</a>
+                <input class="is-checkradio" id="terms-checkbox" type="checkbox" :class="hasError('terms') ? 'is-invalid' : ''" v-model="formData.terms">
+                <label for="terms-checkbox" id="radio-text">
+                  I agree to the <a href="#">terms and conditions</a>
+                </label>
                 <div v-if="hasError('terms')" class="invalid-feedback">
                   <p class="help is-danger" v-if="!$v.formData.terms.required">Please select the terms and conditions.</p>
                 </div>
@@ -259,6 +279,9 @@ export default {
     mixins: [ValidationHelper],
     data() {
       return {
+        interests: [],
+        subtopics: [],
+        subsubtopics: [],
         topics: {},
         formData: {
             firstName: '',
@@ -292,15 +315,30 @@ export default {
           }).bind(this)
         );
       },
-      getSubTopics(topicId) {
-        return QuandaryService.getSubTopics(topicId)
+      onClickTopic: function (topicId) {
+        if (this.interests.includes(topicId)) {
+          const index = this.interests.indexOf(topicId);
+          if (index > -1) {
+            this.interests.splice(index, 1);
+          }
+        }
+        else {
+          this.interests.push(topicId);
+        }
+      },
+      getSubTopics(arr, topicId) {
+        if (!(topicId in arr)) {
+          QuandaryService.getSubTopics(topicId).then(
+            (response => arr[topicId] = response)
+          );
+        }
       },
       onComplete() {
           alert("Form submitted!");
           this.$refs.formwizard.changeStatus();
       },
       reset() {
-          for(let field in this.formData){
+          for(let field in this.formData) {
               this.formData[field] = null;
           }
       },
@@ -319,6 +357,9 @@ export default {
   .main {
     text-align: center;
     margin: 40px 0 40px 0;
+  }
+  .form {
+    margin-bottom: 4rem;
   }
   .subtitle {
     padding-left: 30px;
@@ -357,10 +398,21 @@ export default {
     padding-top: 4px;
   }
   .columns {
-    padding: 0px 30px 0 30px;
+    padding: 0px 0px 0 30px;
   }
   #header-text {
-    padding: 0 0 0 2.2rem;
+    padding: 0 0 0 2.4rem;
     font-size: 1.2rem;
   }
+  .subheader {
+    margin: 0.5rem 0 1rem 0;
+  }
+  #subheader-text {
+    padding: 0 0 0 2.4rem;
+    font-size: 1.1rem;
+  }
+  .subsubheader {
+    margin: 0rem 0 1.4rem 0;
+  }
+
 </style>
