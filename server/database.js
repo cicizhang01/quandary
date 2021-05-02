@@ -11,9 +11,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
     }else{
         console.log('Connected to the SQLite database.')
        
+        
         db.run(`CREATE TABLE course (
-            course_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            course_no INTEGER NOT NULL,
+            course_id INTEGER PRIMARY KEY,
+            course_no TEXT NOT NULL,
             course_name TEXT NOT NULL
         )`,
 
@@ -23,9 +24,16 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO course
-                (course_no, course_name)
-                VALUES (?, ?)`
-                db.run(insert, [121, "Databases"])
+                (course_id, course_no, course_name)
+                VALUES (?, ?, ?)`
+                db.run(insert, [1, "121", "Databases"])
+                db.run(insert, [2, "100", "Research in Aerospace"])
+
+                db.run(insert, [3, "101C", "Fluid Mechanics"])
+                db.run(insert, [4, "011", "Introduction to Matlab and Mathematica"])
+                db.run(insert, [5, "095B", "Introductory Methods of Applied Mathematics for the Physical Sciences"])
+                
+                db.run(insert, [6, "079C", "Senior Thesis, Theoretical"])
             }
         });
         db.run(`CREATE TABLE dept_course (
@@ -43,9 +51,19 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO dept_course
                 (dept, course_id)
                 VALUES (?, ?)`
-                db.run(insert, ['Comp Sci', 1])
+                db.run(insert, ['CS', 1])
+                db.run(insert, ['Ae', 2])
+                db.run(insert, ['Ae', 3])
+                db.run(insert, ['APh', 3])
+                db.run(insert, ['CE', 3])
+                db.run(insert, ['ME', 3])
+                db.run(insert, ['ACM', 4])
+                db.run(insert, ['ACM', 5])
+                db.run(insert, ['APh', 6])
             }
         });
+        
+
         db.run(`CREATE TABLE instructor (
             instructor_id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL
@@ -202,7 +220,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }
         });
         db.run(`CREATE TABLE topic (
-            topic_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            topic_id INTEGER,
             topic_name TEXT NOT NULL
         )`,
 
@@ -211,148 +229,146 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 // Table already created
             }else{
                 // Table just created, creating some rows
-                var insert = `INSERT INTO topic
-                (topic_name)
-                VALUES (?)`
-                db.run(insert, ['Sports'])
-                db.run(insert, ['Tennis'])
-                db.run(insert, ['Soccer'])
-                db.run(insert, ['Basketball'])
-                db.run(insert, ['Cross Country'])
-                db.run(insert, ['Swim and Dive'])
-                db.run(insert, ['Track and Field'])
-                db.run(insert, ['Water Polo'])
-                db.run(insert, ['Volleyball'])
-                db.run(insert, ['Baseball'])
-                db.run(insert, ['Clubs'])
-                db.run(insert, ['Outdoor and Sports Clubs'])
-                db.run(insert, ['Caltech Alpine Club'])
-                db.run(insert, ['Archery Club'])
-                db.run(insert, ['Caltech Bike Lab'])
-                db.run(insert, ['Caltech Cricket Club'])
-                db.run(insert, ['Padding Club'])
-                db.run(insert, ['Ultimate Frisbee'])
-                db.run(insert, ['Caltech Fencing'])
-                db.run(insert, ['Caltech Badminton Club'])
-                db.run(insert, ['Caltech Ballroom Dance Club'])
-                db.run(insert, ['Caltech Tai Chi Club'])
-                db.run(insert, ['Caltech Tango'])
-                db.run(insert, ['Outreach and Service Clubs'])
-                db.run(insert, ['Caltech Effective Altruism'])
-                db.run(insert, ['Engineers Without Borders'])
-                db.run(insert, ['Caltech Letters'])
-                db.run(insert, ['Questbridge'])
-                db.run(insert, ['Techers For a Sustainable Future'])
-                db.run(insert, ['Techreach'])
-                db.run(insert, ['The Caltech Y'])
-                db.run(insert, ['Religion and Philosophy Clubs'])
-                db.run(insert, ['Catholic Small Faith Community'])
-                db.run(insert, ['Christians on Campus at Caltech'])
-                db.run(insert, ['Caltech Christian Fellowship'])
-                db.run(insert, ['Graduate Christian Fellowship'])
-                db.run(insert, ['Caltech Hillel'])
-                db.run(insert, ['Caltech Muslim Student Association'])
-                db.run(insert, ['Philosophy of Yoga'])
-                db.run(insert, ['Science, Math, Engineering Clubs'])
-                db.run(insert, ['Aerospace AIAA'])
-                db.run(insert, ['AICHE'])
-                db.run(insert, ['Biotech Club'])
-                db.run(insert, ['Chem Club'])
-                db.run(insert, ['Caltech Data Science Organization'])
-                db.run(insert, ['Hacktech'])
-                db.run(insert, ['Caltech Harvey Mudd Math Competition'])
-                db.run(insert, ['IEEE'])
-                db.run(insert, ['Math Club'])
-                db.run(insert, ['Neurotechers'])
-                db.run(insert, ['Physics Club'])
-                db.run(insert, ['Caltech Racing'])
-                db.run(insert, ['Caltech Robotics Team'])
-                db.run(insert, ['Rocketry Parsec'])
-                db.run(insert, ['Science Olympiad'])
-                db.run(insert, ['Student Investment Fund'])
-                db.run(insert, ['UAV Club'])
-                db.run(insert, ['Caltech Med Life'])
-                db.run(insert, ['Caltech Premedical Association'])
-                db.run(insert, ['Diversity Equity and Inclusion Clubs'])
-                db.run(insert, ['Black Scientists and Engineers of Caltech'])
-                db.run(insert, ['Caltech Disability Coalition'])
-                db.run(insert, ['Feminist Club'])
-                db.run(insert, ['Caltech Latino Association'])
-                db.run(insert, ['OASIS'])
-                db.run(insert, ['Prism LGBTQ'])
-                db.run(insert, ['Sage Council'])
-                db.run(insert, ['Socialists of Caltech'])
-                db.run(insert, ['SWE'])
-                db.run(insert, ['Arts and Culture Clubs'])
-                db.run(insert, ['Aarya'])
-                db.run(insert, ['Caltech Acapella'])
-                db.run(insert, ['Caltech Anime Society'])
-                db.run(insert, ['Caltech Canadian CLub'])
-                db.run(insert, ['Caltech Chamber Music'])
-                db.run(insert, ['Cheese Society'])
-                db.run(insert, ['Techlit Creative Writing'])
-                db.run(insert, ['Caltech Dhamaka'])
-                db.run(insert, ['Glee Club and Chamber Singers'])
-                db.run(insert, ['Intermission Orchestra'])
-                db.run(insert, ['Jazz Band and Improv'])
-                db.run(insert, ['Performing and Visual Arts'])
-                db.run(insert, ['Science Fiction and Fantasy Club'])
-                db.run(insert, ['Caltech Theater'])
-                db.run(insert, ['Totem Magazine'])
-                db.run(insert, ['Visual Arts'])
-                db.run(insert, ['Misc Clubs'])
-                db.run(insert, ['The Big T'])
-                db.run(insert, ['Bridge Club'])
-                db.run(insert, ['Chess Club'])
-                db.run(insert, ['Dance Dance Revolution Club'])
-                db.run(insert, ['Puzzle Club'])
-                db.run(insert, ['Quizbowl'])
-                db.run(insert, ['Caltech Sovereignty Club'])
-                db.run(insert, ['California Tech'])
-                db.run(insert, ['Caltech Toastmasters'])
-                db.run(insert, ['Caltech Vintage Computing Club'])
-                db.run(insert, ['Housing System'])
-                db.run(insert, ['Rotation'])
-                db.run(insert, ['Excomm'])
-                db.run(insert, ['Memberships'])
-                db.run(insert, ['ASCIT'])
-                db.run(insert, ['Culture'])
-                db.run(insert, ['Orchestra'])
-                db.run(insert, ['Music House'])
-                db.run(insert, ['Silk Screening'])
-                db.run(insert, ['Jobs/Internships'])
-                db.run(insert, ['Career Fair'])
-                db.run(insert, ['Resume'])
-                db.run(insert, ['Interviewing'])
-                db.run(insert, ['Networking'])
-                db.run(insert, ['Research'])
-                db.run(insert, ['SURF'])
-                db.run(insert, ['Labs'])
-                db.run(insert, ['Campus Resources'])
-                db.run(insert, ['Health Center'])
-                db.run(insert, ['Counseling Office'])
-                db.run(insert, ['Gym'])
-                db.run(insert, ['Tech Express'])
-                db.run(insert, ['Library'])
-                db.run(insert, ['Registrar'])
-                db.run(insert, ['Hixon'])
-                db.run(insert, ['Campus Info'])
-                db.run(insert, ['History'])
-                db.run(insert, ['Traditions'])
-                db.run(insert, ['Buildings'])
-                db.run(insert, ['Food'])
-                db.run(insert, ['Money'])
-                db.run(insert, ['Scholarships'])
-                db.run(insert, ['Financial Aid'])
-                db.run(insert, ['Work Study'])
-                db.run(insert, ['Tutoring and TA'])
-                db.run(insert, ['Classes'])
-                db.run(insert, ['Choosing Classes'])
-                db.run(insert, ['Class Gossip'])
-                db.run(insert, ['Majors and Minors'])
-                db.run(insert, ['Off Campus Activities'])
-                db.run(insert, ['Explore LA'])
-                db.run(insert, ['LGBTQ+'])
+                var insert = `INSERT INTO topic VALUES (?,?)`
+                db.run(insert, [1, 'Sports'])
+                db.run(insert, [2, 'Tennis'])
+                db.run(insert, [3, 'Soccer'])
+                db.run(insert, [4, 'Basketball'])
+                db.run(insert, [5, 'Cross Country'])
+                db.run(insert, [6, 'Swim and Dive'])
+                db.run(insert, [7, 'Track and Field'])
+                db.run(insert, [8, 'Water Polo'])
+                db.run(insert, [9, 'Volleyball'])
+                db.run(insert, [10, 'Baseball'])
+                db.run(insert, [11, 'Clubs'])
+                db.run(insert, [12, 'Outdoor and Sports Clubs'])
+                db.run(insert, [13, 'Caltech Alpine Club'])
+                db.run(insert, [14, 'Archery Club'])
+                db.run(insert, [15, 'Caltech Bike Lab'])
+                db.run(insert, [16, 'Caltech Cricket Club'])
+                db.run(insert, [17, 'Padding Club'])
+                db.run(insert, [18, 'Ultimate Frisbee'])
+                db.run(insert, [19, 'Caltech Fencing'])
+                db.run(insert, [20, 'Caltech Badminton Club'])
+                db.run(insert, [21, 'Caltech Ballroom Dance Club'])
+                db.run(insert, [22, 'Caltech Tai Chi Club'])
+                db.run(insert, [23, 'Caltech Tango'])
+                db.run(insert, [24, 'Outreach and Service Clubs'])
+                db.run(insert, [25, 'Caltech Effective Altruism'])
+                db.run(insert, [26, 'Engineers Without Borders'])
+                db.run(insert, [27, 'Caltech Letters'])
+                db.run(insert, [28, 'Questbridge'])
+                db.run(insert, [29, 'Techers For a Sustainable Future'])
+                db.run(insert, [30, 'Techreach'])
+                db.run(insert, [31, 'The Caltech Y'])
+                db.run(insert, [32, 'Religion and Philosophy Clubs'])
+                db.run(insert, [33, 'Catholic Small Faith Community'])
+                db.run(insert, [34, 'Christians on Campus at Caltech'])
+                db.run(insert, [35, 'Caltech Christian Fellowship'])
+                db.run(insert, [36, 'Graduate Christian Fellowship'])
+                db.run(insert, [37, 'Caltech Hillel'])
+                db.run(insert, [38, 'Caltech Muslim Student Association'])
+                db.run(insert, [39, 'Philosophy of Yoga'])
+                db.run(insert, [40, 'Science, Math, Engineering Clubs'])
+                db.run(insert, [41, 'Aerospace AIAA'])
+                db.run(insert, [42, 'AICHE'])
+                db.run(insert, [43, 'Biotech Club'])
+                db.run(insert, [44, 'Chem Club'])
+                db.run(insert, [45, 'Caltech Data Science Organization'])
+                db.run(insert, [46, 'Hacktech'])
+                db.run(insert, [47, 'Caltech Harvey Mudd Math Competition'])
+                db.run(insert, [48, 'IEEE'])
+                db.run(insert, [49, 'Math Club'])
+                db.run(insert, [50, 'Neurotechers'])
+                db.run(insert, [51, 'Physics Club'])
+                db.run(insert, [52, 'Caltech Racing'])
+                db.run(insert, [53, 'Caltech Robotics Team'])
+                db.run(insert, [54, 'Rocketry Parsec'])
+                db.run(insert, [55, 'Science Olympiad'])
+                db.run(insert, [56, 'Student Investment Fund'])
+                db.run(insert, [57, 'UAV Club'])
+                db.run(insert, [58, 'Caltech Med Life'])
+                db.run(insert, [59, 'Caltech Premedical Association'])
+                db.run(insert, [60, 'Diversity Equity and Inclusion Clubs'])
+                db.run(insert, [61, 'Black Scientists and Engineers of Caltech'])
+                db.run(insert, [62, 'Caltech Disability Coalition'])
+                db.run(insert, [63, 'Feminist Club'])
+                db.run(insert, [64, 'Caltech Latino Association'])
+                db.run(insert, [65, 'OASIS'])
+                db.run(insert, [66, 'Prism LGBTQ'])
+                db.run(insert, [67, 'Sage Council'])
+                db.run(insert, [68, 'Socialists of Caltech'])
+                db.run(insert, [69, 'SWE'])
+                db.run(insert, [70, 'Arts and Culture Clubs'])
+                db.run(insert, [71, 'Aarya'])
+                db.run(insert, [72, 'Caltech Acapella'])
+                db.run(insert, [73, 'Caltech Anime Society'])
+                db.run(insert, [74, 'Caltech Canadian CLub'])
+                db.run(insert, [75, 'Caltech Chamber Music'])
+                db.run(insert, [76, 'Cheese Society'])
+                db.run(insert, [77, 'Techlit Creative Writing'])
+                db.run(insert, [78, 'Caltech Dhamaka'])
+                db.run(insert, [79, 'Glee Club and Chamber Singers'])
+                db.run(insert, [80, 'Intermission Orchestra'])
+                db.run(insert, [81, 'Jazz Band and Improv'])
+                db.run(insert, [82, 'Performing and Visual Arts'])
+                db.run(insert, [83, 'Science Fiction and Fantasy Club'])
+                db.run(insert, [84, 'Caltech Theater'])
+                db.run(insert, [85, 'Totem Magazine'])
+                db.run(insert, [86, 'Visual Arts'])
+                db.run(insert, [87, 'Misc Clubs'])
+                db.run(insert, [88, 'The Big T'])
+                db.run(insert, [89, 'Bridge Club'])
+                db.run(insert, [90, 'Chess Club'])
+                db.run(insert, [91, 'Dance Dance Revolution Club'])
+                db.run(insert, [92, 'Puzzle Club'])
+                db.run(insert, [93, 'Quizbowl'])
+                db.run(insert, [94, 'Caltech Sovereignty Club'])
+                db.run(insert, [95, 'California Tech'])
+                db.run(insert, [96, 'Caltech Toastmasters'])
+                db.run(insert, [97, 'Caltech Vintage Computing Club'])
+                db.run(insert, [98, 'Housing System'])
+                db.run(insert, [99, 'Rotation'])
+                db.run(insert, [100, 'Excomm'])
+                db.run(insert, [101, 'Memberships'])
+                db.run(insert, [102, 'ASCIT'])
+                db.run(insert, [103, 'Culture'])
+                db.run(insert, [104, 'Orchestra'])
+                db.run(insert, [105, 'Music House'])
+                db.run(insert, [106, 'Silk Screening'])
+                db.run(insert, [107, 'Jobs/Internships'])
+                db.run(insert, [108, 'Career Fair'])
+                db.run(insert, [109, 'Resume'])
+                db.run(insert, [110, 'Interviewing'])
+                db.run(insert, [111, 'Networking'])
+                db.run(insert, [112, 'Research'])
+                db.run(insert, [113, 'SURF'])
+                db.run(insert, [114, 'Labs'])
+                db.run(insert, [115, 'Campus Resources'])
+                db.run(insert, [116, 'Health Center'])
+                db.run(insert, [117, 'Counseling Office'])
+                db.run(insert, [118, 'Gym'])
+                db.run(insert, [119, 'Tech Express'])
+                db.run(insert, [120, 'Library'])
+                db.run(insert, [121, 'Registrar'])
+                db.run(insert, [122, 'Hixon'])
+                db.run(insert, [123, 'Campus Info'])
+                db.run(insert, [124, 'History'])
+                db.run(insert, [125, 'Traditions'])
+                db.run(insert, [126, 'Buildings'])
+                db.run(insert, [127, 'Food'])
+                db.run(insert, [128, 'Money'])
+                db.run(insert, [129, 'Scholarships'])
+                db.run(insert, [130, 'Financial Aid'])
+                db.run(insert, [131, 'Work Study'])
+                db.run(insert, [132, 'Tutoring and TA'])
+                db.run(insert, [133, 'Classes'])
+                db.run(insert, [134, 'Choosing Classes'])
+                db.run(insert, [135, 'Class Gossip'])
+                db.run(insert, [136, 'Majors and Minors'])
+                db.run(insert, [137, 'Off Campus Activities'])
+                db.run(insert, [138, 'Explore LA'])
+                db.run(insert, [139, 'LGBTQ+'])
             }
         });
         db.run(`CREATE TABLE topic_tree (
@@ -721,6 +737,74 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 (user_id, option, is_major)
                 VALUES (?,?,?)`
                 db.run(insert, [1,'Comp Sci',1])
+            }
+        });
+        
+        db.run(`CREATE TABLE division (
+            division_id INTEGER PRIMARY KEY,
+            division_name TEXT NOT NULL
+        )`,
+
+        (err) => {
+            if (err) {
+                // Table already created
+            }else{
+                // Table just created, creating some rows
+                var insert = `INSERT INTO division
+                VALUES (?,?)`
+                db.run(insert, [1, 'Biology and Biological Engineering'])
+                db.run(insert, [2, 'Chemistry and Chemical Engineering'])
+                db.run(insert, [3, 'Engineering and Applied Science'])
+                db.run(insert, [4, 'Geological and Planetary Sciences'])
+                db.run(insert, [5, 'Humanities and Social Sciences'])
+                db.run(insert, [6, 'Physics, Mathematics, and Astronomy'])
+            }
+        });
+        
+        db.run(`CREATE TABLE faculty (
+            division_id INTEGER,
+            faculty_name TEXT,
+            PRIMARY KEY(division_id, faculty_name),
+            FOREIGN KEY(division_id) REFERENCES division(division_id)
+        )`,
+
+        (err) => {
+            if (err) {
+                // Table already created
+            }else{
+                // Table just created, creating some rows
+                var insert = `INSERT INTO faculty
+                (division_id, faculty_name)
+                VALUES (?,?)`
+                db.run(insert, [1, 'Ralph Adolphs'])
+                db.run(insert, [1, 'John M. Allman'])
+                db.run(insert, [1, 'Richard A. Andersen'])
+                db.run(insert, [1, 'David J. Anderson'])
+
+                db.run(insert, [2, 'Theodor Agapie'])
+                db.run(insert, [2, 'Francis H. Arnold'])
+                db.run(insert, [2, 'Jacqueline K. Barton'])
+                db.run(insert, [2, 'Geoffrey Blake'])
+
+                db.run(insert, [3, 'Yaser S. Abu-Mostafa'])
+                db.run(insert, [3, 'Jess F. Adkins'])
+                db.run(insert, [3, 'Aaron Ames'])
+                db.run(insert, [3, 'Animashree Anandkumar'])
+
+                db.run(insert, [4, 'Paul D. Asimow'])
+                db.run(insert, [4, 'Jean-Philippe Avouac'])
+                db.run(insert, [4, 'Konstantin Batygin'])
+                db.run(insert, [4, 'Geoffrey A. (Geoff) Blake'])
+
+                db.run(insert, [5, 'Marina Agranov'])
+                db.run(insert, [5, 'Warren C. Brown'])
+                db.run(insert, [5, 'Jed Z. Buchwald'])
+                db.run(insert, [5, 'Colin F. Camerer'])
+
+                db.run(insert, [6, 'Rana Adhikari'])
+                db.run(insert, [6, 'Jason F. Alicea'])
+                db.run(insert, [6, 'Fernando Brandao'])
+                db.run(insert, [6, 'Katerina Chatziioannou'])
             }
         });
     }

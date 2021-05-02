@@ -202,8 +202,11 @@ app.put("/add_full_user", (req, res) => {
       // courses
       console.log("Adding user courses")
       var i;
-      for (i = 0; i < data.course_ids.length; i++){
-        var course_id = data.course_ids[i];
+      let unique_course_ids = [...new Set(data.course_ids)];
+      //console.log("unique course ids")
+      //console.log(unique_course_ids)
+      for (i = 0; i < unique_course_ids.length; i++){
+        var course_id = unique_course_ids[i];
         var sql_courses ='INSERT INTO student_course VALUES (?,?)'
         var params_courses =[course_id, user_id]
 
@@ -613,24 +616,46 @@ app.get('/get_all_user_topics', (req, res) => {
 
 
 /*
-Get user courses. Returns a JSON list of course_names.
+Get user courses. Returns a JSON list of course_dept, course_no, and course_name.
 */
 app.get('/get_user_courses/:user_id', (req, res) => {
-  var sql = "select * from student_course inner join course on user_id = ?"
+  var sql = "select * from student_course natural join \
+    course natural join dept_course\
+    where user_id = ?"
   var params = [req.params.user_id]
+  
   db.all(sql, params, (err, rows) => {
     if (err) {
       res.status(400).json({"error":err.message});
       return;
     }
     
-    // Convert rows into a list of courses. 
+    //Convert rows into a list of courses. 
     var i;
     courses = [];
     for (i = 0; i < rows.length; i++){
-      courses.push(rows[i].course_name)
+      // Check if the course is cross-listed. If so,
+      // combine the department titles.
+      var cross_list_cnt = 0;
+      cross_list_dept_name = rows[i].dept
+      var j;
+      for (j = i+1; j < rows.length - i; j++){
+        if (rows[j].course_id == rows[i].course_id){
+          cross_list_cnt++;
+          cross_list_dept_name = cross_list_dept_name + "/" + rows[j].dept
+        }
+      }
+      courses.push(cross_list_dept_name + " " + rows[i].course_no + ": " + rows[i].course_name)
+      
+      // Adjust index if there were cross-listings.
+      if (cross_list_cnt > 0){
+        i += cross_list_cnt
+      }
     }
+    // Return list of courses
     res.json(courses);
+
+    //res.json(rows)
   })
 });
 
@@ -759,6 +784,59 @@ app.get('/get_all_labs', (req, res) => {
 });
 
 
+/* Get all faculty.
+   Returns list of JSON objects each having division and faculty name. */
+   app.get('/get_all_faculty', (req, res) => {
+    var sql = "select * from faculty natural join division"
+    var params = []
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        res.status(400).json({"error":err.message});
+        return;
+      }
+      res.send(rows)
+    });
+  });
+
+
+/* Get all courses.
+   Returns list of JSON objects each having course id, department, 
+   course number, course name. */
+app.get('/get_all_courses', (req, res) => {
+  var sql = "select * from course natural join dept_course"
+  var params = []
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send(rows)
+  });
+});
+
+
+/* Get all departments.
+   Returns list of department names. */
+app.get('/get_all_departments', (req, res) => {
+  var sql = "select distinct dept from dept_course"
+  var params = []
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+
+    /* Convert rows into a list of departments. */
+    var i;
+    depts = [];
+    for (i = 0; i < rows.length; i++){
+      depts.push(rows[i].dept)
+    }
+    res.json(depts);
+  });
+});
+
+
 /* Get full topic_tree.
    Returns list of JSON objects each having parent topic_id and 
    child topic_id. */
@@ -779,9 +857,11 @@ app.get('/get_topic_tree', (req, res) => {
    Returns a list of JSON objects each having topic_id and topic_name.
 */
 app.get('/get_topic_tree_root', (req, res) => {
+  
   var sql = "select * from topic natural join \
   (select distinct parent as topic_id \
     from topic_tree where parent not in (select child from topic_tree))"
+
   var params = []
   db.all(sql, params, (err, rows) => {
     if (err) {
@@ -802,6 +882,34 @@ app.get('/get_topic_subtree', (req, res) => {
   var sql = "select * from topic natural join \
   (select child AS topic_id from topic_tree where parent = ?)"
   var params = [req.body.parent]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send(rows)
+  });
+});
+
+
+app.get('/get_topic_subtree', (req, res) => {
+  var sql = "select * from topic natural join \
+  (select child AS topic_id from topic_tree where parent = ?)"
+  var params = [req.body.parent]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send(rows)
+  });
+});
+
+
+app.get('/get_topic_subtree/:parent', (req, res) => {
+  var sql = "select * from topic natural join \
+  (select child AS topic_id from topic_tree where parent = ?)"
+  var params = [req.params.parent]
   db.all(sql, params, (err, rows) => {
     if (err) {
       res.status(400).json({"error":err.message});
