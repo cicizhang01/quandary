@@ -785,7 +785,7 @@ app.get('/get_all_labs', (req, res) => {
 
 
 /* Get all faculty.
-   Returns list of JSON objects each having division and faculty name. */
+   Returns list of JSON objects each having division_id, division_name and faculty_name. */
    app.get('/get_all_faculty', (req, res) => {
     var sql = "select * from faculty natural join division"
     var params = []
@@ -800,8 +800,8 @@ app.get('/get_all_labs', (req, res) => {
 
 
 /* Get all courses.
-   Returns list of JSON objects each having course id, department, 
-   course number, course name. */
+   Returns list of JSON objects each having course_id, course_no,
+   course_name, and dept. */
 app.get('/get_all_courses', (req, res) => {
   var sql = "select * from course natural join dept_course"
   var params = []
@@ -816,7 +816,7 @@ app.get('/get_all_courses', (req, res) => {
 
 
 /* Get all departments.
-   Returns list of department names. */
+   Returns a list of department names. */
 app.get('/get_all_departments', (req, res) => {
   var sql = "select distinct dept from dept_course"
   var params = []
