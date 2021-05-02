@@ -11,9 +11,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
     }else{
         console.log('Connected to the SQLite database.')
        
+        
         db.run(`CREATE TABLE course (
-            course_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            course_no INTEGER NOT NULL,
+            course_id INTEGER PRIMARY KEY,
+            course_no TEXT NOT NULL,
             course_name TEXT NOT NULL
         )`,
 
@@ -23,9 +24,16 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO course
-                (course_no, course_name)
-                VALUES (?, ?)`
-                db.run(insert, [121, "Databases"])
+                (course_id, course_no, course_name)
+                VALUES (?, ?, ?)`
+                db.run(insert, [1, "121", "Databases"])
+                db.run(insert, [2, "100", "Research in Aerospace"])
+
+                db.run(insert, [3, "101C", "Fluid Mechanics"])
+                db.run(insert, [4, "011", "Introduction to Matlab and Mathematica"])
+                db.run(insert, [5, "095B", "Introductory Methods of Applied Mathematics for the Physical Sciences"])
+                
+                db.run(insert, [6, "079C", "Senior Thesis, Theoretical"])
             }
         });
         db.run(`CREATE TABLE dept_course (
@@ -43,9 +51,19 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO dept_course
                 (dept, course_id)
                 VALUES (?, ?)`
-                db.run(insert, ['Comp Sci', 1])
+                db.run(insert, ['CS', 1])
+                db.run(insert, ['Ae', 2])
+                db.run(insert, ['Ae', 3])
+                db.run(insert, ['APh', 3])
+                db.run(insert, ['CE', 3])
+                db.run(insert, ['ME', 3])
+                db.run(insert, ['ACM', 4])
+                db.run(insert, ['ACM', 5])
+                db.run(insert, ['APh', 6])
             }
         });
+        
+
         db.run(`CREATE TABLE instructor (
             instructor_id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL
@@ -719,6 +737,74 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 (user_id, option, is_major)
                 VALUES (?,?,?)`
                 db.run(insert, [1,'Comp Sci',1])
+            }
+        });
+        
+        db.run(`CREATE TABLE division (
+            division_id INTEGER PRIMARY KEY,
+            division_name TEXT NOT NULL
+        )`,
+
+        (err) => {
+            if (err) {
+                // Table already created
+            }else{
+                // Table just created, creating some rows
+                var insert = `INSERT INTO division
+                VALUES (?,?)`
+                db.run(insert, [1, 'Biology and Biological Engineering'])
+                db.run(insert, [2, 'Chemistry and Chemical Engineering'])
+                db.run(insert, [3, 'Engineering and Applied Science'])
+                db.run(insert, [4, 'Geological and Planetary Sciences'])
+                db.run(insert, [5, 'Humanities and Social Sciences'])
+                db.run(insert, [6, 'Physics, Mathematics, and Astronomy'])
+            }
+        });
+        
+        db.run(`CREATE TABLE faculty (
+            division_id INTEGER,
+            faculty_name TEXT,
+            PRIMARY KEY(division_id, faculty_name),
+            FOREIGN KEY(division_id) REFERENCES division(division_id)
+        )`,
+
+        (err) => {
+            if (err) {
+                // Table already created
+            }else{
+                // Table just created, creating some rows
+                var insert = `INSERT INTO faculty
+                (division_id, faculty_name)
+                VALUES (?,?)`
+                db.run(insert, [1, 'Ralph Adolphs'])
+                db.run(insert, [1, 'John M. Allman'])
+                db.run(insert, [1, 'Richard A. Andersen'])
+                db.run(insert, [1, 'David J. Anderson'])
+
+                db.run(insert, [2, 'Theodor Agapie'])
+                db.run(insert, [2, 'Francis H. Arnold'])
+                db.run(insert, [2, 'Jacqueline K. Barton'])
+                db.run(insert, [2, 'Geoffrey Blake'])
+
+                db.run(insert, [3, 'Yaser S. Abu-Mostafa'])
+                db.run(insert, [3, 'Jess F. Adkins'])
+                db.run(insert, [3, 'Aaron Ames'])
+                db.run(insert, [3, 'Animashree Anandkumar'])
+
+                db.run(insert, [4, 'Paul D. Asimow'])
+                db.run(insert, [4, 'Jean-Philippe Avouac'])
+                db.run(insert, [4, 'Konstantin Batygin'])
+                db.run(insert, [4, 'Geoffrey A. (Geoff) Blake'])
+
+                db.run(insert, [5, 'Marina Agranov'])
+                db.run(insert, [5, 'Warren C. Brown'])
+                db.run(insert, [5, 'Jed Z. Buchwald'])
+                db.run(insert, [5, 'Colin F. Camerer'])
+
+                db.run(insert, [6, 'Rana Adhikari'])
+                db.run(insert, [6, 'Jason F. Alicea'])
+                db.run(insert, [6, 'Fernando Brandao'])
+                db.run(insert, [6, 'Katerina Chatziioannou'])
             }
         });
     }
