@@ -689,6 +689,425 @@ app.get('/get_user_options/:user_id', (req, res) => {
 
 
 
+/* Given a question_id, return its question_body, date_modified, and upvote count" */
+app.get('/get_question/:question_id', (req, res) => {
+  var sql = "select question_id, question_body, date_modified, question_upvotes \
+    from question where question_id = ?"
+  var params = [req.params.question_id]
+  
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send(rows)
+  });
+});
+
+
+/* Given a question_id, returns list of associated 
+   answer_body, date_modified, and upvote count" */
+app.get('/get_question_answers/:question_id', (req, res) => {
+  var sql = "select answer_id, answer_body, date_modified, answer_upvotes  \
+    from answer natural join qna where question_id = ?"
+  var params = [req.params.question_id]
+  
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send(rows)
+  });
+});
+
+
+/* Gets all questions, given a topic_id. TBD */
+app.get('/get_question_by_topic/:topic_id', (req, res) => {
+  var sql = "select * from question natural join qna natural join answer where question_id = ?"
+  var params = [req.params.topic_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+
+    var question_entity = {
+      "question_id" : rows[0].question_id,
+      "question_body" : rows[0].question_body,
+      "date_modified" : rows[0].date_modified,
+      "question_upvotes" : rows[0].question_upvotes,
+      "answers" : []
+    }
+
+    var i;
+    for (i=0; i < rows.length; i++){
+      var answer_entity = {
+        answer_id : rows[i].answer_id,
+        answer_body : rows[i].answer_body,
+        answer_upvotes : rows[i].answer_upvotes
+      }
+      question_entity.answers.push(answer_entity)
+    }
+    console.log(Date.now())
+    res.send(question_entity)
+  });
+});
+
+
+/* Add an answer to a question, given the answer and question_id.
+   Does not deal with upvotes.
+   
+   Inserts into answer the new answer_body and answer_creator
+   Inserts into qna question_id and the new answer_id
+   */
+app.put('/add_answer/:user_id/:question_id', (req, res) => {
+  // answer table
+  var sql_answer = "insert into answer(answer_body, answer_creator) \
+             values (?,?)"
+  var params_answer = [req.body.answer_body, req.params.user_id]
+  db.all(sql_answer, params_answer, (err, rows_answer) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    
+    // qna table
+    var sql_qna = "insert into qna (answer_id, question_id) \
+      values (?,?)"
+    var params_qna = [this.lastID, req.params.question_id]
+    db.all(sql_qna, params_qna, (err, rows_qna) => {
+      if (err) {
+        res.status(400).json({"error":err.message});
+        return;
+      }
+
+    console.log(rows_answer)
+    console.log(rows_qna)
+    res.send("Added new answer.")
+    });
+  });
+});
+
+
+/* Add a question. Accepts user_id and question_body.
+   Does not deal with upvotes.
+   Inserts into question the new question_body and question_creator.
+*/
+app.put('/add_question/:user_id', (req, res) => {
+  var sql = "insert into question(question_body, question_creator) \
+             values (?,?)"
+  var params = [req.body.question_body, req.params.user_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }   
+    res.send({
+      "data": rows,
+      "last id": this.lastID
+    })
+  });
+});
+
+
+/* Get all questions. */
+app.get('/get_all_questions', (req, res) => {
+  //var sql = "select * from question left join qna on question.question_id = qna.question_id"
+  var sql = "select * from question order by question_id DESC"
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        console.log(rows)
+        res.send(rows)
+      });
+});
+
+
+/* Get a certain number of questions sorted by descending date modified. */
+app.get('/get_x_questions/:num_questions', (req, res) => {
+  //var sql = "select * from question left join qna on question.question_id = qna.question_id"
+  var sql = "select * from question order by question_id DESC limit ?"
+    var params = [req.params.num_questions]
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        console.log(rows)
+        res.send(rows)
+      });
+});
+
+
+/* Get all Q&A threads. DEBUGGING IS ROUGH, 
+   we should circumvent this method.
+
+app.get('/get_all_qna_threads', (req, res) => {
+  var sql = "select distinct * \
+  from question natural left outer join qna"
+
+  var params = [req.params.question_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+  //console.log(rows)
+  var qna_threads = [];
+  var r;
+  for (r = 0; r < rows.length; r++){
+    var question_entity = {
+      "question_id" : rows[r].question_id,
+      "question_body" : rows[r].question_body,
+      "date_modified" : rows[r].date_modified,
+      "question_upvotes" : rows[r].question_upvotes,
+      "answers" : []
+    }
+
+    qna_threads.push(question_entity);
+
+    // check if question_id has any answers
+    if (rows[r].answer_id == null){
+      console.log("answer id was null")
+      //qna_threads.push(question_entity);
+      //continue;
+    }
+    else {
+      //console.log(r)
+      // check if the question_id exists elsewhere in list
+      var i;
+      for (i=r; i < rows.length; i++){
+        if (rows[i].question_id == question_entity.question_id){
+          console.log("entered answer if")
+
+          // query answer attributes
+          sql_temp = "select * from answer where answer_id = ?";
+          params_temp = [rows[i].answer_id];
+          db.get(sql_temp, params_temp, (err, rows_temp) => {
+            if (err) {
+              res.status(400).json({"error":err.message});
+              return;
+            }
+            
+            var answer_entity = {
+              answer_id : rows_temp.answer_id,
+              answer_body : rows_temp.answer_body,
+              answer_upvotes : rows_temp.answer_upvotes
+            }
+            
+            //question_entity.answers.push(answer_entity)
+            console.log("qna_threads before pushing answer")
+            console.log(qna_threads)
+            qna_threads[qna_threads.length-1].answers.push(answer_entity)
+            console.log("qna_threads after pushing answer")
+            console.log(qna_threads)
+            //console.log("Just pushed answer entity:")
+            //console.log(answer_entity)
+            //console.log("question_entity.answers looks like:")
+            //console.log(question_entity.answers)
+          })
+        }
+      }
+      //console.log("outside the for loop, question_entity looks like:")
+      //console.log(question_entity)
+      //qna_threads.push(question_entity);
+      //console.log("just pushed question entity")
+      //console.log(qna_threads)
+
+      // ith element of qna threads
+      //console.log("2nd element of qna_threads")
+      //console.log(qna_threads[1])
+
+      // adjust iterative index
+      if (question_entity.answers.length > 0){
+        r += question_entity.answers.length - 1
+      }
+      //console.log(question_entity.answers.length - 1)
+      
+    }
+  }
+   res.send(qna_threads)
+  });
+});
+*/
+
+
+/* Update upvote to an answer. 
+   If user has upvoted, removes their upvote, otherwise adds their upvote. */
+app.put('/update_answer_upvote/:answer_id/:user_id', (req, res) => {
+  // Check if user has upvoted the answer.
+  var sql_check = "select count(*) as count from user_upvotes_answer \
+    where answer_id = ? and user_id = ?"
+  var params_check = [req.params.answer_id, req.params.user_id]
+
+  db.all(sql_check, params_check, (err, rows_check) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    
+    var sql1;
+    var sql2;
+    if (rows_check[0].count == 1){
+      // for user_votes_answer table
+      sql1 = "delete from user_upvotes_answer where answer_id = ? and user_id = ?"
+      // for answer table
+      sql2 = "update answer set answer_upvotes = answer_upvotes - 1 \
+        where answer_id = ?";
+    }
+    else {
+      // for user_votes_answer table
+      var sql1 = "insert into user_upvotes_answer(answer_id, user_id) values (?, ?)"
+      // for answer table
+      var sql2 = "update answer set answer_upvotes = answer_upvotes + 1 \
+        where answer_id = ?";
+    }
+
+    // run db commands
+    var params1 = [req.params.answer_id, req.params.user_id]
+    var params2 = [req.params.answer_id];
+
+    // update user_votes_answer table
+    db.all(sql1, params1, (err, rows) => {
+      if (err) {
+        res.status(400).json({"error":err.message});
+        return;
+      }
+      // update answer table
+      db.all(sql2, params2, (err, rows2) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        res.send("Updated answer upvote count.")
+      });
+    }); 
+  });
+});
+
+
+/* Update upvote to a question. 
+   If user has upvoted, removes their upvote, otherwise adds their upvote. */
+app.put('/update_question_upvote/:question_id/:user_id', (req, res) => {
+  // Check if user has upvoted the question.
+  var sql_check = "select count(*) as count from user_upvotes_question \
+    where question_id = ? and user_id = ?"
+  var params_check = [req.params.question_id, req.params.user_id]
+
+  db.all(sql_check, params_check, (err, rows_check) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    
+    var sql1;
+    var sql2;
+    if (rows_check[0].count == 1){
+      // for user_votes_question table
+      sql1 = "delete from user_upvotes_question where question_id = ? and user_id = ?"
+      // for question table
+      sql2 = "update question set question_upvotes = question_upvotes - 1 \
+        where question_id = ?";
+    }
+    else {
+      // for user_votes_question table
+      var sql1 = "insert into user_upvotes_question(question_id, user_id) values (?, ?)"
+      // for question table
+      var sql2 = "update question set question_upvotes = question_upvotes + 1 \
+        where question_id = ?";
+    }
+
+    // run db commands
+    var params1 = [req.params.question_id, req.params.user_id]
+    var params2 = [req.params.question_id];
+
+    // update user_votes_question table
+    db.all(sql1, params1, (err, rows) => {
+      if (err) {
+        res.status(400).json({"error":err.message});
+        return;
+      }
+      // update question table
+      db.all(sql2, params2, (err, rows2) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        res.send("Updated question upvote count.")
+      });
+    }); 
+  });
+});
+
+
+
+// PLAIN - get all question table (for debugging)
+app.get('/get_question_table', (req, res) => {
+  //var sql = "select * from question left join qna on question.question_id = qna.question_id"
+  var sql = "select * from question natural left outer join qna"
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        console.log(rows)
+        res.send(rows)
+      });
+});
+
+/* Get all answers (for debugging). */
+app.get('/get_all_answers', (req, res) => {
+  var sql = "select distinct * \
+  from question natural left outer join qna"
+
+
+  var params = []
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send(rows)
+  });
+});
+
+
+/* Check if user has upvoted question_id already (for debugging).
+   Returns a list containing true (boolean) if there is an upvote, false otherwise. */
+app.get('/user_upvoted_question/:question_id/:user_id', (req, res) => {
+  var sql = "select count(*) as count from user_upvotes_question \
+    where question_id = ? and user_id = ?"
+  var params = [req.params.question_id, req.params.user_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send([rows[0].count == 1])
+  });
+});
+  
+  
+/* Check if user has upvoted answer_id already (for debugging). */
+app.get('/user_upvoted_answer/:answer_id/:user_id', (req, res) => {
+  var sql = "select count(*) as count from user_upvotes_answer \
+    where answer_id = ? and user_id = ?"
+  var params = [req.params.answer_id, req.params.user_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send([rows[0].count == 1])
+  });
+});
+
+
 /* DATABASE-GENERAL PUT METHODS */
 
 /* Add a lab (one at a time). 

@@ -519,9 +519,11 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         db.run(`CREATE TABLE question (
             question_id INTEGER PRIMARY KEY AUTOINCREMENT,
             question_body TEXT NOT NULL,
+            question_creator INTEGER NOT NULL,
             date_created REAL DEFAULT (datetime('now', 'localtime')),
             date_modified REAL DEFAULT (datetime('now', 'localtime')),
-            count INTEGER DEFAULT 0
+            question_upvotes INTEGER DEFAULT 0,
+            FOREIGN KEY(question_creator) REFERENCES profile(user_id)
         )`,
 
         (err) => {
@@ -530,17 +532,20 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO question
-                (question_body)
-                VALUES (?)`
-                db.run(insert, ['What is the question?'])
+                (question_body, question_creator, question_upvotes)
+                VALUES (?,?,?)`
+                db.run(insert, ['What is the question?', 1, 1])
+                db.run(insert, ['What is the second question?', 1, 0])
             }
         });
         db.run(`CREATE TABLE answer (
             answer_id INTEGER PRIMARY KEY AUTOINCREMENT,
             answer_body TEXT NOT NULL,
+            answer_creator INTEGER NOT NULL,
             date_created REAL DEFAULT (datetime('now', 'localtime')),
             date_modified REAL DEFAULT (datetime('now', 'localtime')),
-            count INTEGER DEFAULT 0
+            answer_upvotes INTEGER DEFAULT 0,
+            FOREIGN KEY(answer_creator) REFERENCES profile(user_id)
         )`,
 
         (err) => {
@@ -549,9 +554,9 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO answer
-                (answer_body)
-                VALUES (?)`
-                db.run(insert, ['This is the answer'])
+                (answer_body, answer_creator, answer_upvotes)
+                VALUES (?,?,?)`
+                db.run(insert, ['This is the answer', 1, 1])
             }
         });
         db.run(`CREATE TABLE question_topic (
