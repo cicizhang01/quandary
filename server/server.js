@@ -1040,36 +1040,8 @@ app.get('/get_topic_tree_root', (req, res) => {
 /*
 Get topic_id and topic_name under a given parent topic_id.
 Returns list of JSON objects each having topic_id and topic_name.
-parent topic_id should be in the body of the request.
+parent topic_id should be in the uri params.
 */
-app.get('/get_topic_subtree', (req, res) => {
-  var sql = "select * from topic natural join \
-  (select child AS topic_id from topic_tree where parent = ?)"
-  var params = [req.body.parent]
-  db.all(sql, params, (err, rows) => {
-    if (err) {
-      res.status(400).json({"error":err.message});
-      return;
-    }
-    res.send(rows)
-  });
-});
-
-
-app.get('/get_topic_subtree', (req, res) => {
-  var sql = "select * from topic natural join \
-  (select child AS topic_id from topic_tree where parent = ?)"
-  var params = [req.body.parent]
-  db.all(sql, params, (err, rows) => {
-    if (err) {
-      res.status(400).json({"error":err.message});
-      return;
-    }
-    res.send(rows)
-  });
-});
-
-
 app.get('/get_topic_subtree/:parent', (req, res) => {
   var sql = "select * from topic natural join \
   (select child AS topic_id from topic_tree where parent = ?)"
