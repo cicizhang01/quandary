@@ -100,7 +100,11 @@ app.put("/add_full_user", (req, res) => {
       topic_ids: req.body.topic_ids,
 
       // student_to_lab table
-      lab_ids: req.body.lab_ids,
+      //lab_ids: req.body.lab_ids,
+
+      // student_to_faculty table
+      division_ids: req.body.division_ids,
+      faculty_names: req.body.faculty_names,
 
       // house_memberships table
       houses: req.body.houses,
@@ -149,7 +153,7 @@ app.put("/add_full_user", (req, res) => {
         })
       }
 
-      // labs
+      /* labs
       var i;
       for (i = 0; i < data.lab_ids.length; i++){
         var lab_id = data.lab_ids[i];
@@ -157,6 +161,24 @@ app.put("/add_full_user", (req, res) => {
         var params_labs =[user_id, lab_id]
 
         db.run(sql_labs, params_labs, function (err, result) {
+          if (err){
+              res.status(400).json({"error": err.message})
+              return;
+          }
+        })
+      }
+      */
+     
+      // faculty connections
+      console.log("Adding user faculty connections.")
+      var i;
+      for (i = 0; i < data.faculty_names.length; i++){
+        var division_id = data.division_ids[i];
+        var faculty_name = data.faculty_names[i];
+        var sql_faculty ='INSERT INTO student_to_faculty VALUES (?,?,?)'
+        var params_faculty =[user_id, division_id, faculty_name]
+
+        db.run(sql_faculty, params_faculty, function (err, result) {
           if (err){
               res.status(400).json({"error": err.message})
               return;
@@ -1200,6 +1222,20 @@ app.get('/user_upvoted_answer/:answer_id/:user_id', (req, res) => {
   });
 });
 
+
+/* Get all faculty_to_student information. */
+app.get('/get_all_student_to_faculty', (req, res) => {
+  var sql = "select * from student_to_faculty\
+             natural join division"
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        res.send(rows)
+      });
+});
 
 /* END Quandary REST API */
 

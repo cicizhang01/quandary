@@ -219,6 +219,31 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 db.run(insert, [1,1])
             }
         });
+
+        // NEW
+        db.run(`CREATE TABLE student_to_faculty (
+            user_id INTEGER NOT NULL,
+            division_id INTEGER NOT NULL,
+            faculty_name TEXT NOT NULL,
+            PRIMARY KEY(user_id, division_id, faculty_name),
+            FOREIGN KEY(user_id) REFERENCES profile(user_id),
+            FOREIGN KEY(division_id) REFERENCES faculty(division_id),
+            FOREIGN KEY(faculty_name) REFERENCES faculty(faculty_name)
+        )`,
+
+        (err) => {
+            if (err) {
+                // Table already created
+            }else{
+                // Table just created, creating some rows
+                var insert = `INSERT INTO student_to_faculty
+                (user_id, division_id, faculty_name)
+                VALUES (?,?,?)`
+                db.run(insert, [1, 2, 'Theodor Agapie'])
+            }
+        });
+        
+
         db.run(`CREATE TABLE topic (
             topic_id INTEGER,
             topic_name TEXT NOT NULL
