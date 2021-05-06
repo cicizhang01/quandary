@@ -208,7 +208,6 @@ export default {
   .step-footer {
     padding: 60px 0 40px 0;
     border-radius: 1rem;
-    margin: 0rem 0rem;
     text-align: center;
   }
   /* Wizard Ends */
