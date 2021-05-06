@@ -793,10 +793,12 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             question_id INTEGER PRIMARY KEY AUTOINCREMENT,
             question_body TEXT NOT NULL,
             question_creator INTEGER NOT NULL,
+            is_anon INTEGER NOT NULL,
             date_created REAL DEFAULT (datetime('now', 'localtime')),
             date_modified REAL DEFAULT (datetime('now', 'localtime')),
             question_upvotes INTEGER DEFAULT 0,
-            FOREIGN KEY(question_creator) REFERENCES profile(user_id)
+            FOREIGN KEY(question_creator) REFERENCES profile(user_id),
+            CHECK (is_anon = 0 OR is_anon = 1)
         )`,
 
         (err) => {
@@ -805,7 +807,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO question
-                (question_body, question_creator, question_upvotes)
+                (question_body, question_creator, is_anon)
                 VALUES (?,?,?)`
                 db.run(insert, ['What is the question?', 1, 1])
                 db.run(insert, ['What is the second question?', 1, 0])
@@ -815,10 +817,12 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             answer_id INTEGER PRIMARY KEY AUTOINCREMENT,
             answer_body TEXT NOT NULL,
             answer_creator INTEGER NOT NULL,
+            is_anon INTEGER NOT NULL,
             date_created REAL DEFAULT (datetime('now', 'localtime')),
             date_modified REAL DEFAULT (datetime('now', 'localtime')),
             answer_upvotes INTEGER DEFAULT 0,
-            FOREIGN KEY(answer_creator) REFERENCES profile(user_id)
+            FOREIGN KEY(answer_creator) REFERENCES profile(user_id),
+            CHECK (is_anon = 0 OR is_anon = 1)
         )`,
 
         (err) => {
@@ -827,9 +831,9 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO answer
-                (answer_body, answer_creator, answer_upvotes)
+                (answer_body, answer_creator, is_anon)
                 VALUES (?,?,?)`
-                db.run(insert, ['This is the answer', 1, 1])
+                db.run(insert, ['This is the answer', 1, 0])
             }
         });
         db.run(`CREATE TABLE question_topic (

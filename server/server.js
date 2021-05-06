@@ -530,9 +530,9 @@ app.put('/update_question_upvote/:question_id/:user_id', (req, res) => {
    Inserts into question the new question_body and question_creator.
 */
 app.put('/add_question/:user_id', (req, res) => {
-  var sql = "insert into question(question_body, question_creator) \
-             values (?,?)"
-  var params = [req.body.question_body, req.params.user_id]
+  var sql = "insert into question(question_body, question_creator, is_anon) \
+             values (?,?,?)"
+  var params = [req.body.question_body, req.params.user_id, req.body.is_anon]
   db.all(sql, params, (err, rows) => {
     if (err) {
       res.status(400).json({"error":err.message});
@@ -1058,7 +1058,7 @@ app.get('/get_topic_subtree/:parent', (req, res) => {
 
 /* Given a question_id, return its question_body, date_modified, and upvote count" */
 app.get('/get_question/:question_id', (req, res) => {
-  var sql = "select question_id, question_body, date_modified, question_upvotes \
+  var sql = "select question_id, question_body, question_creator, is_anon, date_modified, question_upvotes \
     from question where question_id = ?"
   var params = [req.params.question_id]
   
@@ -1075,8 +1075,11 @@ app.get('/get_question/:question_id', (req, res) => {
 /* Given a question_id, returns list of associated 
    answer_body, date_modified, and upvote count" */
 app.get('/get_question_answers/:question_id', (req, res) => {
-  var sql = "select answer_id, answer_body, date_modified, answer_upvotes  \
-    from answer natural join qna where question_id = ?"
+  var sql = "select answer_id, answer_body, \
+              first_name, last_name, is_anon, date_modified, answer_upvotes \
+              from answer natural join qna \
+              inner join profile on answer.answer_creator = profile.user_id \
+              where question_id = ?"
   var params = [req.params.question_id]
   
   db.all(sql, params, (err, rows) => {
@@ -1091,8 +1094,12 @@ app.get('/get_question_answers/:question_id', (req, res) => {
 
 /* Get all questions. */
 app.get('/get_all_questions', (req, res) => {
-  var sql = "select question_id, question_body, date_modified, question_upvotes \
-   from question order by question_id DESC"
+  var sql = "select question_id, question_body, \
+              first_name, last_name is_anon, \
+              date_modified, question_upvotes \
+              from question \
+              inner join profile on question.question_creator = profile.user_id \
+              order by question_id DESC"
     var params = []
     db.all(sql, params, (err, rows) => {
         if (err) {
@@ -1109,8 +1116,11 @@ app.get('/get_all_questions', (req, res) => {
    num_questions should be in uri parameters. */
 app.get('/get_recent_questions/:num_questions', (req, res) => {
   //var sql = "select * from question left join qna on question.question_id = qna.question_id"
-  var sql = "select question_id, question_body, date_modified, question_upvotes \
-    from question order by question_id DESC limit ?"
+  var sql = "select question_id, question_body, \
+              first_name, last_name, is_anon, date_modified, question_upvotes \
+              from question \
+              inner join profile on question.question_creator = profile.user_id \
+              order by question_id DESC limit ?"
     var params = [req.params.num_questions]
     db.all(sql, params, (err, rows) => {
         if (err) {
