@@ -168,7 +168,7 @@ app.put("/add_full_user", (req, res) => {
         })
       }
       */
-     
+
       // faculty connections
       console.log("Adding user faculty connections.")
       var i;
@@ -1156,7 +1156,24 @@ app.get('/get_recent_questions/:num_questions', (req, res) => {
 
 
 /* Gets all questions, given a topic_id. TBD */
-
+app.get('/get_all_questions_by_topic/:topic_id', (req, res) => {
+  var sql = "select question_id, question_body, \
+              first_name, last_name is_anon, \
+              date_modified, question_upvotes \
+              from question \
+              inner join profile on question.question_creator = profile.user_id \
+              natural join question_topic where topic_id = ? \
+              order by question_id DESC"
+    var params = [req.params.topic_id]
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        console.log(rows)
+        res.send(rows)
+      });
+});
 
 
 /* METHODS FOR DEBUGGING */
