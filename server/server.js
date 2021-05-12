@@ -22,7 +22,8 @@ const authConfig = {
 
 // Create middleware to validate the JWT using express-jwt
 const checkJwt = jwt({
-  // Provide a signing key based on the key identifier in the header and the signing keys provided by your Auth0 JWKS endpoint.
+  // Provide a signing key based on the key identifier in the header and 
+  // the signing keys provided by your Auth0 JWKS endpoint.
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
@@ -99,9 +100,6 @@ app.put("/add_full_user", (req, res) => {
       // user_topics table
       topic_ids: req.body.topic_ids,
 
-      // student_to_lab table
-      //lab_ids: req.body.lab_ids,
-
       // student_to_faculty table
       division_ids: req.body.division_ids,
       faculty_names: req.body.faculty_names,
@@ -152,22 +150,6 @@ app.put("/add_full_user", (req, res) => {
           }
         })
       }
-
-      /* labs
-      var i;
-      for (i = 0; i < data.lab_ids.length; i++){
-        var lab_id = data.lab_ids[i];
-        var sql_labs ='INSERT INTO student_to_lab VALUES (?,?)'
-        var params_labs =[user_id, lab_id]
-
-        db.run(sql_labs, params_labs, function (err, result) {
-          if (err){
-              res.status(400).json({"error": err.message})
-              return;
-          }
-        })
-      }
-      */
 
       // faculty connections
       console.log("Adding user faculty connections.")
@@ -412,9 +394,9 @@ app.put("/add_user_courses/:user_id", (req, res) => {
    */
 app.put('/add_answer/:user_id/:question_id', (req, res) => {
   // answer table
-  var sql_answer = "insert into answer(answer_body, answer_creator) \
-             values (?,?)"
-  var params_answer = [req.body.answer_body, req.params.user_id]
+  var sql_answer = "insert into answer(answer_body, answer_creator, is_anon) \
+             values (?,?,?)"
+  var params_answer = [req.body.answer_body, req.params.user_id, req.body.is_anon]
   db.all(sql_answer, params_answer, (err, rows_answer) => {
     if (err) {
       res.status(400).json({"error":err.message});
@@ -971,7 +953,8 @@ app.get('/get_all_labs', (req, res) => {
 
 
 /* Get all faculty.
-   Returns list of JSON objects each having division_id, division_name and faculty_name. */
+   Returns list of JSON objects each having division_id, division_name 
+   and faculty_name. */
    app.get('/get_all_faculty', (req, res) => {
     var sql = "select * from faculty natural join division"
     var params = []
@@ -1080,11 +1063,10 @@ app.get('/get_topic_subtree/:parent', (req, res) => {
 
 /* Given a question_id, return its question_body, date_modified, and upvote count" */
 app.get('/get_question/:question_id', (req, res) => {
-  var sql = "select question_id, question_body, first_name, last_name \
-              is_anon, date_modified, question_upvotes \
-              from question \
-              inner join profile on question.question_creator = profile.user_id\
-              where question_id = ?"
+  var sql = "select * from question \
+    cross join profile \
+    where question.question_creator = profile.user_id and question_id = ?";
+
   var params = [req.params.question_id]
   
   db.all(sql, params, (err, rows) => {
@@ -1119,9 +1101,7 @@ app.get('/get_question_answers/:question_id', (req, res) => {
 
 /* Get all questions. */
 app.get('/get_all_questions', (req, res) => {
-  var sql = "select question_id, question_body, \
-              first_name, last_name is_anon, \
-              date_modified, question_upvotes \
+  var sql = "select * \
               from question \
               inner join profile on question.question_creator = profile.user_id \
               order by question_id DESC"
@@ -1140,9 +1120,7 @@ app.get('/get_all_questions', (req, res) => {
 /* Get num_questions number of questions sorted by descending date modified.
    num_questions should be in uri parameters. */
 app.get('/get_recent_questions/:num_questions', (req, res) => {
-  //var sql = "select * from question left join qna on question.question_id = qna.question_id"
-  var sql = "select question_id, question_body, \
-              first_name, last_name, is_anon, date_modified, question_upvotes \
+  var sql = "select * \
               from question \
               inner join profile on question.question_creator = profile.user_id \
               order by question_id DESC limit ?"
@@ -1160,9 +1138,7 @@ app.get('/get_recent_questions/:num_questions', (req, res) => {
 
 /* Gets all questions, given a topic_id. TBD */
 app.get('/get_all_questions_by_topic/:topic_id', (req, res) => {
-  var sql = "select question_id, question_body, \
-              first_name, last_name is_anon, \
-              date_modified, question_upvotes \
+  var sql = "select * \
               from question \
               inner join profile on question.question_creator = profile.user_id \
               natural join question_topic where topic_id = ? \
@@ -1198,7 +1174,7 @@ app.get('/get_question_table', (req, res) => {
 /* Get all answers (for debugging). */
 app.get('/get_all_answers', (req, res) => {
   var sql = "select distinct * \
-  from question natural left outer join qna"
+  from question natural left outer join qna "
 
 
   var params = []
