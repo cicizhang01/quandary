@@ -6,27 +6,46 @@
           <div class="column is-1" id="upvotes">
             {{ question.count }}
           </div>
+
           <div class="column is-11">
             <h1 class="title">
             {{ question.question_body }}
-          </h1>
-          <h2 class="subtitle">
-            Anonymous | {{ question.date_modified }}
-          </h2>
-          <span class="tag is-primary is-medium" id="question-topic" v-for="topic in topics" v-bind:key="topic">
-            {{ topic }}
-          </span>
-         </div>
+            </h1>
+            <h2 class="subtitle">
+              Anonymous | {{ question.date_modified }}
+            </h2>
+            <span class="tag is-primary is-medium" id="question-topic" v-for="topic in topics" v-bind:key="topic">
+              {{ topic }}
+            </span>
+          </div>
         </div>          
       </div>
     
       <div class="answer-body">
+        <div class="comment">
+          <div class="comment-label is-grouped">
+            Comment as
+            <div class="select" id="comment-username">
+              <select>
+                <option>Username</option> <!-- Replace with current user's username -->
+                <option>Anonymous</option>
+              </select>
+            </div>
+            <button class="button is-primary" v-on:click="onSubmit()">Submit</button>
+          </div>
+          <div class="comment-box has-addons">
+            <textarea class="textarea has-fixed-size" placeholder="Any thoughts?" v-model="comment.body"></textarea>
+          </div>
+          
+        </div>
+
         <div class="is-divider"></div>
         <div v-for="answer in answers" v-bind:key="answer">
           <div class="columns">
             <div class="column is-1" id="upvotes">
               {{ answer.count }}
             </div>
+
             <div class="column is-11">
               <section class="answer-header">
                 Anonymous <span class="date">| {{ answer.date_modified }}</span> 
@@ -47,6 +66,10 @@ export default {
   name: 'QuandarySingle',
   data() {
     return {
+      comment: {
+        body: "",
+        username: ""
+      },
       question: {
         question_id: 1,
         question_body: 'Where is your favorite place to go eat?',
@@ -93,6 +116,31 @@ export default {
           this.$set(this, "event", event);
         }).bind(this)
       );
+    },
+    getDate() {
+      var time = new Date();
+      var month = time.getMonth() + 1;
+      var date = time.getDate();
+      var year = time.getFullYear();
+      
+      return month + "/" + date + "/" + year;
+    },
+    onSubmit() {
+      if (this.comment.body.length != 0) {
+        var comment = {
+        answer_id: 2,
+        answer_body: this.comment.body,
+        date_created: this.getDate(),
+        date_modified: this.getDate(),
+        count: 0,
+        };
+
+        // Should insert new answer into database
+        this.answers.push(comment);
+
+        // Reset comment body
+        this.comment.body = "";
+      }
     }
   }
 }
@@ -126,6 +174,21 @@ export default {
     margin: 20px 0;
     border-radius: 1rem;
     box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+    .comment {
+      margin: 1rem 0;
+      .comment-label {
+        color: $light-gray;
+        display: flex;
+        align-items: center;
+        #comment-username {
+          margin-left: 0.75rem;
+          margin-right: 24.1rem;
+        }
+      }
+      .comment-box {
+        margin-top: 1rem;
+      }
+    }
     .answer-header {
       font-size: 0.8rem;
       color: $light-gray;
