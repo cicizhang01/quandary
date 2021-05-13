@@ -31,6 +31,9 @@ export default {
   },
   async getQuestionAnswers(questionId) {
     let res = await axios.get("http://localhost:8000/get_question_answers/" + questionId);
+  },
+  async getQuestionsData() {
+    let res = await axios.get("http://localhost:8000/get_all_questions");
     return res.data;
   },
   async addAnswer(userId, questionId, answer) {

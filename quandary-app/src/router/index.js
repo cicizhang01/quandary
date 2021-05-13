@@ -34,6 +34,12 @@ export default new Router({
       name: 'quandarySingle',
       component: () => import('../views/QuandarySingle.vue'),
       beforeEnter: authGuard
-    }
+    },
+
+    {
+        path: '/forum',
+        name: 'forum',
+        component: () => import('../views/Forum.vue')
+      }
   ]
 })
