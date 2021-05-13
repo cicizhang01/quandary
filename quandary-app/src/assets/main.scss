@@ -1,5 +1,5 @@
 // Customizations for colors
-@import "colors";
+@import 'colors';
 
 // Import fonts from the Google Font API
 @import url('https://fonts.googleapis.com/css?family=Source+Sans|Open+Sans|Muli');
@@ -9,4 +9,6 @@ $family-sans-serif: 'Muli', 'Source Sans', 'Open Sans', sans-serif;
 
 // Bulma Import
 @import '~bulma';
-@import "../../node_modules/bulma-checkradio/dist/css/bulma-checkradio.sass"
+
+@import '../../node_modules/bulma-extensions/bulma-divider/dist/css/bulma-divider.min.css';
+@import '../../node_modules/bulma-extensions/bulma-checkradio/dist/css/bulma-checkradio.sass';
