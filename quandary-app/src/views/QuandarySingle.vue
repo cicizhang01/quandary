@@ -4,9 +4,14 @@
         <div class="columns">
           <div class="column is-1" id="upvotes">
             <div>
-              <button class="button is-white" v-on:click="onUpdateQuestionCount(question[0])">
+              <button class="button is-white" v-if="user.question_upvotes.includes(question[0].question_id)" v-on:click="onUpdateQuestionCount(question[0])">
                 <span class="icon is-small">
                   <i class="fas fa-heart"></i>
+                </span>
+              </button>
+              <button class="button is-white" v-else v-on:click="onUpdateQuestionCount(question[0])">
+                <span class="icon is-small">
+                  <i class="far fa-heart"></i>
                 </span>
               </button>
               <div class="upvotes-text"> {{ question[0].question_upvotes }} </div>
@@ -26,7 +31,7 @@
           </div>
 
           <div class="column is-1">
-            <section v-if="displayName(question.first_name, question.last_name, 0) === displayName(user.first_name, user.last_name, 0)"> 
+            <section v-show="displayName(question.first_name, question.last_name, 0) === displayName(user.first_name, user.last_name, 0)"> 
               <div class="dropdown is-right is-hoverable">
                 <div class="dropdown-trigger">
                   <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu">
@@ -123,9 +128,14 @@
           <div class="columns">
             <div class="column is-1" id="upvotes">
               <div>
-                <button class="button is-white" v-on:click="onUpdateAnswerCount(answer)">
+                <button class="button is-white" v-if="user.answer_upvotes.includes(answer.answer_id)" v-on:click="onUpdateAnswerCount(answer)">
                   <span class="icon is-small">
                     <i class="fas fa-heart"></i>
+                  </span>
+                </button>
+                <button class="button is-white" v-else v-on:click="onUpdateAnswerCount(answer)">
+                  <span class="icon is-small">
+                    <i class="far fa-heart"></i>
                   </span>
                 </button>
                 <div class="upvotes-text"> {{ answer.answer_upvotes }} </div>
@@ -145,7 +155,7 @@
               </div>
             </div>
             <div class="column is-1">
-              <section v-if="displayName(answer.first_name, answer.last_name, 0) === displayName(user.first_name, user.last_name, 0)"> 
+              <section v-show="displayName(answer.first_name, answer.last_name, 0) === displayName(user.first_name, user.last_name, 0)"> 
                 <div class="dropdown is-right is-hoverable">
                   <div class="dropdown-trigger">
                     <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu">
