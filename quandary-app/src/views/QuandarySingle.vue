@@ -4,14 +4,14 @@
         <div class="columns">
           <div class="column is-1" id="upvotes">
             <div>
-              <button class="button is-white" v-if="user.question_upvotes.includes(question[0].question_id)" v-on:click="onUpdateQuestionCount(question[0])">
+              <button class="button is-white is-medium" v-if="user.question_upvotes.includes(question[0].question_id)" v-on:click="onUpdateQuestionCount(question[0])">
                 <span class="icon is-small">
-                  <i class="fas fa-heart"></i>
+                  <i class="fas fa-heart" id="solid-heart"></i>
                 </span>
               </button>
-              <button class="button is-white" v-else v-on:click="onUpdateQuestionCount(question[0])">
+              <button class="button is-white is-medium" v-else v-on:click="onUpdateQuestionCount(question[0])">
                 <span class="icon is-small">
-                  <i class="far fa-heart"></i>
+                  <i class="far fa-heart" id="regular-heart"></i>
                 </span>
               </button>
               <div class="upvotes-text"> {{ question[0].question_upvotes }} </div>
@@ -124,18 +124,18 @@
         </div>
 
         <div class="is-divider"></div>
-        <div v-for="answer in answers" v-bind:key="answer">
+        <div v-for="answer in answers" v-bind:key="answer.answer_id">
           <div class="columns">
             <div class="column is-1" id="upvotes">
               <div>
-                <button class="button is-white" v-if="user.answer_upvotes.includes(answer.answer_id)" v-on:click="onUpdateAnswerCount(answer)">
+                <button class="button is-white is-medium" v-if="user.answer_upvotes.includes(answer.answer_id)" v-on:click="onUpdateAnswerCount(answer)">
                   <span class="icon is-small">
-                    <i class="fas fa-heart"></i>
+                    <i class="fas fa-heart" id="solid-heart"></i>
                   </span>
                 </button>
-                <button class="button is-white" v-else v-on:click="onUpdateAnswerCount(answer)">
+                <button class="button is-white is-medium" v-else v-on:click="onUpdateAnswerCount(answer)">
                   <span class="icon is-small">
-                    <i class="far fa-heart"></i>
+                    <i class="far fa-heart" id="regular-heart"></i>
                   </span>
                 </button>
                 <div class="upvotes-text"> {{ answer.answer_upvotes }} </div>
@@ -318,7 +318,11 @@ export default {
       this.answers.sort(function(a, b) {
         return a.answer_id < b.answer_id;
       });
-
+    },
+    sortUpvotes () {
+      this.answers.sort(function(a, b) {
+        return a.answer_upvotes > b.answer_upvotes;
+      });
     }
   }
 }
@@ -372,13 +376,14 @@ export default {
     }
     .answer-header {
       font-size: 0.8rem;
+      margin-bottom: 0.9rem;
       color: $light-gray;
     }
     .answer-text {
-      margin: 0.55rem 0 0 0;
+      // margin: 0.7rem 0 0 0;
     }
     #answer {
-      margin-top: .75rem;
+      margin-top: 1.1rem;
       display: flex;
       align-items: center;
       // justify-content: center;
@@ -393,6 +398,12 @@ export default {
     justify-content: center;
     text-align: center;
     .upvotes-text {
+      color: $light-gray;
+    }
+    #solid-heart {
+      color: $pink;
+    }
+    #regular-heart {
       color: $light-gray;
     }
   }
