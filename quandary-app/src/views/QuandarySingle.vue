@@ -4,7 +4,14 @@
       <div class="question-body">
         <div class="columns">
           <div class="column is-1" id="upvotes">
-            {{ question.count }}
+            <div>
+              <button class="button is-white">
+                <span class="icon is-small">
+                  <i class="fas fa-heart"></i>
+                </span>
+              </button>
+              <span class="upvotes-text"> {{ question.question_upvotes }} </span>
+            </div>
           </div>
 
           <div class="column is-11">
@@ -12,7 +19,7 @@
             {{ question.question_body }}
             </h1>
             <h2 class="subtitle">
-              Anonymous | {{ question.date_modified }}
+              {{ displayName(question.first_name, question.last_name, question.is_anon) }} <span class="date">| {{ displayDate(question.date_modified) }}</span>
             </h2>
             <span class="tag is-primary is-medium" id="question-topic" v-for="topic in topics" v-bind:key="topic">
               {{ topic }}
@@ -23,15 +30,21 @@
     
       <div class="answer-body">
         <div class="comment">
-          <div class="comment-label is-grouped">
-            Comment as
-            <div class="select" id="comment-username">
-              <select>
-                <option>Username</option> <!-- Replace with current user's username -->
-                <option>Anonymous</option>
-              </select>
+          <div class="columns">
+            <div class="column">
+              <div class="comment-label is-grouped">
+                Comment as
+                <div class="select" id="comment-username">
+                  <select v-model="comment.is_anon">
+                    <option value=0>{{ this.$auth.user.name }}</option> <!-- Replace with current user's first and last name; initial selected value has to match v-model-->
+                    <option value=1>Anonymous</option>
+                  </select>
+                </div>
+              </div>
             </div>
-            <button class="button is-primary" v-on:click="onSubmit()">Submit</button>
+            <div class="column is-2">
+              <button class="button is-pulled-right is-primary" v-on:click="onSubmit()">Submit</button>
+            </div>
           </div>
           <div class="comment-box has-addons">
             <textarea class="textarea has-fixed-size" placeholder="Any thoughts?" v-model="comment.body"></textarea>
@@ -43,16 +56,25 @@
         <div v-for="answer in answers" v-bind:key="answer">
           <div class="columns">
             <div class="column is-1" id="upvotes">
-              {{ answer.count }}
+              <div>
+                <button class="button is-white">
+                  <span class="icon is-small">
+                    <i class="fas fa-heart"></i>
+                  </span>
+                </button>
+                <span class="upvotes-text"> {{ answer.answer_upvotes }} </span>
+              </div>
             </div>
 
-            <div class="column is-11">
-              <section class="answer-header">
-                Anonymous <span class="date">| {{ answer.date_modified }}</span> 
-              </section>
-              <section class="answer-text">
-                {{ answer.answer_body }}
-              </section>
+            <div class="column is-11" id="answer">
+              <div>
+                <section class="answer-header">
+                  {{ displayName(answer.first_name, answer.last_name, answer.is_anon) }} <span class="date">| {{ displayDate(answer.date_modified) }}</span> 
+                </section>
+                <section class="answer-text">
+                  {{ answer.answer_body }}
+                </section>
+              </div>
             </div>
           </div>
           <div class="is-divider"></div>
@@ -68,36 +90,43 @@ export default {
     return {
       comment: {
         body: "",
-        username: ""
+        username: this.$auth.user.name, // Replace with current user's first and last name
+        is_anon: 0
       },
       question: {
         question_id: 1,
         question_body: 'Where is your favorite place to go eat?',
-        user_id: 2,
-        is_anon: true,
-        date_created: '12/25/2019',
-        date_modified: '12/25/2019',
-        count: 17, 
+        first_name: 'john', 
+        last_name: 'doe',
+        is_anon: 0,
+        date_created: '2019-12-25 12:34:50',
+        date_modified: '2019-12-25 12:34:50',
+        question_upvotes: 17, 
       }
       ,
       answers: [
         {
           answer_id: 1,
+          first_name: 'putnamelater',
+          last_name: 'smith',
+          is_anon: 1,
           answer_body: 'Chandler',
-          date_created: '12/25/2019',
-          date_modified: '12/25/2019',
-          count: 3,
+          date_created: '2019-12-25 12:34:50',
+          date_modified: '2019-12-25 12:34:50',
+          answer_upvotes: 3,
         },
         {
           answer_id: 2,
+          first_name: 'bob',
+          last_name: 'oh',
+          is_anon: 0,
           answer_body: 'Broad',
-          date_created: '12/27/2019',
-          date_modified: '12/27/2019',
-          count: 5,
+          date_created: '2019-12-25 12:34:50',
+          date_modified: '2019-12-25 12:34:50',
+          answer_upvotes: 5,
         }
       ],
-      topics: ['Campus Info', 'Food']
-      ,
+      topics: ['Campus Info', 'Food'],
       event: {}
     }
   },
@@ -117,22 +146,44 @@ export default {
         }).bind(this)
       );
     },
-    getDate() {
-      var time = new Date();
-      var month = time.getMonth() + 1;
-      var date = time.getDate();
-      var year = time.getFullYear();
+    displayName(firstName, lastName, isAnon) {
+      if (isAnon == 1) {
+        return 'Anonymous';
+      }
+      return firstName + " " + lastName;
+    },
+    displayDate(currDate) {
+      var time = currDate.split(" ");
+      var month = time[0].substring(5, 7);
+      var date = time[0].substring(8, 10);
+      var year = time[0].substring(0, 4);
+      var hour = time[1].substring(0, 2);
+      var minutes = time[1].substring(3, 5);
       
-      return month + "/" + date + "/" + year;
+      return month + "/" + date + "/" + year + " " + hour + ":" + minutes;
+    },
+    getDateTime() {
+      var time = new Date();
+      var month = ('0' + (time.getMonth() + 1)).slice(-2);
+      var date = ('0' + time.getDate()).slice(-2);
+      var year = time.getFullYear();
+      var hour = time.getHours();
+      var minutes = time.getMinutes();
+      var seconds = time.getSeconds();
+      
+      return year + "-" + month + "-" + date + " " + hour + ":" + minutes + ":" + seconds;
     },
     onSubmit() {
       if (this.comment.body.length != 0) {
         var comment = {
         answer_id: 2,
+        first_name: this.comment.username,
+        last_name: '',
+        is_anon: this.comment.is_anon, 
         answer_body: this.comment.body,
-        date_created: this.getDate(),
-        date_modified: this.getDate(),
-        count: 0,
+        date_created: this.getDateTime(),
+        date_modified: this.getDateTime(),
+        answer_upvotes: 0,
         };
 
         // Should insert new answer into database
@@ -141,6 +192,9 @@ export default {
         // Reset comment body
         this.comment.body = "";
       }
+    },
+    onUpdateCount() {
+      
     }
   }
 }
@@ -175,14 +229,14 @@ export default {
     border-radius: 1rem;
     box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
     .comment {
-      margin: 1rem 0;
+      padding: 1.25rem 0;
+      padding-bottom: 0.4rem;
       .comment-label {
         color: $light-gray;
         display: flex;
         align-items: center;
         #comment-username {
           margin-left: 0.75rem;
-          margin-right: 24.1rem;
         }
       }
       .comment-box {
@@ -192,17 +246,27 @@ export default {
     .answer-header {
       font-size: 0.8rem;
       color: $light-gray;
-      .date {
-        color: $lighter-gray;
-      }
     }
     .answer-text {
-      padding: 0.4rem 0 0 0;
+      margin: 0.55rem 0 0 0;
     }
+    #answer {
+      margin-top: .75rem;
+      display: flex;
+      align-items: center;
+      // justify-content: center;
+    }
+  }
+  .date {
+        color: $lighter-gray;
   }
   #upvotes {
     display: flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
+    .upvotes-text {
+      color: $light-gray;
+    }
   }
 </style>
