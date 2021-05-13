@@ -10,10 +10,11 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
       throw err
     }else{
         console.log('Connected to the SQLite database.')
-
+       
+        
         db.run(`CREATE TABLE course (
-            course_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            course_no INTEGER NOT NULL,
+            course_id INTEGER PRIMARY KEY,
+            course_no TEXT NOT NULL,
             course_name TEXT NOT NULL
         )`,
 
@@ -23,9 +24,16 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO course
-                (course_no, course_name)
-                VALUES (?, ?)`
-                db.run(insert, [121, "Databases"])
+                (course_id, course_no, course_name)
+                VALUES (?, ?, ?)`
+                db.run(insert, [1, "121", "Databases"])
+                db.run(insert, [2, "100", "Research in Aerospace"])
+
+                db.run(insert, [3, "101C", "Fluid Mechanics"])
+                db.run(insert, [4, "011", "Introduction to Matlab and Mathematica"])
+                db.run(insert, [5, "095B", "Introductory Methods of Applied Mathematics for the Physical Sciences"])
+                
+                db.run(insert, [6, "079C", "Senior Thesis, Theoretical"])
             }
         });
         db.run(`CREATE TABLE dept_course (
@@ -43,9 +51,19 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO dept_course
                 (dept, course_id)
                 VALUES (?, ?)`
-                db.run(insert, ['Comp Sci', 1])
+                db.run(insert, ['CS', 1])
+                db.run(insert, ['Ae', 2])
+                db.run(insert, ['Ae', 3])
+                db.run(insert, ['APh', 3])
+                db.run(insert, ['CE', 3])
+                db.run(insert, ['ME', 3])
+                db.run(insert, ['ACM', 4])
+                db.run(insert, ['ACM', 5])
+                db.run(insert, ['APh', 6])
             }
         });
+        
+
         db.run(`CREATE TABLE instructor (
             instructor_id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL
@@ -201,6 +219,31 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 db.run(insert, [1,1])
             }
         });
+
+        // NEW
+        db.run(`CREATE TABLE student_to_faculty (
+            user_id INTEGER NOT NULL,
+            division_id INTEGER NOT NULL,
+            faculty_name TEXT NOT NULL,
+            PRIMARY KEY(user_id, division_id, faculty_name),
+            FOREIGN KEY(user_id) REFERENCES profile(user_id),
+            FOREIGN KEY(division_id) REFERENCES faculty(division_id),
+            FOREIGN KEY(faculty_name) REFERENCES faculty(faculty_name)
+        )`,
+
+        (err) => {
+            if (err) {
+                // Table already created
+            }else{
+                // Table just created, creating some rows
+                var insert = `INSERT INTO student_to_faculty
+                (user_id, division_id, faculty_name)
+                VALUES (?,?,?)`
+                db.run(insert, [1, 2, 'Theodor Agapie'])
+            }
+        });
+        
+
         db.run(`CREATE TABLE topic (
             topic_id INTEGER,
             topic_name TEXT NOT NULL
@@ -209,9 +252,13 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
         (err) => {
             if (err) {
                 // Table already created
-            }else{
+            }
+            
+            else{
+                
                 // Table just created, creating some rows
                 var insert = `INSERT INTO topic VALUES (?,?)`
+                /*
                 db.run(insert, [1, 'Sports'])
                 db.run(insert, [2, 'Tennis'])
                 db.run(insert, [3, 'Soccer'])
@@ -351,6 +398,146 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 db.run(insert, [137, 'Off Campus Activities'])
                 db.run(insert, [138, 'Explore LA'])
                 db.run(insert, [139, 'LGBTQ+'])
+                */
+               db.run(insert, [1, 'Sports'])
+               db.run(insert, [2, 'Tennis'])
+               db.run(insert, [3, 'Soccer'])
+               db.run(insert, [4, 'Basketball'])
+               db.run(insert, [5, 'Cross Country'])
+               db.run(insert, [6, 'Swim and Dive'])
+               db.run(insert, [7, 'Track and Field'])
+               db.run(insert, [8, 'Water Polo'])
+               db.run(insert, [9, 'Volleyball'])
+               db.run(insert, [10, 'Baseball'])
+               db.run(insert, [11, 'Housing System'])
+               db.run(insert, [12, 'Rotation'])
+               db.run(insert, [13, 'Excomm'])
+               db.run(insert, [14, 'Memberships'])
+               db.run(insert, [15, 'ASCIT'])
+               db.run(insert, [16, 'Culture'])
+               db.run(insert, [17, 'Orchestra'])
+               db.run(insert, [18, 'Music House'])
+               db.run(insert, [19, 'Silk Screening'])
+               db.run(insert, [20, 'Jobs/Internships'])
+               db.run(insert, [21, 'Career Fair'])
+               db.run(insert, [22, 'Resume'])
+               db.run(insert, [23, 'Interviewing'])
+               db.run(insert, [24, 'Networking'])
+               db.run(insert, [25, 'Research'])
+               db.run(insert, [26, 'SURF'])
+               db.run(insert, [27, 'Labs'])
+               db.run(insert, [28, 'Campus Resources'])
+               db.run(insert, [29, 'Health Center'])
+               db.run(insert, [30, 'Counseling Office'])
+               db.run(insert, [31, 'Gym'])
+               db.run(insert, [32, 'Tech Express'])
+               db.run(insert, [33, 'Library'])
+               db.run(insert, [34, 'Registrar'])
+               db.run(insert, [35, 'Hixon'])
+               db.run(insert, [36, 'Campus Info'])
+               db.run(insert, [37, 'History'])
+               db.run(insert, [38, 'Traditions'])
+               db.run(insert, [39, 'Buildings'])
+               db.run(insert, [40, 'Food'])
+               db.run(insert, [41, 'Money'])
+               db.run(insert, [42, 'Scholarships'])
+               db.run(insert, [43, 'Financial Aid'])
+               db.run(insert, [44, 'Work Study'])
+               db.run(insert, [45, 'Tutoring and TA'])
+               db.run(insert, [46, 'Classes'])
+               db.run(insert, [47, 'Choosing Classes'])
+               db.run(insert, [48, 'Class Gossip'])
+               db.run(insert, [49, 'Majors and Minors'])
+               db.run(insert, [50, 'Off Campus Activities'])
+               db.run(insert, [51, 'Explore LA'])
+               db.run(insert, [52, 'LGBTQ+'])
+               db.run(insert, [53, 'Clubs'])
+               db.run(insert, [54, 'Outdoor and Sports Clubs'])
+               db.run(insert, [55, 'Caltech Alpine Club'])
+               db.run(insert, [56, 'Archery Club'])
+               db.run(insert, [57, 'Caltech Bike Lab'])
+               db.run(insert, [58, 'Caltech Cricket Club'])
+               db.run(insert, [59, 'Padding Club'])
+               db.run(insert, [60, 'Ultimate Frisbee'])
+               db.run(insert, [61, 'Caltech Fencing'])
+               db.run(insert, [62, 'Caltech Badminton Club'])
+               db.run(insert, [63, 'Caltech Ballroom Dance Club'])
+               db.run(insert, [64, 'Caltech Tai Chi Club'])
+               db.run(insert, [65, 'Caltech Tango'])
+               db.run(insert, [66, 'Outreach and Service Clubs'])
+               db.run(insert, [67, 'Caltech Effective Altruism'])
+               db.run(insert, [68, 'Engineers Without Borders'])
+               db.run(insert, [69, 'Caltech Letters'])
+               db.run(insert, [70, 'Questbridge'])
+               db.run(insert, [71, 'Techers For a Sustainable Future'])
+               db.run(insert, [72, 'Techreach'])
+               db.run(insert, [73, 'The Caltech Y'])
+               db.run(insert, [74, 'Religion and Philosophy Clubs'])
+               db.run(insert, [75, 'Catholic Small Faith Community'])
+               db.run(insert, [76, 'Christians on Campus at Caltech'])
+               db.run(insert, [77, 'Caltech Christian Fellowship'])
+               db.run(insert, [78, 'Graduate Christian Fellowship'])
+               db.run(insert, [79, 'Caltech Hillel'])
+               db.run(insert, [80, 'Caltech Muslim Student Association'])
+               db.run(insert, [81, 'Philosophy of Yoga'])
+               db.run(insert, [82, 'Science Math Engineering Clubs'])
+               db.run(insert, [83, 'Aerospace AIAA'])
+               db.run(insert, [84, 'AICHE'])
+               db.run(insert, [85, 'Biotech Club'])
+               db.run(insert, [86, 'Chem Club'])
+               db.run(insert, [87, 'Caltech Data Science Organization'])
+               db.run(insert, [88, 'Hacktech'])
+               db.run(insert, [89, 'Caltech Harvey Mudd Math Competition'])
+               db.run(insert, [90, 'IEEE'])
+               db.run(insert, [91, 'Math Club'])
+               db.run(insert, [92, 'Neurotechers'])
+               db.run(insert, [93, 'Physics Club'])
+               db.run(insert, [94, 'Caltech Racing'])
+               db.run(insert, [95, 'Caltech Robotics Team'])
+               db.run(insert, [96, 'Rocketry Parsec'])
+               db.run(insert, [97, 'Science Olympiad'])
+               db.run(insert, [98, 'Student Investment Fund'])
+               db.run(insert, [99, 'UAV Club'])
+               db.run(insert, [100, 'Caltech Med Life'])
+               db.run(insert, [101, 'Caltech Premedical Association'])
+               db.run(insert, [102, 'Diversity Equity and Inclusion Clubs'])
+               db.run(insert, [103, 'Black Scientists and Engineers of Caltech'])
+               db.run(insert, [104, 'Caltech Disability Coalition'])
+               db.run(insert, [105, 'Feminist Club'])
+               db.run(insert, [106, 'Caltech Latino Association'])
+               db.run(insert, [107, 'OASIS'])
+               db.run(insert, [108, 'Prism LGBTQ'])
+               db.run(insert, [109, 'Sage Council'])
+               db.run(insert, [110, 'Socialists of Caltech'])
+               db.run(insert, [111, 'SWE'])
+               db.run(insert, [112, 'Arts and Culture Clubs'])
+               db.run(insert, [113, 'Aarya'])
+               db.run(insert, [114, 'Caltech Acapella'])
+               db.run(insert, [115, 'Caltech Anime Society'])
+               db.run(insert, [116, 'Caltech Canadian CLub'])
+               db.run(insert, [117, 'Caltech Chamber Music'])
+               db.run(insert, [118, 'Cheese Society'])
+               db.run(insert, [119, 'Techlit Creative Writing'])
+               db.run(insert, [120, 'Caltech Dhamaka'])
+               db.run(insert, [121, 'Glee Club and Chamber Singers'])
+               db.run(insert, [122, 'Intermission Orchestra'])
+               db.run(insert, [123, 'Jazz Band and Improv'])
+               db.run(insert, [124, 'Performing and Visual Arts'])
+               db.run(insert, [125, 'Science Fiction and Fantasy Club'])
+               db.run(insert, [126, 'Caltech Theater'])
+               db.run(insert, [127, 'Totem Magazine'])
+               db.run(insert, [128, 'Visual Arts'])
+               db.run(insert, [129, 'Misc Clubs'])
+               db.run(insert, [130, 'The Big T'])
+               db.run(insert, [131, 'Bridge Club'])
+               db.run(insert, [132, 'Chess Club'])
+               db.run(insert, [133, 'Dance Dance Revolution Club'])
+               db.run(insert, [134, 'Puzzle Club'])
+               db.run(insert, [135, 'Quizbowl'])
+               db.run(insert, [136, 'Caltech Sovereignty Club'])
+               db.run(insert, [137, 'California Tech'])
+               db.run(insert, [138, 'Caltech Toastmasters'])
+               db.run(insert, [139, 'Caltech Vintage Computing Club'])
             }
         });
         db.run(`CREATE TABLE topic_tree (
@@ -369,6 +556,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO topic_tree
                 (parent, child)
                 VALUES (?, ?)`
+                /*
                 db.run(insert, [1, 2])
                 db.run(insert, [1, 3])
                 db.run(insert, [1, 4])
@@ -496,14 +684,146 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 db.run(insert, [133, 135])
                 db.run(insert, [133, 136])
                 db.run(insert, [137, 138])
+                */
+               db.run(insert, [1, 2])
+               db.run(insert, [1, 3])
+               db.run(insert, [1, 4])
+               db.run(insert, [1, 5])
+               db.run(insert, [1, 6])
+               db.run(insert, [1, 7])
+               db.run(insert, [1, 8])
+               db.run(insert, [1, 9])
+               db.run(insert, [1, 10])
+               db.run(insert, [11, 12])
+               db.run(insert, [11, 13])
+               db.run(insert, [11, 14])
+               db.run(insert, [11, 15])
+               db.run(insert, [16, 17])
+               db.run(insert, [16, 18])
+               db.run(insert, [16, 19])
+               db.run(insert, [20, 21])
+               db.run(insert, [20, 22])
+               db.run(insert, [20, 23])
+               db.run(insert, [20, 24])
+               db.run(insert, [25, 26])
+               db.run(insert, [25, 27])
+               db.run(insert, [28, 29])
+               db.run(insert, [28, 30])
+               db.run(insert, [28, 31])
+               db.run(insert, [28, 32])
+               db.run(insert, [28, 33])
+               db.run(insert, [28, 34])
+               db.run(insert, [28, 35])
+               db.run(insert, [36, 37])
+               db.run(insert, [36, 38])
+               db.run(insert, [36, 39])
+               db.run(insert, [36, 40])
+               db.run(insert, [41, 42])
+               db.run(insert, [41, 43])
+               db.run(insert, [41, 44])
+               db.run(insert, [41, 45])
+               db.run(insert, [46, 47])
+               db.run(insert, [46, 48])
+               db.run(insert, [46, 49])
+               db.run(insert, [50, 51])
+               db.run(insert, [53, 54])
+               db.run(insert, [53, 66])
+               db.run(insert, [53, 74])
+               db.run(insert, [53, 82])
+               db.run(insert, [53, 102])
+               db.run(insert, [53, 112])
+               db.run(insert, [53, 129])
+               db.run(insert, [54, 55])
+               db.run(insert, [54, 56])
+               db.run(insert, [54, 57])
+               db.run(insert, [54, 58])
+               db.run(insert, [54, 59])
+               db.run(insert, [54, 60])
+               db.run(insert, [54, 61])
+               db.run(insert, [54, 62])
+               db.run(insert, [54, 63])
+               db.run(insert, [54, 64])
+               db.run(insert, [54, 65])
+               db.run(insert, [66, 67])
+               db.run(insert, [66, 68])
+               db.run(insert, [66, 69])
+               db.run(insert, [66, 70])
+               db.run(insert, [66, 71])
+               db.run(insert, [66, 72])
+               db.run(insert, [66, 73])
+               db.run(insert, [74, 75])
+               db.run(insert, [74, 76])
+               db.run(insert, [74, 77])
+               db.run(insert, [74, 78])
+               db.run(insert, [74, 79])
+               db.run(insert, [74, 80])
+               db.run(insert, [74, 81])
+               db.run(insert, [82, 83])
+               db.run(insert, [82, 84])
+               db.run(insert, [82, 85])
+               db.run(insert, [82, 86])
+               db.run(insert, [82, 87])
+               db.run(insert, [82, 88])
+               db.run(insert, [82, 89])
+               db.run(insert, [82, 90])
+               db.run(insert, [82, 91])
+               db.run(insert, [82, 92])
+               db.run(insert, [82, 93])
+               db.run(insert, [82, 94])
+               db.run(insert, [82, 95])
+               db.run(insert, [82, 96])
+               db.run(insert, [82, 97])
+               db.run(insert, [82, 98])
+               db.run(insert, [82, 99])
+               db.run(insert, [82, 100])
+               db.run(insert, [82, 101])
+               db.run(insert, [102, 103])
+               db.run(insert, [102, 104])
+               db.run(insert, [102, 105])
+               db.run(insert, [102, 106])
+               db.run(insert, [102, 107])
+               db.run(insert, [102, 108])
+               db.run(insert, [102, 109])
+               db.run(insert, [102, 110])
+               db.run(insert, [102, 111])
+               db.run(insert, [112, 113])
+               db.run(insert, [112, 114])
+               db.run(insert, [112, 115])
+               db.run(insert, [112, 116])
+               db.run(insert, [112, 117])
+               db.run(insert, [112, 118])
+               db.run(insert, [112, 119])
+               db.run(insert, [112, 120])
+               db.run(insert, [112, 121])
+               db.run(insert, [112, 122])
+               db.run(insert, [112, 123])
+               db.run(insert, [112, 124])
+               db.run(insert, [112, 125])
+               db.run(insert, [112, 126])
+               db.run(insert, [112, 127])
+               db.run(insert, [112, 128])
+               db.run(insert, [129, 130])
+               db.run(insert, [129, 131])
+               db.run(insert, [129, 132])
+               db.run(insert, [129, 133])
+               db.run(insert, [129, 134])
+               db.run(insert, [129, 135])
+               db.run(insert, [129, 136])
+               db.run(insert, [129, 137])
+               db.run(insert, [129, 138])
+               db.run(insert, [129, 139])
             }
         });
         db.run(`CREATE TABLE question (
             question_id INTEGER PRIMARY KEY AUTOINCREMENT,
             question_body TEXT NOT NULL,
+            question_creator INTEGER NOT NULL,
+            is_anon INTEGER NOT NULL,
             date_created REAL DEFAULT (datetime('now', 'localtime')),
             date_modified REAL DEFAULT (datetime('now', 'localtime')),
-            count INTEGER DEFAULT 0
+            question_upvotes INTEGER DEFAULT 0,
+            FOREIGN KEY(question_creator) REFERENCES profile(user_id),
+            CHECK (is_anon = 0 OR is_anon = 1)
         )`,
 
         (err) => {
@@ -512,17 +832,22 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO question
-                (question_body)
-                VALUES (?)`
-                db.run(insert, ['What is the question?'])
+                (question_body, question_creator, is_anon)
+                VALUES (?,?,?)`
+                db.run(insert, ['What is the question?', 1, 1])
+                db.run(insert, ['What is the second question?', 1, 0])
             }
         });
         db.run(`CREATE TABLE answer (
             answer_id INTEGER PRIMARY KEY AUTOINCREMENT,
             answer_body TEXT NOT NULL,
+            answer_creator INTEGER NOT NULL,
+            is_anon INTEGER NOT NULL,
             date_created REAL DEFAULT (datetime('now', 'localtime')),
             date_modified REAL DEFAULT (datetime('now', 'localtime')),
-            count INTEGER DEFAULT 0
+            answer_upvotes INTEGER DEFAULT 0,
+            FOREIGN KEY(answer_creator) REFERENCES profile(user_id),
+            CHECK (is_anon = 0 OR is_anon = 1)
         )`,
 
         (err) => {
@@ -531,9 +856,9 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO answer
-                (answer_body)
-                VALUES (?)`
-                db.run(insert, ['This is the answer'])
+                (answer_body, answer_creator, is_anon)
+                VALUES (?,?,?)`
+                db.run(insert, ['This is the answer', 1, 0])
             }
         });
         db.run(`CREATE TABLE question_topic (
@@ -719,6 +1044,74 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 (user_id, option, is_major)
                 VALUES (?,?,?)`
                 db.run(insert, [1,'Comp Sci',1])
+            }
+        });
+        
+        db.run(`CREATE TABLE division (
+            division_id INTEGER PRIMARY KEY,
+            division_name TEXT NOT NULL
+        )`,
+
+        (err) => {
+            if (err) {
+                // Table already created
+            }else{
+                // Table just created, creating some rows
+                var insert = `INSERT INTO division
+                VALUES (?,?)`
+                db.run(insert, [1, 'Biology and Biological Engineering'])
+                db.run(insert, [2, 'Chemistry and Chemical Engineering'])
+                db.run(insert, [3, 'Engineering and Applied Science'])
+                db.run(insert, [4, 'Geological and Planetary Sciences'])
+                db.run(insert, [5, 'Humanities and Social Sciences'])
+                db.run(insert, [6, 'Physics, Mathematics, and Astronomy'])
+            }
+        });
+        
+        db.run(`CREATE TABLE faculty (
+            division_id INTEGER,
+            faculty_name TEXT,
+            PRIMARY KEY(division_id, faculty_name),
+            FOREIGN KEY(division_id) REFERENCES division(division_id)
+        )`,
+
+        (err) => {
+            if (err) {
+                // Table already created
+            }else{
+                // Table just created, creating some rows
+                var insert = `INSERT INTO faculty
+                (division_id, faculty_name)
+                VALUES (?,?)`
+                db.run(insert, [1, 'Ralph Adolphs'])
+                db.run(insert, [1, 'John M. Allman'])
+                db.run(insert, [1, 'Richard A. Andersen'])
+                db.run(insert, [1, 'David J. Anderson'])
+
+                db.run(insert, [2, 'Theodor Agapie'])
+                db.run(insert, [2, 'Francis H. Arnold'])
+                db.run(insert, [2, 'Jacqueline K. Barton'])
+                db.run(insert, [2, 'Geoffrey Blake'])
+
+                db.run(insert, [3, 'Yaser S. Abu-Mostafa'])
+                db.run(insert, [3, 'Jess F. Adkins'])
+                db.run(insert, [3, 'Aaron Ames'])
+                db.run(insert, [3, 'Animashree Anandkumar'])
+
+                db.run(insert, [4, 'Paul D. Asimow'])
+                db.run(insert, [4, 'Jean-Philippe Avouac'])
+                db.run(insert, [4, 'Konstantin Batygin'])
+                db.run(insert, [4, 'Geoffrey A. (Geoff) Blake'])
+
+                db.run(insert, [5, 'Marina Agranov'])
+                db.run(insert, [5, 'Warren C. Brown'])
+                db.run(insert, [5, 'Jed Z. Buchwald'])
+                db.run(insert, [5, 'Colin F. Camerer'])
+
+                db.run(insert, [6, 'Rana Adhikari'])
+                db.run(insert, [6, 'Jason F. Alicea'])
+                db.run(insert, [6, 'Fernando Brandao'])
+                db.run(insert, [6, 'Katerina Chatziioannou'])
             }
         });
     }
