@@ -11,7 +11,7 @@ export default {
       Authorization: `Bearer ${accessToken}`
     }
   });
-    return res.data;
+    return res.data; 
   },
   async getAllHeaderTopics() {
     let res = await axios.get("http://localhost:8000/get_topic_tree_root");
@@ -24,5 +24,14 @@ export default {
   async getLabs() {
     let res = await axios.get("http://localhost:8000/get_all_labs");
     return res.data;
+  },
+  async getQuestion(questionId) {
+    let res = await axios.get("http://localhost:8000/get_question/" + questionId);
+    return res.data;
+  },
+  async getQuestionAnswers(questionId) {
+    let res = await axios.get("http://localhost:8000/get_question_answers/" + questionId);
+    return res.data;
   }
+
 }

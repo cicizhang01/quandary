@@ -1,7 +1,6 @@
 <template>
   <div class="quandary-single">
-    
-      <div class="question-body">
+      <div class="question-body" v-for="question in question" v-bind:key="question">
         <div class="columns">
           <div class="column is-1" id="upvotes">
             <div>
@@ -36,7 +35,7 @@
                 Comment as
                 <div class="select" id="comment-username">
                   <select v-model="comment.is_anon">
-                    <option value=0>{{ this.$auth.user.name }}</option> <!-- Replace with current user's first and last name; initial selected value has to match v-model-->
+                    <option value=0>{{ this.$auth.user.nickname }}</option> <!-- Replace with current user's first and last name; initial selected value has to match v-model-->
                     <option value=1>Anonymous</option>
                   </select>
                 </div>
@@ -90,42 +89,11 @@ export default {
     return {
       comment: {
         body: "",
-        username: this.$auth.user.name, // Replace with current user's first and last name
+        username: this.$auth.user.nickname, // Replace with current user's first and last name
         is_anon: 0
       },
-      question: {
-        question_id: 1,
-        question_body: 'Where is your favorite place to go eat?',
-        first_name: 'john', 
-        last_name: 'doe',
-        is_anon: 0,
-        date_created: '2019-12-25 12:34:50',
-        date_modified: '2019-12-25 12:34:50',
-        question_upvotes: 17, 
-      }
-      ,
-      answers: [
-        {
-          answer_id: 1,
-          first_name: 'putnamelater',
-          last_name: 'smith',
-          is_anon: 1,
-          answer_body: 'Chandler',
-          date_created: '2019-12-25 12:34:50',
-          date_modified: '2019-12-25 12:34:50',
-          answer_upvotes: 3,
-        },
-        {
-          answer_id: 2,
-          first_name: 'bob',
-          last_name: 'oh',
-          is_anon: 0,
-          answer_body: 'Broad',
-          date_created: '2019-12-25 12:34:50',
-          date_modified: '2019-12-25 12:34:50',
-          answer_upvotes: 5,
-        }
-      ],
+      question: {},
+      answers: {},
       topics: ['Campus Info', 'Food'],
       event: {}
     }
@@ -135,14 +103,18 @@ export default {
   },
   methods: {
     async getQuandaryData() {
-      // Get the access token from the auth wrapper
-      const accessToken = await this.$auth.getTokenSilently()
-
-      // Use the quandaryService to call the getQuandarySingle method
-      QuandaryService.getQuandarySingle(this.$route.params.id, accessToken)
+      // Get question
+      QuandaryService.getQuestion(this.$route.params.id)
       .then(
-        (event => {
-          this.$set(this, "event", event);
+        (question => {
+          this.$set(this, "question", question);
+        }).bind(this)
+      );
+      // Get corresponding answers to the question
+      QuandaryService.getQuestionAnswers(this.$route.params.id)
+      .then(
+        (answers => {
+          this.$set(this, "answers", answers);
         }).bind(this)
       );
     },
