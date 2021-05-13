@@ -1,6 +1,6 @@
 <template>
   <div class="quandary-single">
-      <div class="question-body" v-for="question in question" v-bind:key="question">
+      <div class="question-body" >
         <div class="columns">
           <div class="column is-1" id="upvotes">
             <div>
@@ -9,16 +9,16 @@
                   <i class="fas fa-heart"></i>
                 </span>
               </button>
-              <span class="upvotes-text"> {{ question.question_upvotes }} </span>
+              <span class="upvotes-text"> {{ question[0].question_upvotes }} </span>
             </div>
           </div>
 
           <div class="column is-11">
             <h1 class="title">
-            {{ question.question_body }}
+            {{ question[0].question_body }}
             </h1>
             <h2 class="subtitle">
-              {{ displayName(question.first_name, question.last_name, question.is_anon) }} <span class="date">| {{ displayDate(question.date_modified) }}</span>
+              {{ displayName(question[0].first_name, question[0].last_name, question[0].is_anon) }} <span class="date">| {{ displayDate(question[0].date_modified) }}</span>
             </h2>
             <span class="tag is-primary is-medium" id="question-topic" v-for="topic in topics" v-bind:key="topic">
               {{ topic }}
@@ -68,10 +68,22 @@
             <div class="column is-11" id="answer">
               <div>
                 <section class="answer-header">
-                  {{ displayName(answer.first_name, answer.last_name, answer.is_anon) }} <span class="date">| {{ displayDate(answer.date_modified) }}</span> 
+                  {{ displayName(answer.first_name, answer.last_name, answer.is_anon) }} <span class="date">| {{ displayDate(answer.date_modified) }}</span>
                 </section>
+                
                 <section class="answer-text">
                   {{ answer.answer_body }}
+                </section>
+                
+                <section v-if="displayName(answer.first_name, answer.last_name, 0) === 'sandyhamstercc'"> <!-- Replace with current user's first and last name -->
+                  <button class="button is-white">
+                    Edit
+                  </button>
+                  <button class="button is-white">
+                    <span class="icon is-small">
+                      <i class="far fa-trash-alt"></i>
+                    </span>
+                  </button>
                 </section>
               </div>
             </div>
