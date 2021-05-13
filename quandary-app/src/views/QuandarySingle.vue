@@ -182,7 +182,6 @@
           <div class="is-divider"></div>
         </div>
       </div>
-      {{this.answers}}
   </div>
 </template>
 <script>
