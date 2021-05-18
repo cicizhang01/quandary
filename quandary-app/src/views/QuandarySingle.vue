@@ -34,7 +34,7 @@
             <section v-show="displayName(question.first_name, question.last_name, 0) === displayName(user.first_name, user.last_name, 0)"> 
               <div class="dropdown is-right is-hoverable">
                 <div class="dropdown-trigger">
-                  <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu">
+                  <button class="button is-white" id="comment-options" aria-haspopup="true" aria-controls="dropdown-menu">
                     <span class="icon is-small">
                       <i class="fas fa-ellipsis-v" ></i>
                     </span>
@@ -94,7 +94,8 @@
             Sort by
             <div class="select" id="sort-selection">
               <select v-model="sortBy">
-                <option> Most Recent </option>
+                <option> Newest </option>
+                <option> Oldest </option>
                 <option> Most Upvoted </option>
               </select>
             </div>
@@ -164,7 +165,7 @@
               <section v-show="displayName(answer.first_name, answer.last_name, 0) === displayName(user.first_name, user.last_name, 0)"> 
                 <div class="dropdown is-right is-hoverable">
                   <div class="dropdown-trigger">
-                    <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu">
+                    <button class="button is-white" id="comment-options" aria-haspopup="true" aria-controls="dropdown-menu">
                       <span class="icon is-small">
                         <i class="fas fa-ellipsis-v" ></i>
                       </span>
@@ -206,7 +207,7 @@ export default {
   data() {
     return {
       edit: null, // Answer currently being edited
-      sortBy: 'Most Recent',
+      sortBy: 'Newest',
       user: {
         first_name: this.$auth.user.nickname, // Replace with current user's first and last name
         last_name: '',
@@ -238,18 +239,25 @@ export default {
       let sortedAnswers = this.answers;
 
       sortedAnswers = [].slice.call(sortedAnswers).sort((a, b) => {
-        if (this.sortBy == 'Most Recent') {
+        if (this.sortBy == 'Newest') {
+          if (a.date_modified < b.date_modified)
+            return 1;
+          if (a.date_modified > b.date_modified) 
+            return -1;
+          return 0;
+        }
+        else if (this.sortBy == 'Oldest') {
           if (a.date_modified < b.date_modified)
             return -1;
           if (a.date_modified > b.date_modified) 
             return 1;
           return 0;
         }
-        if (this.sortBy == 'Most Upvoted') {
-          if (a.answer_upvotes > b.answer_upvotes)
-            return -1;
-          if (a.answer_upvotes < b.answer_upvotes) 
+        else if (this.sortBy == 'Most Upvoted') {
+          if (a.answer_upvotes < b.answer_upvotes)
             return 1;
+          if (a.answer_upvotes > b.answer_upvotes) 
+            return -1;
           return 0;
         }
       });
@@ -439,11 +447,8 @@ export default {
     }
     .answer-header {
       font-size: 0.8rem;
-      margin-bottom: 0.9rem;
+      margin-bottom: 1.1rem;
       color: $light-gray;
-    }
-    .answer-text {
-      // margin: 0.7rem 0 0 0;
     }
     #answer {
       margin-top: 1.1rem;
@@ -455,11 +460,13 @@ export default {
   .date {
         color: $lighter-gray;
   }
+  #comment-options {
+    color: $gray;
+  }
   #upvotes {
     display: flex;
-    align-items: center;
-    justify-content: center;
     text-align: center;
+    padding: 1rem 0.5rem 0.5rem;
     .upvotes-text {
       color: $light-gray;
     }
