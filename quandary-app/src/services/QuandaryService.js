@@ -7,10 +7,10 @@ export default {
   },
   async getQuandarySingle(quandaryId, accessToken) {
     let res = await axios.get("http://localhost:8000/quandary/" + quandaryId, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  });
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
     return res.data; 
   },
   async getAllHeaderTopics() {
@@ -32,6 +32,9 @@ export default {
   async getQuestionAnswers(questionId) {
     let res = await axios.get("http://localhost:8000/get_question_answers/" + questionId);
     return res.data;
+  },
+  async addAnswer(userId, questionId, answer) {
+    let response = await axios.post("http://localhost:8000/add_answer/" + userId + "/" + questionId, answer);
+    return response.data;
   }
-
 }

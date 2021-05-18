@@ -26,7 +26,7 @@
               {{ displayName(question[0].first_name, question[0].last_name, question[0].is_anon) }} <span class="date">| {{ displayDate(question[0].date_modified) }}</span>
             </h2>
             <span class="tag is-primary is-medium" id="question-topic" v-for="topic in topics" v-bind:key="topic">
-              {{ topic }}
+              <a :href="topic">{{ topic }}</a>
             </span>
           </div>
 
@@ -202,6 +202,7 @@
           </div>
           <div class="is-divider"></div>
         </div>
+        {{$auth.user}}
       </div>
   </div>
 </template>
@@ -211,9 +212,11 @@ export default {
   name: 'QuandarySingle',
   data() {
     return {
+      temp: {},
       edit: null, // Answer currently being edited
       sortBy: 'Newest',
       user: {
+        user_id: 3,
         first_name: this.$auth.user.nickname, // Replace with current user's first and last name
         last_name: '',
         question_upvotes: [],
@@ -237,7 +240,7 @@ export default {
   },
   updated() {
     // Update data with query calls to API
-    // this.getQuandaryData();
+    this.getQuandaryData();
   },
   computed: {
     sortAnswers() {
@@ -318,18 +321,23 @@ export default {
     onSubmitAnswer() {
       if (this.comment.body.length != 0) {
         var comment = {
-          answer_id: 3,
           first_name: this.user.first_name,
           last_name: this.user.last_name,
           is_anon: this.comment.is_anon, 
           answer_body: this.comment.body,
           date_created: this.getDateTime(),
           date_modified: this.getDateTime(),
-          answer_upvotes: 0,
-          is_editable: 0
+          answer_upvotes: 0
         };
 
         // Should insert new answer into database
+        // QuandaryService.addAnswer(this.user.user_id, this.question[0].question_id, comment)
+        // .then(
+        //   (temp => {
+        //     this.$set(this, "temp", temp);
+        //   }).bind(this)
+        // );
+        
         this.answers.push(comment);
 
         // Reset comment body
@@ -410,6 +418,9 @@ export default {
   }
   #question-topic {
     margin: -1rem 0.75rem 0 0;
+    a {
+      color: inherit;
+    }
   }
   .answer-body {
     background-color: white;
