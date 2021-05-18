@@ -34,7 +34,7 @@
             <section v-show="displayName(question.first_name, question.last_name, 0) === displayName(user.first_name, user.last_name, 0)"> 
               <div class="dropdown is-right is-hoverable">
                 <div class="dropdown-trigger">
-                  <button class="button is-white" id="comment-options" aria-haspopup="true" aria-controls="dropdown-menu">
+                  <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu">
                     <span class="icon is-small">
                       <i class="fas fa-ellipsis-v" ></i>
                     </span>
@@ -125,7 +125,12 @@
             <div class="column is-10" id="answer">
               <div>
                 <section class="answer-header">
-                  {{ displayName(answer.first_name, answer.last_name, answer.is_anon) }} <span class="date">| {{ displayDate(answer.date_modified) }}</span>                
+                  {{ displayName(answer.first_name, answer.last_name, answer.is_anon) }} 
+                  <span class="date">
+                    | {{ displayDate(answer.date_modified) }}
+                    <i v-if="answer.date_created != answer.date_modified"> (edited) </i>
+                  </span>                
+                  
                 </section>
 
                 <section class="answer-text" v-if="edit != answer.answer_id">
@@ -165,7 +170,7 @@
               <section v-show="displayName(answer.first_name, answer.last_name, 0) === displayName(user.first_name, user.last_name, 0)"> 
                 <div class="dropdown is-right is-hoverable">
                   <div class="dropdown-trigger">
-                    <button class="button is-white" id="comment-options" aria-haspopup="true" aria-controls="dropdown-menu">
+                    <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu">
                       <span class="icon is-small">
                         <i class="fas fa-ellipsis-v" ></i>
                       </span>
@@ -458,9 +463,9 @@ export default {
     }
   }
   .date {
-        color: $lighter-gray;
+    color: $lighter-gray;
   }
-  #comment-options {
+  .icon {
     color: $gray;
   }
   #upvotes {
