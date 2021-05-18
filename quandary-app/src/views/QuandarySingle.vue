@@ -81,7 +81,7 @@
               </div>
             </div>
             <div class="column is-2">
-              <button class="button is-pulled-right is-primary is-outlined" v-on:click="onSubmit()">Submit</button>
+              <button class="button is-pulled-right is-primary is-outlined" v-on:click="onSubmitAnswer()">Submit</button>
             </div>
           </div>
           <div class="comment-box has-addons">
@@ -127,8 +127,35 @@
                   {{ displayName(answer.first_name, answer.last_name, answer.is_anon) }} <span class="date">| {{ displayDate(answer.date_modified) }}</span>                
                 </section>
 
-                <section class="answer-text" v-if="!answer.is_editable">
+                <section class="answer-text" v-if="edit != answer.answer_id">
                   {{ answer.answer_body }}
+                </section>
+                
+                <section class="answer-text" v-if="edit == answer.answer_id">
+                  <div class="edit-comment">
+                    <div class="columns">
+                      <div class="column is-8">
+                        <div class="edit-comment-label is-grouped">
+                          Comment as
+                          <div class="select" id="comment-username">
+                            <select v-model="comment_edit.is_anon">
+                              <option value=0>{{ displayName(user.first_name, user.last_name, 0) }}</option>
+                              <option value=1>{{ displayName(user.first_name, user.last_name, 1) }}</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="column is-2">
+                        <button class="button is-pulled-right is-primary is-outlined" v-on:click="onSubmitEdit(answer)">Submit</button>
+                      </div>
+                      <div class="column is-2">
+                        <button class="button is-pulled-right is-dark is-outlined" v-on:click="onCancelEdit(answer)">Cancel</button>
+                      </div>
+                    </div>
+                    <div class="edit-comment-box has-addons">
+                      <textarea class="textarea has-fixed-size" placeholder="Any thoughts?" v-model="answer.answer_body"></textarea>
+                    </div>
+                  </div>
                 </section>
                 
               </div>
@@ -178,6 +205,7 @@ export default {
   name: 'QuandarySingle',
   data() {
     return {
+      edit: null, // Answer currently being edited
       sortBy: 'Most Recent',
       user: {
         first_name: this.$auth.user.nickname, // Replace with current user's first and last name
@@ -186,7 +214,11 @@ export default {
         answer_upvotes: []
       },
       comment: {
-        body: "",
+        body: '',
+        is_anon: 0
+      },
+      comment_edit: {
+        body: '', // Used to store original comment
         is_anon: 0
       },
       question: {},
@@ -264,13 +296,13 @@ export default {
       var month = ('0' + (time.getMonth() + 1)).slice(-2);
       var date = ('0' + time.getDate()).slice(-2);
       var year = time.getFullYear();
-      var hour = time.getHours();
-      var minutes = time.getMinutes();
-      var seconds = time.getSeconds();
+      var hour = ('0' + time.getHours()).slice(-2);
+      var minutes = ('0' + time.getMinutes()).slice(-2);
+      var seconds = ('0' + time.getSeconds()).slice(-2);
       
       return year + "-" + month + "-" + date + " " + hour + ":" + minutes + ":" + seconds;
     },
-    onSubmit() {
+    onSubmitAnswer() {
       if (this.comment.body.length != 0) {
         var comment = {
           answer_id: 3,
@@ -313,9 +345,26 @@ export default {
         answer.answer_upvotes += 1;
       }
     },
-    // onEditAnswer(answer) {
-
-    // },
+    onEditAnswer(answer) {
+      if (this.edit == null) {
+        this.edit = answer.answer_id;
+        
+        // Store original comment 
+        this.comment_edit.body = answer.answer_body;
+        // Edit answer
+      }
+    },
+    onSubmitEdit(answer) {
+      this.edit = null;
+      answer.date_modified = this.getDateTime();
+      answer.is_anon = this.comment_edit.is_anon;
+      // Should also update answer in database
+    },
+    onCancelEdit(answer) {
+      // Restore original comment
+      answer.answer_body = this.comment_edit.body;
+      this.edit = null;
+    },
     onDeleteAnswer(answer) {
       const index = this.answers.indexOf(answer);
       if (index > -1) {
@@ -369,6 +418,20 @@ export default {
       .comment-box {
         margin-top: 1rem;
         margin-bottom: 0.4rem;
+      }
+    }
+    .edit-comment {
+      .edit-comment-label {
+        color: $light-gray;
+        display: flex;
+        align-items: center;
+        #comment-username {
+          margin-left: 0.75rem;
+        }
+      }
+      .edit-comment-box {
+        margin: 0.4rem 0;
+        width: 37.2rem;
       }
     }
     .filter {
