@@ -81,7 +81,7 @@
               </div>
             </div>
             <div class="column is-2">
-              <button class="button is-pulled-right is-primary" v-on:click="onSubmit()">Submit</button>
+              <button class="button is-pulled-right is-primary is-outlined" v-on:click="onSubmit()">Submit</button>
             </div>
           </div>
           <div class="comment-box has-addons">
@@ -89,42 +89,21 @@
           </div>
         </div>
 
-        <div class="filter"> 
-          <div class="dropdown is-hoverable">
-            <div class="dropdown-trigger">
-              <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-
-                <span> Filter </span>
-                <span class="icon is-small">
-                  <i class="fas fa-sort" ></i>
-                </span>
-              </button>
-            </div>
-            <div class="dropdown-menu" id="dropdown-menu" role="menu">
-              <div class="dropdown-content">
-                <div class="dropdown-item">
-                  <button class="button is-white" v-on:click="sortRecent()">
-                    <span class="icon is-small">
-                      <i class="fas fa-history"></i>
-                    </span>
-                    <span class="dropdown-text"> Most Recent </span>
-                  </button>
-                </div>
-                <div class="dropdown-item">
-                  <button class="button is-white" v-on:click="sortUpvotes()">
-                    <span class="icon is-small">
-                      <i class="fas fa-heart"></i>
-                    </span>
-                    <span class="dropdown-text"> Most Upvoted </span>
-                  </button>
-                </div>
-              </div>
+        <div class="sort">
+          <div class="sort-label is-grouped">
+            Sort by
+            <div class="select" id="sort-selection">
+              <select v-model="sortBy">
+                <option> Most Recent </option>
+                <option> Most Upvoted </option>
+              </select>
             </div>
           </div>
         </div>
 
         <div class="is-divider"></div>
-        <div v-for="answer in answers" v-bind:key="answer.answer_id">
+
+        <div v-for="answer in sortAnswers" v-bind:key="answer.answer_id">
           <div class="columns">
             <div class="column is-1" id="upvotes">
               <div>
@@ -148,7 +127,7 @@
                   {{ displayName(answer.first_name, answer.last_name, answer.is_anon) }} <span class="date">| {{ displayDate(answer.date_modified) }}</span>                
                 </section>
 
-                <section class="answer-text">
+                <section class="answer-text" v-if="!answer.is_editable">
                   {{ answer.answer_body }}
                 </section>
                 
@@ -167,7 +146,7 @@
                   <div class="dropdown-menu" id="dropdown-menu" role="menu">
                     <div class="dropdown-content">
                       <div class="dropdown-item">
-                        <button class="button is-white">
+                        <button class="button is-white" v-on:click="onEditAnswer(answer)">
                           <span class="icon is-small">
                             <i class="fas fa-pencil-alt"></i>
                           </span>
@@ -187,7 +166,6 @@
                 </div>
               </section>
             </div>
-          
           </div>
           <div class="is-divider"></div>
         </div>
@@ -200,6 +178,7 @@ export default {
   name: 'QuandarySingle',
   data() {
     return {
+      sortBy: 'Most Recent',
       user: {
         first_name: this.$auth.user.nickname, // Replace with current user's first and last name
         last_name: '',
@@ -212,12 +191,38 @@ export default {
       },
       question: {},
       answers: {},
-      topics: ['Campus Info', 'Food'],
-      event: {}
+      topics: ['Campus Info', 'Food']
     }
   },
   created() {
     this.getQuandaryData();
+  },
+  updated() {
+    // Update data with query calls to API
+    // this.getQuandaryData();
+  },
+  computed: {
+    sortAnswers() {
+      let sortedAnswers = this.answers;
+
+      sortedAnswers = [].slice.call(sortedAnswers).sort((a, b) => {
+        if (this.sortBy == 'Most Recent') {
+          if (a.date_modified < b.date_modified)
+            return -1;
+          if (a.date_modified > b.date_modified) 
+            return 1;
+          return 0;
+        }
+        if (this.sortBy == 'Most Upvoted') {
+          if (a.answer_upvotes > b.answer_upvotes)
+            return -1;
+          if (a.answer_upvotes < b.answer_upvotes) 
+            return 1;
+          return 0;
+        }
+      });
+      return sortedAnswers;
+    }
   },
   methods: {
     async getQuandaryData() {
@@ -268,14 +273,15 @@ export default {
     onSubmit() {
       if (this.comment.body.length != 0) {
         var comment = {
-        answer_id: 3,
-        first_name: this.user.first_name,
-        last_name: this.user.last_name,
-        is_anon: this.comment.is_anon, 
-        answer_body: this.comment.body,
-        date_created: this.getDateTime(),
-        date_modified: this.getDateTime(),
-        answer_upvotes: 0,
+          answer_id: 3,
+          first_name: this.user.first_name,
+          last_name: this.user.last_name,
+          is_anon: this.comment.is_anon, 
+          answer_body: this.comment.body,
+          date_created: this.getDateTime(),
+          date_modified: this.getDateTime(),
+          answer_upvotes: 0,
+          is_editable: 0
         };
 
         // Should insert new answer into database
@@ -307,22 +313,15 @@ export default {
         answer.answer_upvotes += 1;
       }
     },
+    // onEditAnswer(answer) {
+
+    // },
     onDeleteAnswer(answer) {
       const index = this.answers.indexOf(answer);
       if (index > -1) {
         this.answers.splice(index, 1);
       }
       // Should also delete answer from database
-    },
-    sortRecent() {
-      this.answers.sort(function(a, b) {
-        return a.answer_id < b.answer_id;
-      });
-    },
-    sortUpvotes () {
-      this.answers.sort(function(a, b) {
-        return a.answer_upvotes > b.answer_upvotes;
-      });
     }
   }
 }
@@ -356,19 +355,20 @@ export default {
     margin: 20px 0;
     border-radius: 1rem;
     box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
-    .comment {
+    .comment, .sort {
       padding: 1.25rem 0;
-      padding-bottom: 0.4rem;
-      .comment-label {
+      padding-bottom: 0.2rem;
+      .comment-label, .sort-label {
         color: $light-gray;
         display: flex;
         align-items: center;
-        #comment-username {
+        #comment-username, #sort-selection {
           margin-left: 0.75rem;
         }
       }
       .comment-box {
         margin-top: 1rem;
+        margin-bottom: 0.4rem;
       }
     }
     .filter {
