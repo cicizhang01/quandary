@@ -34,7 +34,12 @@ export default {
     return res.data;
   },
   async addAnswer(userId, questionId, answer) {
-    let response = await axios.post("http://localhost:8000/add_answer/" + userId + "/" + questionId, answer);
-    return response.data;
+    await axios.put("http://localhost:8000/add_answer/" + userId + "/" + questionId, answer);
+
+    // Returns the updated answers for a specific question
+    return this.getQuestionAnswers(questionId);
+  },
+  async updateAnswerCount(userId, answerId) {
+    await axios.put("http://localhost:8000/update_answer_upvote/" + answerId + "/" + userId);
   }
 }

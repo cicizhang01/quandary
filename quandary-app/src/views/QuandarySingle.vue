@@ -202,7 +202,6 @@
           </div>
           <div class="is-divider"></div>
         </div>
-        {{$auth.user}}
       </div>
   </div>
 </template>
@@ -216,9 +215,9 @@ export default {
       edit: null, // Answer currently being edited
       sortBy: 'Newest',
       user: {
-        user_id: 3,
-        first_name: this.$auth.user.nickname, // Replace with current user's first and last name
-        last_name: '',
+        user_id: 4, // Replace with some method to find current user's user_id
+        first_name: 'Sandy', // Replace with current user's first and last name
+        last_name: 'Hamster',
         question_upvotes: [],
         answer_upvotes: []
       },
@@ -240,7 +239,7 @@ export default {
   },
   updated() {
     // Update data with query calls to API
-    this.getQuandaryData();
+    // this.getQuandaryData();
   },
   computed: {
     sortAnswers() {
@@ -321,25 +320,18 @@ export default {
     onSubmitAnswer() {
       if (this.comment.body.length != 0) {
         var comment = {
-          first_name: this.user.first_name,
-          last_name: this.user.last_name,
-          is_anon: this.comment.is_anon, 
           answer_body: this.comment.body,
-          date_created: this.getDateTime(),
-          date_modified: this.getDateTime(),
-          answer_upvotes: 0
+          is_anon: this.comment.is_anon
         };
 
-        // Should insert new answer into database
-        // QuandaryService.addAnswer(this.user.user_id, this.question[0].question_id, comment)
-        // .then(
-        //   (temp => {
-        //     this.$set(this, "temp", temp);
-        //   }).bind(this)
-        // );
+        // Inserts new answer into database and updates answers data object 
+        QuandaryService.addAnswer(this.user.user_id, this.question[0].question_id, comment)
+        .then(
+          answers => {
+            this.answers = answers;
+          }
+        );
         
-        this.answers.push(comment);
-
         // Reset comment body
         this.comment.body = "";
       }
@@ -365,6 +357,8 @@ export default {
         this.user.answer_upvotes.push(answer.answer_id)
         answer.answer_upvotes += 1;
       }
+
+      // QuandaryService.updateAnswerCount(this.user.user_id, answer.answer_id);
     },
     onEditAnswer(answer) {
       if (this.edit == null) {
