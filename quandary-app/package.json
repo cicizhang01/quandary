@@ -9,9 +9,17 @@
   },
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.14.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-regular-svg-icons": "^5.15.3",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/vue-fontawesome": "^2.0.2",
     "axios": "^0.21.1",
     "bulma": "^0.9.2",
+<<<<<<< HEAD
     "bulma-checkradio": "^1.1.1",
+=======
+    "bulma-extensions": "^6.2.7",
+>>>>>>> main
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
