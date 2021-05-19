@@ -22,7 +22,8 @@ const authConfig = {
 
 // Create middleware to validate the JWT using express-jwt
 const checkJwt = jwt({
-  // Provide a signing key based on the key identifier in the header and the signing keys provided by your Auth0 JWKS endpoint.
+  // Provide a signing key based on the key identifier in the header and 
+  // the signing keys provided by your Auth0 JWKS endpoint.
   secret: jwksRsa.expressJwtSecret({
     cache: true,
     rateLimit: true,
@@ -99,8 +100,9 @@ app.put("/add_full_user", (req, res) => {
       // user_topics table
       topic_ids: req.body.topic_ids,
 
-      // student_to_lab table
-      lab_ids: req.body.lab_ids,
+      // student_to_faculty table
+      division_ids: req.body.division_ids,
+      faculty_names: req.body.faculty_names,
 
       // house_memberships table
       houses: req.body.houses,
@@ -149,14 +151,16 @@ app.put("/add_full_user", (req, res) => {
         })
       }
 
-      // labs
+      // faculty connections
+      console.log("Adding user faculty connections.")
       var i;
-      for (i = 0; i < data.lab_ids.length; i++){
-        var lab_id = data.lab_ids[i];
-        var sql_labs ='INSERT INTO student_to_lab VALUES (?,?)'
-        var params_labs =[user_id, lab_id]
+      for (i = 0; i < data.faculty_names.length; i++){
+        var division_id = data.division_ids[i];
+        var faculty_name = data.faculty_names[i];
+        var sql_faculty ='INSERT INTO student_to_faculty VALUES (?,?,?)'
+        var params_faculty =[user_id, division_id, faculty_name]
 
-        db.run(sql_labs, params_labs, function (err, result) {
+        db.run(sql_faculty, params_faculty, function (err, result) {
           if (err){
               res.status(400).json({"error": err.message})
               return;
@@ -222,8 +226,7 @@ app.put("/add_full_user", (req, res) => {
   
   res.json({
     "message": "Added new user.",
-    "data": data,
-    //"id" : user_id
+    "data": data
   })
 
 });
@@ -382,6 +385,169 @@ app.put("/add_user_courses/:user_id", (req, res) => {
   res.json({response: "Added course(s) for user."});
 });
 
+
+/* Add an answer to a question, given the answer and question_id.
+   Does not deal with upvotes.
+   
+   Inserts into answer the new answer_body and answer_creator
+   Inserts into qna question_id and the new answer_id
+   */
+app.put('/add_answer/:user_id/:question_id', (req, res) => {
+  // answer table
+  var sql_answer = "insert into answer(answer_body, answer_creator, is_anon) \
+             values (?,?,?)"
+  var params_answer = [req.body.answer_body, req.params.user_id, req.body.is_anon]
+  db.all(sql_answer, params_answer, (err, rows_answer) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    
+    // qna table
+    var sql_qna = "insert into qna (answer_id, question_id) \
+      values (?,?)"
+    var params_qna = [this.lastID, req.params.question_id]
+    db.all(sql_qna, params_qna, (err, rows_qna) => {
+      if (err) {
+        res.status(400).json({"error":err.message});
+        return;
+      }
+
+    console.log(rows_answer)
+    console.log(rows_qna)
+    res.send("Added new answer.")
+    });
+  });
+});
+
+
+/* Update upvote to an answer. 
+   If user has upvoted, removes their upvote, otherwise adds their upvote. */
+app.put('/update_answer_upvote/:answer_id/:user_id', (req, res) => {
+  // Check if user has upvoted the answer.
+  var sql_check = "select count(*) as count from user_upvotes_answer \
+    where answer_id = ? and user_id = ?"
+  var params_check = [req.params.answer_id, req.params.user_id]
+
+  db.all(sql_check, params_check, (err, rows_check) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    
+    var sql1;
+    var sql2;
+    if (rows_check[0].count == 1){
+      // for user_votes_answer table
+      sql1 = "delete from user_upvotes_answer where answer_id = ? and user_id = ?"
+      // for answer table
+      sql2 = "update answer set answer_upvotes = answer_upvotes - 1 \
+        where answer_id = ?";
+    }
+    else {
+      // for user_votes_answer table
+      var sql1 = "insert into user_upvotes_answer(answer_id, user_id) values (?, ?)"
+      // for answer table
+      var sql2 = "update answer set answer_upvotes = answer_upvotes + 1 \
+        where answer_id = ?";
+    }
+
+    // run db commands
+    var params1 = [req.params.answer_id, req.params.user_id]
+    var params2 = [req.params.answer_id];
+
+    // update user_votes_answer table
+    db.all(sql1, params1, (err, rows) => {
+      if (err) {
+        res.status(400).json({"error":err.message});
+        return;
+      }
+      // update answer table
+      db.all(sql2, params2, (err, rows2) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        res.send("Updated answer upvote count.")
+      });
+    }); 
+  });
+});
+
+
+/* Update upvote to a question. 
+   If user has upvoted, removes their upvote, otherwise adds their upvote. */
+app.put('/update_question_upvote/:question_id/:user_id', (req, res) => {
+  // Check if user has upvoted the question.
+  var sql_check = "select count(*) as count from user_upvotes_question \
+    where question_id = ? and user_id = ?"
+  var params_check = [req.params.question_id, req.params.user_id]
+
+  db.all(sql_check, params_check, (err, rows_check) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    
+    var sql1;
+    var sql2;
+    if (rows_check[0].count == 1){
+      // for user_votes_question table
+      sql1 = "delete from user_upvotes_question where question_id = ? and user_id = ?"
+      // for question table
+      sql2 = "update question set question_upvotes = question_upvotes - 1 \
+        where question_id = ?";
+    }
+    else {
+      // for user_votes_question table
+      var sql1 = "insert into user_upvotes_question(question_id, user_id) values (?, ?)"
+      // for question table
+      var sql2 = "update question set question_upvotes = question_upvotes + 1 \
+        where question_id = ?";
+    }
+
+    // run db commands
+    var params1 = [req.params.question_id, req.params.user_id]
+    var params2 = [req.params.question_id];
+
+    // update user_votes_question table
+    db.all(sql1, params1, (err, rows) => {
+      if (err) {
+        res.status(400).json({"error":err.message});
+        return;
+      }
+      // update question table
+      db.all(sql2, params2, (err, rows2) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        res.send("Updated question upvote count.")
+      });
+    }); 
+  });
+});
+
+
+/* Add a question. Accepts user_id and question_body.
+   Does not deal with upvotes.
+   Inserts into question the new question_body and question_creator.
+*/
+app.put('/add_question/:user_id', (req, res) => {
+  var sql = "insert into question(question_body, question_creator, is_anon) \
+             values (?,?,?)"
+  var params = [req.body.question_body, req.params.user_id, req.body.is_anon]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }   
+    res.send({
+      "data": rows,
+      "last id": this.lastID
+    })
+  });
+});
 
 
 /* USER DELETE METHODS */
@@ -688,8 +854,10 @@ app.get('/get_user_options/:user_id', (req, res) => {
 });
 
 
-
 /* DATABASE-GENERAL PUT METHODS */
+
+
+
 
 /* Add a lab (one at a time). 
    Returns a JSON object of data that was inserted. */
@@ -785,7 +953,8 @@ app.get('/get_all_labs', (req, res) => {
 
 
 /* Get all faculty.
-   Returns list of JSON objects each having division and faculty name. */
+   Returns list of JSON objects each having division_id, division_name 
+   and faculty_name. */
    app.get('/get_all_faculty', (req, res) => {
     var sql = "select * from faculty natural join division"
     var params = []
@@ -800,8 +969,8 @@ app.get('/get_all_labs', (req, res) => {
 
 
 /* Get all courses.
-   Returns list of JSON objects each having course id, department, 
-   course number, course name. */
+   Returns list of JSON objects each having course_id, course_no,
+   course_name, and dept. */
 app.get('/get_all_courses', (req, res) => {
   var sql = "select * from course natural join dept_course"
   var params = []
@@ -816,7 +985,7 @@ app.get('/get_all_courses', (req, res) => {
 
 
 /* Get all departments.
-   Returns list of department names. */
+   Returns a list of department names. */
 app.get('/get_all_departments', (req, res) => {
   var sql = "select distinct dept from dept_course"
   var params = []
@@ -876,7 +1045,7 @@ app.get('/get_topic_tree_root', (req, res) => {
 /*
 Get topic_id and topic_name under a given parent topic_id.
 Returns list of JSON objects each having topic_id and topic_name.
-parent topic_id should be in the body of the request.
+parent topic_id should be in the uri params.
 */
 app.get('/get_topic_subtree/:parent', (req, res) => {
   var sql = "select * from topic natural join \
@@ -891,11 +1060,14 @@ app.get('/get_topic_subtree/:parent', (req, res) => {
   });
 });
 
+/* Given a question_id, return its question_body, date_modified, and upvote count" */
+app.get('/get_question/:question_id', (req, res) => {
+  var sql = "select * from question \
+    cross join profile \
+    where question.question_creator = profile.user_id and question_id = ?";
 
-app.get('/get_topic_subtree', (req, res) => {
-  var sql = "select * from topic natural join \
-  (select child AS topic_id from topic_tree where parent = ?)"
-  var params = [req.body.parent]
+  var params = [req.params.question_id]
+  
   db.all(sql, params, (err, rows) => {
     if (err) {
       res.status(400).json({"error":err.message});
@@ -906,10 +1078,16 @@ app.get('/get_topic_subtree', (req, res) => {
 });
 
 
-app.get('/get_topic_subtree/:parent', (req, res) => {
-  var sql = "select * from topic natural join \
-  (select child AS topic_id from topic_tree where parent = ?)"
-  var params = [req.params.parent]
+/* Given a question_id, returns list of associated 
+   answer_body, date_modified, and upvote count" */
+app.get('/get_question_answers/:question_id', (req, res) => {
+  var sql = "select answer_id, answer_body, \
+              first_name, last_name, is_anon, date_modified, answer_upvotes \
+              from answer natural join qna \
+              inner join profile on answer.answer_creator = profile.user_id \
+              where question_id = ?"
+  var params = [req.params.question_id]
+  
   db.all(sql, params, (err, rows) => {
     if (err) {
       res.status(400).json({"error":err.message});
@@ -917,6 +1095,141 @@ app.get('/get_topic_subtree/:parent', (req, res) => {
     }
     res.send(rows)
   });
+});
+
+
+/* Get all questions. */
+app.get('/get_all_questions', (req, res) => {
+  var sql = "select * \
+              from question \
+              inner join profile on question.question_creator = profile.user_id \
+              order by question_id DESC"
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        console.log(rows)
+        res.send(rows)
+      });
+});
+
+
+/* Get num_questions number of questions sorted by descending date modified.
+   num_questions should be in uri parameters. */
+app.get('/get_recent_questions/:num_questions', (req, res) => {
+  var sql = "select * \
+              from question \
+              inner join profile on question.question_creator = profile.user_id \
+              order by question_id DESC limit ?"
+    var params = [req.params.num_questions]
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        console.log(rows)
+        res.send(rows)
+      });
+});
+
+
+/* Gets all questions, given a topic_id. TBD */
+app.get('/get_all_questions_by_topic/:topic_id', (req, res) => {
+  var sql = "select * \
+              from question \
+              inner join profile on question.question_creator = profile.user_id \
+              natural join question_topic where topic_id = ? \
+              order by question_id DESC"
+    var params = [req.params.topic_id]
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        console.log(rows)
+        res.send(rows)
+      });
+});
+
+
+/* METHODS FOR DEBUGGING */
+// PLAIN - get all question table (for debugging)
+app.get('/get_question_table', (req, res) => {
+  //var sql = "select * from question left join qna on question.question_id = qna.question_id"
+  var sql = "select * from question natural left outer join qna"
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        console.log(rows)
+        res.send(rows)
+      });
+});
+
+/* Get all answers (for debugging). */
+app.get('/get_all_answers', (req, res) => {
+  var sql = "select distinct * \
+  from question natural left outer join qna "
+
+
+  var params = []
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send(rows)
+  });
+});
+
+
+/* Check if user has upvoted question_id already (for debugging).
+   Returns a list containing true (boolean) if there is an upvote, false otherwise. */
+app.get('/user_upvoted_question/:question_id/:user_id', (req, res) => {
+  var sql = "select count(*) as count from user_upvotes_question \
+    where question_id = ? and user_id = ?"
+  var params = [req.params.question_id, req.params.user_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send([rows[0].count == 1])
+  });
+});
+  
+  
+/* Check if user has upvoted answer_id already (for debugging). */
+app.get('/user_upvoted_answer/:answer_id/:user_id', (req, res) => {
+  var sql = "select count(*) as count from user_upvotes_answer \
+    where answer_id = ? and user_id = ?"
+  var params = [req.params.answer_id, req.params.user_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send([rows[0].count == 1])
+  });
+});
+
+
+/* Get all faculty_to_student information. */
+app.get('/get_all_student_to_faculty', (req, res) => {
+  var sql = "select * from student_to_faculty\
+             natural join division"
+    var params = []
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        res.send(rows)
+      });
 });
 
 /* END Quandary REST API */
