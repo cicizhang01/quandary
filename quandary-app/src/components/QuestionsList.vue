@@ -1,14 +1,13 @@
 <template>
   <div class="events container">
     <div class="columns is-multiline">
-      <div v-for="question in questions" :question="question" :key="question.question_id" class="column is-full">
-        <!-- <router-link :to="`/quandary/${question.question_id}`"> -->
+        <div v-for="question in questions" :question="question" :key="question.question_id" class="column is-full">
           <div class="question-card">
                 <div class="card">
                     <div class="columns">
                         <div class="column is-1" id="upvotes">
                             <div>
-                                <button class="button is-white is-medium" v-if="user.question_upvotes.includes(question.question_id)" v-on:click="onUpdateQuestionCount(question)">
+                                <button class="button is-white is-medium" v-if="user.upvotes.includes(question.question_id)" v-on:click="onUpdateQuestionCount(question)">
                                     <span class="icon is-small">
                                         <i class="fas fa-heart" id="solid-heart"></i>
                                     </span>
@@ -23,28 +22,29 @@
                         </div>
                         
                         <div class= "column is-11">
-                                <h2 class="question-date">{{ displayDate(question.date_modified) }}</h2>
-                                <h1 class="title">{{ question.question_body }}</h1>
-                                <span class="tag is-primary is-medium" id="question-topic" v-for="topic in topics" v-bind:key="topic">
-                                    {{ topic }}
-                                </span>
+                            <h2 class="question-date">{{ displayDate(question.date_modified) }}</h2>
+                            <div class = "test">
+                                <router-link :to="`/quandary/${question.question_id}`">
+                                    <h1 class="title">{{ question.question_body }}</h1>
+                                </router-link>
+                            </div>
+                            <span class="tag is-primary is-medium" id="question-topic" v-for="topic in topics" v-bind:key="topic">
+                                {{ topic }}
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
-        <!-- </router-link> -->
-      </div>
+        </div>
     </div>
   </div>
 </template>
 <script>
-// import QuestionCard from "@/components/QuestionCard";
 import QuandaryService from '@/services/QuandaryService.js';
 
 export default {
   name: "QuestionsList",
   components: {
-    // QuestionCard
   },
   computed: {
     console: () => console,
@@ -59,7 +59,7 @@ export default {
         user_id: 4, // Replace with some method to find current user's user_id
         first_name: 'Sandy', // Replace with current user's first and last name
         last_name: 'Hamster',
-        question_upvotes: []
+        upvotes: []
       }
     };
   }, 
@@ -75,6 +75,7 @@ export default {
                     }).bind(this)
                 );
         },
+
         displayDate(currDate) {
             var datetime = currDate.split(" ");
             var date = datetime[0].split("-");
@@ -87,6 +88,7 @@ export default {
       
             return month + "/" + day + "/" + year + " " + hour + ":" + minutes;
         },
+
         getDateTime() {
             var time = new Date();
             var month = ('0' + (time.getMonth() + 1)).slice(-2);
@@ -97,19 +99,22 @@ export default {
             var seconds = time.getSeconds();
             
             return year + "-" + month + "-" + date + " " + hour + ":" + minutes + ":" + seconds;
-            }
         },
+
         onUpdateQuestionCount(question) {
-            const index = this.user.question_upvotes.indexOf(question.question_id);
+            const index = this.user.upvotes.indexOf(question.question_id);
             if (index > -1) {
-                this.user.question_upvotes.splice(index, 1);
+                this.user.upvotes.splice(index, 1);
                 question.question_upvotes -= 1;
             }
             else {
-                this.user.question_upvotes.push(question.question_id);
+                this.user.upvotes.push(question.question_id);
                 question.question_upvotes += 1;
             }
         },
+
+    },
+        
 };
 </script>
 <style lang="scss" scoped>
@@ -118,7 +123,6 @@ export default {
   margin-top: 50px;
   text-align: left;
 }
-
 
 
 
@@ -132,6 +136,9 @@ export default {
       font-size: 1rem;
       color: gray;
   }
+  .title {
+      margin: 0.5rem 0 1rem 0;
+  }
 }
 .question-date {
   color: rgb(0, 0, 0);
@@ -139,7 +146,7 @@ export default {
   top: 0;
   right: 0;
 }
-.question-topic {
+#question-topic {
     margin: -1rem 0.75rem 0 0;
 }
 #upvotes {
