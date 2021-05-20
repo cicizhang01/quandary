@@ -4,7 +4,7 @@
       <div class="columns">
           <div class="column is-1" id="upvotes">
               <div>
-                <button class="button is-white">
+                <button class="button is-white is-medium">
                     <span class="icon is-small">
                         <i class="fas fa-heart"></i>
                     </span>
@@ -35,14 +35,16 @@ export default {
     },
     methods: {
         displayDate(currDate) {
-            var time = currDate.split(" ");
-            var month = time[0].substring(5, 7);
-            var date = time[0].substring(8, 10);
-            var year = time[0].substring(0, 4);
-            var hour = time[1].substring(0, 2);
-            var minutes = time[1].substring(3, 5);
-            
-            return month + "/" + date + "/" + year + " " + hour + ":" + minutes;
+            var datetime = currDate.split(" ");
+            var date = datetime[0].split("-");
+            var time = datetime[1].split(":");
+            var month = date[1];
+            var day = date[2];
+            var year = date[0];
+            var hour = time[0];
+            var minutes = time[1];
+      
+            return month + "/" + day + "/" + year + " " + hour + ":" + minutes;
             },
         getDateTime() {
             var time = new Date();
