@@ -37,9 +37,10 @@ export default new Router({
     },
 
     {
-        path: '/forum',
-        name: 'forum',
-        component: () => import('../views/Forum.vue')
+      path: '/quandary',
+      name: 'quandary',
+      component: () => import('../views/Forum.vue'),
+      beforeEnter: authGuard
       }
   ]
 })

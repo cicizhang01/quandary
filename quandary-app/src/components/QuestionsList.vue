@@ -1,9 +1,9 @@
 <template>
   <div class="events container">
     <div class="columns is-multiline">
-      <div v-for="event in events" :event="event" :key="event.question_id" class="column is-full">
-        <router-link :to="`/event/${event.question_id}`">
-          <QuestionCard :event="event" />
+      <div v-for="question in questions" :question="question" :key="question.question_id" class="column is-full">
+        <router-link :to="`/quandary/${question.question_id}`">
+          <QuestionCard :question="question" />
         </router-link>
       </div>
     </div>
@@ -19,8 +19,8 @@ export default {
   },
   data() {
     return {
-      event: {},
-      events: []
+      question: {},
+      questions: []
     };
   }, 
   created() {
@@ -30,8 +30,8 @@ export default {
       async getData() {
       QuandaryService.getQuestionsData()
       .then(
-        (events => {
-          this.$set(this, "events", events);
+        (questions => {
+          this.$set(this, "questions", questions);
         }).bind(this)
       );
     }
@@ -39,7 +39,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.events {
+.questions {
   margin-top: 50px;
   text-align: left;
 }
