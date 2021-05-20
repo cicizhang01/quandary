@@ -36,7 +36,6 @@ export default {
   async getQuestionsData() {
     let res = await axios.get("http://localhost:8000/get_all_questions");
     return res.data;
-<<<<<<< HEAD
   },
   async addAnswer(userId, questionId, answer) {
     await axios.put("http://localhost:8000/add_answer/" + userId + "/" + questionId, answer);
@@ -46,7 +45,5 @@ export default {
   },
   async updateAnswerCount(userId, answerId) {
     await axios.put("http://localhost:8000/update_answer_upvote/" + answerId + "/" + userId);
-=======
->>>>>>> 0ca73cc (Routing fixed between forum and single)
   }
 }
