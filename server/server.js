@@ -1255,6 +1255,20 @@ app.get('/get_faculty_by_division/:division_id', (req, res) => {
 });
 
 
+/* Get all divisions.
+  Returns list of JSON objects each having division_id and division_name. */
+app.get('/get_all_divisions', (req, res) => {
+  var sql = "select * from division"
+  var params = []
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send(rows)
+  });
+});
+
 
 /* Get all courses.
    Returns list of JSON objects each having course_id, course_no,
