@@ -4,7 +4,7 @@
         <div class="columns">
           <div class="column is-1" id="upvotes">
             <div>
-              <button class="button is-white is-medium" v-if="user.question_upvotes.includes(question[0].question_id)" v-on:click="onUpdateQuestionCount(question[0])">
+              <button class="button is-white is-medium" v-if="user_question_is_upvoted" v-on:click="onUpdateQuestionCount(question[0])">
                 <span class="icon is-small">
                   <i class="fas fa-heart" id="solid-heart"></i>
                 </span>
@@ -26,12 +26,12 @@
               {{ displayName(question[0].first_name, question[0].last_name, question[0].is_anon) }} <span class="date">| {{ displayDate(question[0].date_modified) }}</span>
             </h2>
             <span class="tag is-primary is-medium" id="question-topic" v-for="topic in topics" v-bind:key="topic">
-              <a :href="topic">{{ topic }}</a>
+              <a :href="topic.topic_name">{{ topic.topic_name }}</a>
             </span>
           </div>
 
           <div class="column is-1">
-            <section v-show="displayName(question.first_name, question.last_name, 0) === displayName(user.first_name, user.last_name, 0)"> 
+            <section v-show="question[0].user_id == user.user_id"> 
               <div class="dropdown is-right is-hoverable">
                 <div class="dropdown-trigger">
                   <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu">
@@ -108,7 +108,7 @@
           <div class="columns">
             <div class="column is-1" id="upvotes">
               <div>
-                <button class="button is-white is-medium" v-if="user.answer_upvotes.includes(answer.answer_id)" v-on:click="onUpdateAnswerCount(answer)">
+                <button class="button is-white is-medium" v-if="user_answer_upvotes.includes(answer.answer_id)" v-on:click="onUpdateAnswerCount(answer)">
                   <span class="icon is-small">
                     <i class="fas fa-heart" id="solid-heart"></i>
                   </span>
@@ -155,7 +155,7 @@
                         <button class="button is-pulled-right is-primary is-outlined" v-on:click="onSubmitEdit(answer)">Submit</button>
                       </div>
                       <div class="column is-2">
-                        <button class="button is-pulled-right is-dark is-outlined" v-on:click="onCancelEdit(answer)">Cancel</button>
+                        <button class="button is-pulled-right is-dark is-outlined" v-on:click="onCancelEdit()">Cancel</button>
                       </div>
                     </div>
                     <div class="edit-comment-box has-addons">
@@ -167,7 +167,7 @@
               </div>
             </div>
             <div class="column is-1">
-              <section v-show="displayName(answer.first_name, answer.last_name, 0) === displayName(user.first_name, user.last_name, 0)"> 
+              <section v-show="answer.user_id == user.user_id"> 
                 <div class="dropdown is-right is-hoverable">
                   <div class="dropdown-trigger">
                     <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu">
@@ -211,35 +211,29 @@ export default {
   name: 'QuandarySingle',
   data() {
     return {
-      temp: {},
-      edit: null, // Answer currently being edited
+      edit: null, // Stores answer_id of the answer currently being edited
       sortBy: 'Newest',
       user: {
         user_id: 4, // Replace with some method to find current user's user_id
         first_name: 'Sandy', // Replace with current user's first and last name
         last_name: 'Hamster',
-        question_upvotes: [],
-        answer_upvotes: []
       },
+      user_question_is_upvoted: null,
+      user_answer_upvotes: [],
       comment: {
         body: '',
         is_anon: 0
       },
       comment_edit: {
-        body: '', // Used to store original comment
         is_anon: 0
       },
       question: {},
       answers: {},
-      topics: ['Campus Info', 'Food']
+      topics: {}
     }
   },
   created() {
     this.getQuandaryData();
-  },
-  updated() {
-    // Update data with query calls to API
-    // this.getQuandaryData();
   },
   computed: {
     sortAnswers() {
@@ -280,11 +274,36 @@ export default {
           this.$set(this, "question", question);
         }).bind(this)
       );
-      // Get corresponding answers to the question
+
+      // Get corresponding answers for the question
       QuandaryService.getQuestionAnswers(this.$route.params.id)
       .then(
         (answers => {
           this.$set(this, "answers", answers);
+        }).bind(this)
+      );
+
+      // Get corresponding topics for the question
+      QuandaryService.getQuestionTopics(this.$route.params.id)
+      .then(
+        (topics => {
+          this.$set(this, "topics", topics);
+        }).bind(this)
+      );
+
+      // Get whether or not the current question is upvoted by the current user
+      QuandaryService.getQuestionIsUpvoted(this.user.user_id, this.$route.params.id)
+      .then(
+        (question => {
+          this.$set(this, "user_question_is_upvoted", question);
+        }).bind(this)
+      );
+
+      // Get answer_id of upvoted answers by the current user
+      QuandaryService.getAnswerUpvotes(this.user.user_id)
+      .then(
+        (answers => {
+          this.$set(this, "user_answer_upvotes", answers);
         }).bind(this)
       );
     },
@@ -337,55 +356,56 @@ export default {
       }
     },
     onUpdateQuestionCount(question) {
-      const index = this.user.question_upvotes.indexOf(question.question_id);
-      if (index > -1) {
-        this.user.question_upvotes.splice(index, 1);
-        question.question_upvotes -= 1;
-      }
-      else {
-        this.user.question_upvotes.push(question.question_id)
-        question.question_upvotes += 1;
-      }
+      QuandaryService.updateQuestionCount(this.user.user_id, question.question_id)
+      .then(
+        res => {
+          this.user_question_is_upvoted = res[0];
+          this.question = res[1];
+        }
+      );
     },
     onUpdateAnswerCount(answer) {
-      const index = this.user.answer_upvotes.indexOf(answer.answer_id);
-      if (index > -1) {
-        this.user.answer_upvotes.splice(index, 1);
-        answer.answer_upvotes -= 1;
-      }
-      else {
-        this.user.answer_upvotes.push(answer.answer_id)
-        answer.answer_upvotes += 1;
-      }
-
-      // QuandaryService.updateAnswerCount(this.user.user_id, answer.answer_id);
+      QuandaryService.updateAnswerCount(this.user.user_id, answer.answer_id, this.$route.params.id)
+      .then(
+        res => {
+          this.user_answer_upvotes = res[0];
+          this.answers = res[1];
+        }
+      );
     },
     onEditAnswer(answer) {
       if (this.edit == null) {
         this.edit = answer.answer_id;
-        
-        // Store original comment 
-        this.comment_edit.body = answer.answer_body;
-        // Edit answer
       }
     },
     onSubmitEdit(answer) {
       this.edit = null;
-      answer.date_modified = this.getDateTime();
-      answer.is_anon = this.comment_edit.is_anon;
-      // Should also update answer in database
+
+      var edit = {
+        answer_body: answer.answer_body,
+        date_modified: this.getDateTime(),
+        is_anon: this.comment_edit.is_anon
+      };
+
+      // Updates answer in database and answers data object 
+      QuandaryService.updateAnswer(this.user.user_id, this.question[0].question_id, answer.answer_id, edit)
+      .then(
+        answers => {
+          this.answers = answers;
+        }
+      );
     },
-    onCancelEdit(answer) {
-      // Restore original comment
-      answer.answer_body = this.comment_edit.body;
+    onCancelEdit() {
       this.edit = null;
     },
     onDeleteAnswer(answer) {
-      const index = this.answers.indexOf(answer);
-      if (index > -1) {
-        this.answers.splice(index, 1);
-      }
-      // Should also delete answer from database
+      // Deletes answer from database and updates answers data object 
+      QuandaryService.deleteAnswer(this.user.user_id, answer.answer_id, this.question[0].question_id)
+      .then(
+        answers => {
+          this.answers = answers;
+        }
+      );
     }
   }
 }
