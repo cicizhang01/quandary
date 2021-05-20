@@ -33,6 +33,10 @@ export default {
     let res = await axios.get("http://localhost:8000/get_question_answers/" + questionId);
     return res.data;
   },
+  async getQuestionTopics(questionId) {
+    let res = await axios.get("http://localhost:8000/get_question_topics/" + questionId);
+    return res.data;
+  },
   async getQuestionIsUpvoted(userId, questionId) {
     let res = await axios.get("http://localhost:8000/is_question_upvoted/" + userId + "/" + questionId);
 
