@@ -144,6 +144,8 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 (first_name, last_name, advisor_id, incoming_year, grad_year, is_undergrad, is_grad, is_alum, is_transfer, pronouns)
                 VALUES (?,?,?,?,?,?,?,?,?,?)`
                 db.run(insert, ['Joe','Shmo', 1, 2018, 2022, 1, 0, 0, 0, 'he/him'])
+                db.run(insert, ['Ree','Rar', 1, 2017, 2021, 0, 1, 0, 0, 'she/her'])
+                db.run(insert, ['Kee','Kar', 1, 2016, 2020, 0, 1, 0, 0, 'they/them'])
             }
         });
         db.run(`CREATE TABLE student_course (
@@ -163,6 +165,8 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 (course_id, user_id)
                 VALUES (?,?)`
                 db.run(insert, [1,1])
+                db.run(insert, [1,2])
+                db.run(insert, [1,3])
             }
         });
         db.run(`CREATE TABLE labs (
@@ -240,6 +244,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 (user_id, division_id, faculty_name)
                 VALUES (?,?,?)`
                 db.run(insert, [1, 2, 'Theodor Agapie'])
+                db.run(insert, [2, 1, 'Ralph Adolphs'])
             }
         });
         
@@ -832,10 +837,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO question
-                (question_body, question_creator, is_anon)
-                VALUES (?,?,?)`
-                db.run(insert, ['What is the question?', 1, 1])
-                db.run(insert, ['What is the second question?', 1, 0])
+                (question_body, question_creator, is_anon, question_upvotes)
+                VALUES (?,?,?,?)`
+                db.run(insert, ['What is the question?', 1, 1, 1])
+                db.run(insert, ['What is the second question?', 2, 0, 0])
             }
         });
         db.run(`CREATE TABLE answer (
@@ -856,9 +861,9 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO answer
-                (answer_body, answer_creator, is_anon)
-                VALUES (?,?,?)`
-                db.run(insert, ['This is the answer', 1, 0])
+                (answer_body, answer_creator, is_anon, answer_upvotes)
+                VALUES (?,?,?,?)`
+                db.run(insert, ['This is the answer', 1, 0, 1])
             }
         });
         db.run(`CREATE TABLE question_topic (
@@ -896,6 +901,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 (answer_id, question_id)
                 VALUES (?,?)`
                 db.run(insert, [1,1])
+                db.run(insert, [2,2])
             }
         });
         db.run(`CREATE TABLE user_upvotes_question (
@@ -953,6 +959,8 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 (user_id, topic_id)
                 VALUES (?,?)`
                 db.run(insert, [1,1])
+                db.run(insert, [2,3])
+                db.run(insert, [3,4])
             }
         });
         db.run(`CREATE TABLE house_memberships (
@@ -973,6 +981,8 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 (house, user_id, is_full)
                 VALUES (?,?,?)`
                 db.run(insert, ['Lloyd',1,1])
+                db.run(insert, ['Avery',2,1])
+                db.run(insert, ['Ricketts',3,1])
             }
         });
         db.run(`CREATE TABLE options (
@@ -1043,7 +1053,9 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO user_option
                 (user_id, option, is_major)
                 VALUES (?,?,?)`
-                db.run(insert, [1,'Comp Sci',1])
+                db.run(insert, [1,'CS',1])
+                db.run(insert, [2,'ACM',1])
+                db.run(insert, [3,'ACM',1])
             }
         });
         
