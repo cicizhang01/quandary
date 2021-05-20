@@ -155,7 +155,7 @@
                         <button class="button is-pulled-right is-primary is-outlined" v-on:click="onSubmitEdit(answer)">Submit</button>
                       </div>
                       <div class="column is-2">
-                        <button class="button is-pulled-right is-dark is-outlined" v-on:click="onCancelEdit(answer)">Cancel</button>
+                        <button class="button is-pulled-right is-dark is-outlined" v-on:click="onCancelEdit()">Cancel</button>
                       </div>
                     </div>
                     <div class="edit-comment-box has-addons">
@@ -211,8 +211,7 @@ export default {
   name: 'QuandarySingle',
   data() {
     return {
-      temp: {},
-      edit: null, // Answer currently being edited
+      edit: null, // Stores answer_id of the answer currently being edited
       sortBy: 'Newest',
       user: {
         user_id: 4, // Replace with some method to find current user's user_id
@@ -226,12 +225,11 @@ export default {
         is_anon: 0
       },
       comment_edit: {
-        body: '', // Used to store original comment
         is_anon: 0
       },
       question: {},
       answers: {},
-      topics: ['Campus Info', 'Food'] // Get topics for a specific question
+      topics: ['Campus Info', 'Food'] // Replace with stored topics for a specific question
     }
   },
   created() {
@@ -370,10 +368,6 @@ export default {
     onEditAnswer(answer) {
       if (this.edit == null) {
         this.edit = answer.answer_id;
-        
-        // Store original comment 
-        this.comment_edit.body = answer.answer_body;
-        // Edit answer
       }
     },
     onSubmitEdit(answer) {
@@ -393,9 +387,7 @@ export default {
         }
       );
     },
-    onCancelEdit(answer) {
-      // Restore original comment
-      answer.answer_body = this.comment_edit.body;
+    onCancelEdit() {
       this.edit = null;
     },
     onDeleteAnswer(answer) {
