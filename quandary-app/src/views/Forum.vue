@@ -2,14 +2,16 @@
   <div class="about">
     <div class="events container">
       <div>
-          <button class="button is-primary" v-on:click="isHidden = !isHidden">Ask a question!</button>
+          <button class="button is-primary" v-if= "!isHidden" v-on:click="isHidden = !isHidden">Ask a question!</button>
       </div>
-
+      <div>
+          <button class="button is-secondary" v-if= "isHidden" v-on:click="isHidden = !isHidden">Ask a question!</button>
+      </div>
       <h1 v-if="!isHidden">
         <div class="comment">
           <div class="columns">
 
-            <div class="column is-11">
+            <div class="column is-11" id="ask-button">
               <div class="comment-label is-grouped">
                 Ask as
                 <div class="select" id="comment-username">
@@ -32,9 +34,11 @@
           </div>
         </div>
       </h1>
-
     </div>
-    <QuestionsList />
+
+    <div class = "listing">
+      <QuestionsList />
+    </div>
   </div>
 </template>
 
@@ -72,6 +76,10 @@ export default {
   #question-box {
     margin-top: 1rem;
   }
+  .ask-button {
+    margin: 0.5rem 0.5rem 1rem 0.5rem;
+
+  }
   .comment {
     padding: 1.25rem 0;
     padding-bottom: 0.4rem;
@@ -86,5 +94,8 @@ export default {
     .question-box {
       margin-top: 1rem;
     }
+  }
+  .listing {
+    margin: 1rem;
   }
 </style>
