@@ -529,14 +529,91 @@ app.put('/update_question_upvote/:question_id/:user_id', (req, res) => {
 });
 
 
-/* Add a question. Accepts user_id and question_body.
+
+/* Update a question. Can modify the question_body, is_anon, date_modified.
+*/
+app.put('/update_question/:user_id/:question_id', (req, res) => {
+  // Check if user_id created the question.
+  var sql_check = "select count(*) as count from question \
+    where question_creator = ? and question_id = ?"
+  var params_check = [req.params.user_id, req.params.question_id]
+
+  db.all(sql_check, params_check, (err, rows_check) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    else if (rows_check[0].count == 0){
+      console.log("correct if")
+      res.status(400).json({"error":"You are not the creator of this question."});
+      return;
+    }
+    else if (rows_check[0].count == 1){
+      console.log("wrong if")
+      var sql = "update question set question_body = ?, \
+        is_anon = ?, date_modified = ? \
+        where question_id = ?";
+      var params = [req.body.question_body, req.body.is_anon, req.body.date_modified, req.params.question_id]
+
+      db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }   
+        res.send({
+          "msg" : "Question updated."
+        })
+      });
+    }
+  });
+});
+
+
+/* Update an answer. Can modify the answer_body, is_anon, date_modified.
+*/
+app.put('/update_answer/:user_id/:answer_id', (req, res) => {
+  // Check if user_id created the answer.
+  var sql_check = "select count(*) as count from answer \
+    where answer_creator = ? and answer_id = ?"
+  var params_check = [req.params.user_id, req.params.answer_id]
+
+  db.all(sql_check, params_check, (err, rows_check) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    else if (rows_check[0].count == 0){
+      res.status(400).json({"error":"You are not the creator of this answer."});
+      return;
+    }
+    else if (rows_check[0].count == 1){
+      var sql = "update answer set answer_body = ?, \
+        is_anon = ?, date_modified = ? \
+        where answer_id = ?";
+      var params = [req.body.answer_body, req.body.is_anon, req.body.date_modified, req.params.answer_id]
+
+      db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }   
+        res.send({
+          "msg" : "Answer updated."
+        })
+      });
+    }
+  });
+});
+
+
+/* Add a question. Accepts question_body, user_id, is_anon, date_created.
    Does not deal with upvotes.
    Inserts into question the new question_body and question_creator.
 */
 app.put('/add_question/:user_id', (req, res) => {
-  var sql = "insert into question(question_body, question_creator, is_anon) \
-             values (?,?,?)"
-  var params = [req.body.question_body, req.params.user_id, req.body.is_anon]
+  var sql = "insert into question(question_body, question_creator, is_anon, date_created) \
+             values (?,?,?,?)"
+  var params = [req.body.question_body, req.params.user_id, req.body.is_anon, req.body.date_created]
   db.all(sql, params, (err, rows) => {
     if (err) {
       res.status(400).json({"error":err.message});
@@ -854,6 +931,79 @@ app.get('/get_user_options/:user_id', (req, res) => {
 });
 
 
+/* Get a list of question_ids upvoted by the user_id. */
+app.get('/get_upvoted_questions/:user_id', (req, res) => {
+  var sql = "select distinct question_id from user_upvotes_question \
+    where user_id = ?"
+    var params = [req.params.user_id]
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+
+        /* Convert rows into a list of question_ids. */
+        var i;
+        questions = [];
+        for (i = 0; i < rows.length; i++){
+          questions.push(rows[i].question_id)
+        }
+        res.send(questions);
+      });
+});
+
+
+/* Return true if question_id is upvoted by user_id, false otherwise. */
+app.get('/is_question_upvoted/:user_id/:question_id', (req, res) => {
+  var sql = "select count(*) as count from user_upvotes_question \
+    where user_id = ? and question_id = ?"
+    var params = [req.params.user_id, req.params.question_id]
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        res.send(Boolean(rows[0].count));
+      })
+});
+
+
+/* Get a list of answer_ids upvoted by the user_id. */
+app.get('/get_upvoted_answers/:user_id', (req, res) => {
+  var sql = "select distinct answer_id from user_upvotes_answer \
+    where user_id = ?"
+    var params = [req.params.user_id]
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+
+        /* Convert rows into a list of answer_ids. */
+        var i;
+        answers = [];
+        for (i = 0; i < rows.length; i++){
+          answers.push(rows[i].answer_id)
+        }
+        res.send(answers);
+        });
+});
+
+/* Return true if answer_id is upvoted by user_id, false otherwise. */
+app.get('/is_answer_upvoted/:user_id/:answer_id', (req, res) => {
+  var sql = "select count(*) as count from user_upvotes_answer \
+    where user_id = ? and answer_id = ?"
+    var params = [req.params.user_id, req.params.answer_id]
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }
+        res.send(Boolean(rows[0].count));
+      })
+});
+
+
 /* DATABASE-GENERAL PUT METHODS */
 
 
@@ -901,6 +1051,127 @@ app.delete("/remove_lab/:lab_id", (req, res) => {
     })
   })
 });
+
+
+/* Delete a question.
+*/
+app.delete('/delete_question/:user_id/:question_id', (req, res) => {
+  // Check if user_id created the question.
+  var sql_check = "select count(*) as count from question \
+    where question_creator = ? and question_id = ?"
+  var params_check = [req.params.user_id, req.params.question_id]
+
+  db.all(sql_check, params_check, (err, rows_check) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    else if (rows_check[0].count == 0){
+      res.status(400).json({"error":"You are not the creator of this question."});
+      return;
+    }
+    else if (rows_check[0].count == 1){
+      // Delete from qna
+      var sql_qna = "delete from qna where question_id = ?"
+      var params = [req.params.question_id]
+
+      // Delete from user_upvotes_question
+      var sql_upvotes = "delete from user_upvotes_question \
+        where question_id = ?"
+      
+      // Delete from question
+      var sql_question = "delete from question \
+        where question_id = ?"
+
+
+      db.all(sql_qna, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }   
+      });
+
+      db.all(sql_upvotes, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }   
+      });
+
+      db.all(sql_question, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }   
+      });
+
+      res.send({
+        "msg" : "Question deleted."
+      })
+    }
+  });
+});
+
+
+/* Delete an answer.
+*/
+app.delete('/delete_answer/:user_id/:answer_id', (req, res) => {
+  // Check if user_id created the answer .
+  var sql_check = "select count(*) as count from answer \
+    where answer_creator = ? and answer_id = ?"
+  var params_check = [req.params.user_id, req.params.answer_id]
+
+  db.all(sql_check, params_check, (err, rows_check) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    else if (rows_check[0].count == 0){
+      res.status(400).json({"error":"You are not the creator of this answer."});
+      return;
+    }
+    else if (rows_check[0].count == 1){
+      // Delete from qna
+      var sql_qna = "delete from qna where answer_id = ?"
+      var params = [req.params.answer_id]
+
+      // Delete from user_upvotes_answer
+      var sql_upvotes = "delete from user_upvotes_answer \
+        where answer_id = ?"
+      
+      // Delete from answer
+      var sql_answer = "delete from answer \
+        where answer_id = ?"
+
+
+      db.all(sql_qna, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }   
+      });
+
+      db.all(sql_upvotes, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }   
+      });
+
+      db.all(sql_answer, params, (err, rows) => {
+        if (err) {
+          res.status(400).json({"error":err.message});
+          return;
+        }   
+      });
+
+      res.send({
+        "msg" : "Answer deleted."
+      })
+    }
+  });
+});
+
 
 
 
@@ -968,12 +1239,59 @@ app.get('/get_all_labs', (req, res) => {
   });
 
 
+/* Get all faculty by division_id.
+  Returns list of JSON objects each having division_id, division_name 
+  and faculty_name. */
+app.get('/get_faculty_by_division/:division_id', (req, res) => {
+  var sql = "select * from faculty natural join division where division_id=?"
+  var params = [req.params.division_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send(rows)
+  });
+});
+
+
+/* Get all divisions.
+  Returns list of JSON objects each having division_id and division_name. */
+app.get('/get_all_divisions', (req, res) => {
+  var sql = "select * from division"
+  var params = []
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send(rows)
+  });
+});
+
+
 /* Get all courses.
    Returns list of JSON objects each having course_id, course_no,
    course_name, and dept. */
 app.get('/get_all_courses', (req, res) => {
   var sql = "select * from course natural join dept_course"
   var params = []
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send(rows)
+  });
+});
+
+
+/* Get courses by department.
+   Returns list of JSON objects each having course_id, course_no,
+   course_name, and dept. */
+app.get('/get_courses_by_dept/:dept', (req, res) => {
+  var sql = "select * from course natural join dept_course where dept = ?"
+  var params = [req.params.dept]
   db.all(sql, params, (err, rows) => {
     if (err) {
       res.status(400).json({"error":err.message});
@@ -1082,7 +1400,8 @@ app.get('/get_question/:question_id', (req, res) => {
    answer_body, date_modified, and upvote count" */
 app.get('/get_question_answers/:question_id', (req, res) => {
   var sql = "select answer_id, answer_body, \
-              first_name, last_name, is_anon, date_modified, answer_upvotes \
+              user_id, first_name, last_name, is_anon, \
+              date_modified, date_created, answer_upvotes \
               from answer natural join qna \
               inner join profile on answer.answer_creator = profile.user_id \
               where question_id = ?"
@@ -1105,6 +1424,7 @@ app.get('/get_all_questions', (req, res) => {
               inner join profile on question.question_creator = profile.user_id \
               order by question_id DESC"
     var params = []
+    
     db.all(sql, params, (err, rows) => {
         if (err) {
           res.status(400).json({"error":err.message});
@@ -1112,7 +1432,7 @@ app.get('/get_all_questions', (req, res) => {
         }
         console.log(rows)
         res.send(rows)
-      });
+    });
 });
 
 
