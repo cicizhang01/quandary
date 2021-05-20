@@ -1,12 +1,19 @@
+// NOTE: DEPRECATED
+
 <template>
   <div class="question-card">
     <div class="card">
       <div class="columns">
           <div class="column is-1" id="upvotes">
               <div>
-                <button class="button is-white is-medium">
+                <button class="button is-white is-medium" v-if="user.question_upvotes.includes(question.question_id)" v-on:click="onUpdateQuestionCount(question)">
                     <span class="icon is-small">
-                        <i class="fas fa-heart"></i>
+                        <i class="fas fa-heart" id="solid-heart"></i>
+                    </span>
+                </button>
+                <button class="button is-white is-medium" v-on:click="onUpdateQuestionCount(question)">
+                    <span class="icon is-small">
+                        <i class="far fa-heart" id="regular-heart"></i>
                     </span>
                 </button>
                 <div class="upvotes-text">{{question.question_upvotes}}</div>
@@ -30,7 +37,13 @@ export default {
     name: 'QuestionCard',
     data() {
         return {
-            topics: ['Topic 1', 'Topic 2']
+            topics: ['Topic 1', 'Topic 2'],
+            user: {
+                user_id: 4, // Replace with some method to find current user's user_id
+                first_name: 'Sandy', // Replace with current user's first and last name
+                last_name: 'Hamster',
+                question_upvotes: []
+            }
         }
     },
     methods: {
@@ -45,7 +58,7 @@ export default {
             var minutes = time[1];
       
             return month + "/" + day + "/" + year + " " + hour + ":" + minutes;
-            },
+        },
         getDateTime() {
             var time = new Date();
             var month = ('0' + (time.getMonth() + 1)).slice(-2);
@@ -57,7 +70,18 @@ export default {
             
             return year + "-" + month + "-" + date + " " + hour + ":" + minutes + ":" + seconds;
             }
-        }
+        },
+        onUpdateQuestionCount(question) {
+            const index = this.user.question_upvotes.indexOf(question.question_id);
+            if (index > -1) {
+                this.user.question_upvotes.splice(index, 1);
+                question.question_upvotes -= 1;
+            }
+            else {
+                this.user.question_upvotes.push(question.question_id)
+                question.question_upvotes += 1;
+            }
+        },
 
 };
 </script>
@@ -85,13 +109,18 @@ export default {
 }
 #upvotes {
     display: flex;
-    align-items: center;
-    justify-content: center;
     text-align: center;
+    padding: 1rem 0.5rem 0.5rem;
     .upvotes-text {
       color: $light-gray;
     }
-}
+    #solid-heart {
+      color: $pink;
+    }
+    #regular-heart {
+      color: $light-gray;
+    }
+  }
 </style>
 
 
