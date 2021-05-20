@@ -35,7 +35,7 @@ export default {
   },
   async getQuestionsData() {
     let res = await axios.get("http://localhost:8000/get_all_questions");
-
+    return res.data;
   },
   async getQuestionTopics(questionId) {
     let res = await axios.get("http://localhost:8000/get_question_topics/" + questionId);
