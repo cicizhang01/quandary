@@ -1007,6 +1007,27 @@ app.get('/is_answer_upvoted/:user_id/:answer_id', (req, res) => {
 /* DATABASE-GENERAL PUT METHODS */
 
 
+/* Add question to topic associations. */
+app.put("/add_question_topics/:question_id", (req, res) => {
+  var topic_ids = req.body.topic_ids;
+
+  var i;
+  for (i = 0; i < topic_ids.length; i++){
+    var topic_id = topic_ids[i];
+    console.log(topic_id)
+    var sql_topics ='INSERT INTO question_topic VALUES (?,?)'
+    var params_topics =[req.params.question_id, topic_ids[i]]
+
+    db.run(sql_topics, params_topics, function (err, result) {
+      if (err){
+          console.log("error in sql function" + err)
+          res.status(400).json({"error": err.message})
+          return;
+      }
+    })
+  }
+  res.send("Added question topics.") 
+});
 
 
 /* Add a lab (one at a time). 
@@ -1205,6 +1226,42 @@ app.get('/get_all_topics', (req, res) => {
     }
     res.send(rows)
   });
+});
+
+
+/* Get all topics associated with question_id.
+   Returns list of JSON objects each having topic_id and topic_name. */
+app.get('/get_question_topics/:question_id', (req, res) => {
+  var sql = "select topic_id, topic_name from question_topic natural join topic where question_id = ?"
+  var params = [req.params.question_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.send(rows)
+  });
+});
+
+
+/* Get all questions associated with 1 or more of the topics in the
+   list of topic_ids.
+   Returns list of JSON objects each having question_id. */
+app.get("/get_questions_by_topics", (req, res) => {
+  var topic_ids = req.body.topic_ids;
+
+  var sql_topics ='select distinct question_id from question_topic natural join topic \
+    where topic_id IN (?' + ',?'.repeat(topic_ids.length-1) + ')'
+  var params_topics = topic_ids;
+
+  db.all(sql_topics, params_topics, (err, result) => {
+    if (err){
+        console.log("error in sql function" + err)
+        res.status(400).json({"error": err.message})
+        return;
+    }
+    res.send(result)
+  })
 });
 
 

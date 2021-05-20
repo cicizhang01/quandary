@@ -837,10 +837,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO question
-                (question_body, question_creator, is_anon)
-                VALUES (?,?,?)`
-                db.run(insert, ['What is the question?', 1, 1])
-                db.run(insert, ['What is the second question?', 2, 0])
+                (question_body, question_creator, is_anon, question_upvotes)
+                VALUES (?,?,?,?)`
+                db.run(insert, ['What is the question?', 1, 1, 1])
+                db.run(insert, ['What is the second question?', 2, 0, 0])
             }
         });
         db.run(`CREATE TABLE answer (
@@ -861,9 +861,9 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO answer
-                (answer_body, answer_creator, is_anon)
-                VALUES (?,?,?)`
-                db.run(insert, ['This is the answer', 1, 0])
+                (answer_body, answer_creator, is_anon, answer_upvotes)
+                VALUES (?,?,?,?)`
+                db.run(insert, ['This is the answer', 1, 0, 1])
             }
         });
         db.run(`CREATE TABLE question_topic (
