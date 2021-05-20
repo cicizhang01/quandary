@@ -16,6 +16,9 @@
           <div class= "column is-11">
                 <h2 class="question-date">{{ displayDate(question.date_modified) }}</h2>
                 <h1 class="title">{{ question.question_body }}</h1>
+                <span class="tag is-primary is-medium" id="question-topic" v-for="topic in topics" v-bind:key="topic">
+                    {{ topic }}
+                </span>
           </div>
       </div>
     </div>
@@ -74,6 +77,9 @@ export default {
   font-size: 0.75em;
   top: 0;
   right: 0;
+}
+.question-topic {
+    margin: -1rem 0.75rem 0 0;
 }
 #upvotes {
     display: flex;
