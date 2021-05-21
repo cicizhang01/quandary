@@ -2,10 +2,10 @@
   <div class="about">
     <div class="events container">
       <div>
-          <button class="button is-primary" v-if= "!isHidden" v-on:click="isHidden = !isHidden">Ask a question!</button>
+          <button class="button is-outlined is-light" v-if= "isHidden" v-on:click="isHidden = !isHidden">Ask a question!</button>
       </div>
       <div>
-          <button class="button is-secondary" v-if= "isHidden" v-on:click="isHidden = !isHidden">Ask a question!</button>
+          <button class="button is-primary" v-if= "!isHidden" v-on:click="isHidden = !isHidden">Ask a question!</button>
       </div>
       <h1 v-if="!isHidden">
         <div class="comment">
