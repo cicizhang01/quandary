@@ -13,12 +13,28 @@ export default {
     });
     return res.data; 
   },
-  async getAllHeaderTopics() {
+  async getTopics() {
     let res = await axios.get("http://localhost:8000/get_topic_tree_root");
     return res.data;
   },
   async getSubTopics(topicId) {
     let res = await axios.get("http://localhost:8000/get_topic_subtree/" + topicId);
+    return res.data;
+  },
+  async getDivisions() {
+    let res = await axios.get("http://localhost:8000/get_all_divisions");
+    return res.data;
+  },
+  async getFaculty(divisionId) {
+    let res = await axios.get("http://localhost:8000/get_faculty_by_division/" + divisionId);
+    return res.data;
+  },
+  async getDepartments() {
+    let res = await axios.get("http://localhost:8000/get_all_departments");
+    return res.data;
+  },
+  async getCourses(dept) {
+    let res = await axios.get("http://localhost:8000/get_courses_by_dept/" + dept);
     return res.data;
   },
   async getLabs() {

@@ -56,7 +56,7 @@
       </tab-content>
 
       <tab-content title="Caltech Info"> 
-        <div class="field is-grouped is-grouped-left-aligned">
+        <div class="field is-grouped is-grouped-left-aligned" id="majors-minors">
           <div id="multiple-select" class="field">
             <label class="label is-medium">Major</label>
             <span class="select is-multiple is-light">
@@ -219,7 +219,7 @@
           <div v-for="topic in topics" :key="topic.topic_id" class="column is-half">
             {{ getSubTopics(subtopics, topic.topic_id) }}
             <div class="header">
-              <input class="is-checkradio" :id="topic.topic_name" type="checkbox" name="checkbox" :checked="interests.includes(topic.topic_id)" v-on:click="onClickTopic(topic.topic_id)">
+              <input class="is-checkradio" :id="topic.topic_name" type="checkbox" name="checkbox" :checked="interests.includes(topic.topic_id)" v-on:click="onClickTopic(interests, topic.topic_id)">
               <label :for="topic.topic_name" id="header-text"><b>{{ topic.topic_name }}</b></label>
             </div>
 
@@ -227,14 +227,14 @@
               <div v-for="subtopic in subtopics[topic.topic_id]" :key="subtopic.topic_id" class="subtopics">
                 {{ getSubTopics(subsubtopics, subtopic.topic_id) }}
                 <div class="subheader">
-                  <input class="is-checkradio is-circle" :id="subtopic.topic_name" type="checkbox" name="checkbox" :checked="interests.includes(subtopic.topic_id)" v-on:click="onClickTopic(subtopic.topic_id)">
+                  <input class="is-checkradio is-circle" :id="subtopic.topic_name" type="checkbox" name="checkbox" :checked="interests.includes(subtopic.topic_id)" v-on:click="onClickTopic(interests, subtopic.topic_id)">
                   <label :for="subtopic.topic_name" id="subheader-text">{{ subtopic.topic_name }}</label>
                 </div>
 
                 <div class="column" v-show="interests.includes(subtopic.topic_id) && subsubtopics[subtopic.topic_id].length != 0">
                   <div v-for="subsubtopic in subsubtopics[subtopic.topic_id]" :key="subsubtopic.topic_id" class="subtopics">
                     <div class="subsubheader">
-                      <input class="is-checkradio is-circle" :id="subsubtopic.topic_name" type="checkbox" name="checkbox" :checked="interests.includes(subsubtopic.topic_id)" v-on:click="onClickTopic(subsubtopic.topic_id)">
+                      <input class="is-checkradio is-circle" :id="subsubtopic.topic_name" type="checkbox" name="checkbox" :checked="interests.includes(subsubtopic.topic_id)" v-on:click="onClickTopic(interests, subsubtopic.topic_id)">
                       <label :for="subsubtopic.topic_name" id="subsubheader-text">{{ subsubtopic.topic_name }}</label>
                     </div>
                   </div>
@@ -246,39 +246,50 @@
       </tab-content>
 
       <tab-content title="Finishing Up"> 
-        <div id="multiple-select" class="field">
-          <label class="label is-medium">Labs</label>
-          <span class="select is-multiple is-light">
-            <select multiple v-model="formData.labs">
-              <option selected></option>
-              <option v-for="lab in labs" :key="lab.lab_id">
-                {{ lab.name }} 
-              </option>
-            </select>
-          </span>
-        </div>
+        <h1 class="subtitle">
+          Select any faculty you're interested in following.
+        </h1>
+        <div class="columns is-multiline">
+          <div v-for="division in divisions" :key="division.division_id" class="column is-half">
+            {{ getFaculty(faculties, division.division_id) }}
+            <div class="header">
+              <input class="is-checkradio" :id="division.division_name" type="checkbox" name="checkbox" :checked="sections.includes(division.division_id)" v-on:click="onClickTopic(sections, division.division_id)">
+              <label :for="division.division_name" id="header-text"><b>{{ getDivisionName(division.division_name) }}</b></label>
+            </div>
 
-        <div id="multiple-select-second-row" class="">
-          <label class="label is-medium">Courses</label>
-          <span class="select is-multiple is-light">
-            <select multiple v-model="formData.courses">
-              <option selected></option>
-              <!-- <option v-for="course in courses" :key="courses.course_id">
-                {{ course.dept }} {{ course.course_no }} {{ course.course_name }}
-              </option> -->
-            </select>
-          </span>
-        </div>
-
-        <div id="terms" class="field">
-          <input class="is-checkradio" id="terms-checkbox" type="checkbox" :class="hasError('terms') ? 'is-invalid' : ''" v-model="formData.terms">
-          <label for="terms-checkbox" id="radio-text">
-            I agree to the <a href="#">terms and conditions</a>
-          </label>
-          <div v-if="hasError('terms')" class="invalid-feedback">
-            <p class="help is-danger" v-if="!$v.formData.terms.required">Please select the terms and conditions.</p>
+            <div class="column" v-show="sections.includes(division.division_id)">
+              <div v-for="faculty in faculties[division.division_id]" :key="faculty.faculty_name" class="subtopics">
+                <div class="subheader">
+                  <input class="is-checkradio is-circle" :id="faculty.faculty_name" type="checkbox" name="checkbox" :checked="faculty_interests.includes(faculty.faculty_name)" v-on:click="onClickTopic(faculty_interests, faculty.faculty_name)">
+                  <label :for="faculty.faculty_name" id="subheader-text">{{ faculty.faculty_name }}</label>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        <h1 class="subtitle" id="courses">
+          Select any courses you're interested in following.
+        </h1>
+        <div class="columns is-multiline">
+          <div v-for="department in departments" :key="department" class="column is-half">
+            {{ getCourses(courses, department) }}
+            <div class="header">
+              <input class="is-checkradio" :id="department" type="checkbox" name="checkbox" :checked="sections.includes(department)" v-on:click="onClickTopic(sections, department)">
+              <label :for="department" id="header-text"><b>{{ department }}</b></label>
+            </div>
+
+            <div class="column" v-show="sections.includes(department)">
+              <div v-for="course in courses[department]" :key="course.course_id" class="subtopics">
+                <div class="subheader">
+                  <input class="is-checkradio is-circle" :id="course.course_id" type="checkbox" name="checkbox" :checked="course_interests.includes(course.course_id)" v-on:click="onClickTopic(course_interests, course,course_id)">
+                  <label :for="course.course_id" id="subheader-text">{{ getCourseName(course) }}</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </tab-content>
     </form-wizard>
   </div>
@@ -291,8 +302,6 @@ import ValidationHelper from '../components/ValidationHelper.vue';
 import { required } from 'vuelidate/lib/validators';
 import QuandaryService from '../services/QuandaryService.js';
 
-const checked = (value) => value === true;
-
 export default {
     name: 'form',
     components: {
@@ -302,11 +311,16 @@ export default {
     data() {
       return {
         interests: [], // local variables
+        sections: [],
+        faculty_interests: [],
+        course_interests: [],
         subtopics: [],
         subsubtopics: [],
         topics: {}, // queried data
-        labs: {},
-        courses: {},
+        divisions: {},
+        departments: {},
+        faculties: [],
+        courses: [],
         formData: {
             firstName: '',
             lastName: '',
@@ -322,49 +336,85 @@ export default {
             courses: null
         },
         validationRules:[
-          {firstName: {required}, lastName: {required}, pronouns: {required}},
-          {major: {}, minor: {}, incomingYear: {required}, gradYear: {required}, currStudent: {required}, isTransfer: {required}, studentLevel: {required}},
+          // {firstName: {required}, lastName: {required}, pronouns: {required}},
+          // {major: {}, minor: {}, incomingYear: {required}, gradYear: {required}, currStudent: {required}, isTransfer: {required}, studentLevel: {required}},
+          {firstName: {required}},
           {},
-          {terms: {checked}}
+          {},
+          {}
         ]
       }
     },
     created() {
-      this.getTopicsData();
-      this.getLabsData();
+      this.getFormData();
     },
     methods: {
-      async getTopicsData() {
-        QuandaryService.getAllHeaderTopics()
+      async getFormData() {
+        QuandaryService.getTopics()
         .then(
           (topics => {
             this.$set(this, "topics", topics);
           }).bind(this)
         );
-      },
-      async getLabsData() {
-        QuandaryService.getLabs()
+
+        QuandaryService.getDivisions()
         .then(
-          (labs => {
-            this.$set(this, "labs", labs);
+          (divisions => {
+            this.$set(this, "divisions", divisions);
+          }).bind(this)
+        );
+
+        QuandaryService.getDepartments()
+        .then(
+          (departments => {
+            this.$set(this, "departments", departments);
           }).bind(this)
         );
       },
-      onClickTopic: function (topicId) {
-        if (this.interests.includes(topicId)) {
-          const index = this.interests.indexOf(topicId);
+      onClickTopic: function (arr, topicId) {
+        if (arr.includes(topicId)) {
+          const index = arr.indexOf(topicId);
           if (index > -1) {
-            this.interests.splice(index, 1);
+            arr.splice(index, 1);
           }
         }
         else {
-          this.interests.push(topicId);
+          arr.push(topicId);
         }
       },
       getSubTopics(arr, topicId) {
         if (!(topicId in arr)) {
           QuandaryService.getSubTopics(topicId).then(
             (response => arr[topicId] = response)
+          );
+        }
+      },
+      getFaculty(arr, divisionId) {
+        if (!(divisionId in arr)) {
+          QuandaryService.getFaculty(divisionId).then(
+            (response => arr[divisionId] = response)
+          );
+        }
+      },
+      getDivisionName(division) {
+        if (division == 'Biology and Biological Engineering') {
+          return 'Biology and BE'
+        }
+        else if (division == 'Chemistry and Chemical Engineering') {
+          return 'Chemistry and ChE'
+        }
+        else if (division == 'Physics, Mathematics, and Astronomy') {
+          return 'PMA'
+        }
+        return division
+      },
+      getCourseName(course) {
+        return course.dept + " " + course.course_no + " " + course.course_name;
+      },
+      getCourses(arr, dept) {
+        if (!(dept in arr)) {
+          QuandaryService.getCourses(dept).then(
+            (response => arr[dept] = response)
           );
         }
       },
@@ -397,13 +447,21 @@ export default {
     margin-bottom: 4rem;
   }
   .subtitle {
-    padding-left: 1.9rem;
+    padding-left: 1.9rem;  
+    padding-top: 0.75rem;
+  }
+  #courses {
+    padding: 1.5rem 0 0 1.9rem;
   }
   #first-row {
     padding-left: 1.9rem;
+    padding-top: 0.75rem;
   }
   #last-name {
     padding: 0 6.25rem 0 1.9rem;
+  }
+  #majors-minors {
+    padding-top: 0.6rem
   }
   #multiple-select {
     padding: 0 3.5rem 0.3rem 1.9rem; 
@@ -414,10 +472,6 @@ export default {
   #required {
     margin-top: 1.25rem;
     text-align: center;
-  }
-  #terms {
-    padding-top: 1.8rem;
-    padding-left: 1.9rem;
   }
   #incoming-year {
     padding: 0 4.4rem 0.5rem 1.9rem;
