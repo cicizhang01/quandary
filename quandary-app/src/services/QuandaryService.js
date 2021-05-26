@@ -71,6 +71,9 @@ export default {
     let res = await axios.get("http://localhost:8000/get_upvoted_answers/" + userId);
     return res.data;
   },
+  async addFullUser(userData) {
+    await axios.put("http://localhost:8000/add_full_user", userData);
+  },
   async addAnswer(userId, questionId, answer) {
     await axios.put("http://localhost:8000/add_answer/" + userId + "/" + questionId, answer);
 

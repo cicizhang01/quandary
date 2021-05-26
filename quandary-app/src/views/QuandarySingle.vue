@@ -93,7 +93,7 @@
           <div class="sort-label is-grouped">
             Sort by
             <div class="select" id="sort-selection">
-              <select v-model="sortBy">
+              <select v-model="sort_by">
                 <option> Newest </option>
                 <option> Oldest </option>
                 <option> Most Upvoted </option>
@@ -212,7 +212,7 @@ export default {
   data() {
     return {
       edit: null, // Stores answer_id of the answer currently being edited
-      sortBy: 'Newest',
+      sort_by: 'Newest',
       user: {
         user_id: 4, // Replace with some method to find current user's user_id
         first_name: 'Sandy', // Replace with current user's first and last name
@@ -240,21 +240,21 @@ export default {
       let sortedAnswers = this.answers;
 
       sortedAnswers = [].slice.call(sortedAnswers).sort((a, b) => {
-        if (this.sortBy == 'Newest') {
+        if (this.sort_by == 'Newest') {
           if (a.date_modified < b.date_modified)
             return 1;
           if (a.date_modified > b.date_modified) 
             return -1;
           return 0;
         }
-        else if (this.sortBy == 'Oldest') {
+        else if (this.sort_by == 'Oldest') {
           if (a.date_modified < b.date_modified)
             return -1;
           if (a.date_modified > b.date_modified) 
             return 1;
           return 0;
         }
-        else if (this.sortBy == 'Most Upvoted') {
+        else if (this.sort_by == 'Most Upvoted') {
           if (a.answer_upvotes < b.answer_upvotes)
             return 1;
           if (a.answer_upvotes > b.answer_upvotes) 
