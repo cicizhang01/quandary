@@ -88,7 +88,6 @@ app.put("/add_full_user", (req, res) => {
       // profile table
       first_name: req.body.first_name,
       last_name: req.body.last_name,
-      advisor_id: req.body.advisor_id,
       incoming_year: req.body.incoming_year,
       grad_year: req.body.grad_year,
       is_undergrad: req.body.is_undergrad,
@@ -118,13 +117,14 @@ app.put("/add_full_user", (req, res) => {
 
   // profile
   var user_id;
-  var sql_profile ='INSERT INTO profile (first_name, last_name, advisor_id, \
+  var sql_profile ='INSERT INTO profile (first_name, last_name, \
     incoming_year, grad_year, is_undergrad, is_grad, is_alum, \
-    is_transfer, pronouns) VALUES (?,?,?,?,?,?,?,?,?,?)'
-  
-  var params =[data.first_name, data.last_name, data.advisor_id,
+    is_transfer, pronouns) VALUES (?,?,?,?,?,?,?,?,?)'
+
+  var params =[data.first_name, data.last_name,
     data.incoming_year, data.grad_year, data.is_undergrad, 
     data.is_grad, data.is_alum, data.is_transfer, data.pronouns]
+  
   
   db.run(sql_profile, params, function (err, result) {
       if (err){
@@ -394,28 +394,32 @@ app.put("/add_user_courses/:user_id", (req, res) => {
    */
 app.put('/add_answer/:user_id/:question_id', (req, res) => {
   // answer table
-  var sql_answer = "insert into answer(answer_body, answer_creator, is_anon) \
-             values (?,?,?)"
-  var params_answer = [req.body.answer_body, req.params.user_id, req.body.is_anon]
-  db.all(sql_answer, params_answer, (err, rows_answer) => {
+  var sql_answer = "insert into answer(answer_body, answer_creator, is_anon, date_created) \
+             values (?,?,?,?)"
+  var params_answer = [req.body.answer_body, req.params.user_id, req.body.is_anon, req.body.date_created]
+  
+  db.run(sql_answer, params_answer, function (err, rows_answer){
     if (err) {
       res.status(400).json({"error":err.message});
       return;
     }
-    
+    console.log("add_answer lastID:")
+    console.log(this.lastID);
+
+    answer_id = this.lastID;
     // qna table
     var sql_qna = "insert into qna (answer_id, question_id) \
       values (?,?)"
-    var params_qna = [this.lastID, req.params.question_id]
+    var params_qna = [answer_id, req.params.question_id]
     db.all(sql_qna, params_qna, (err, rows_qna) => {
       if (err) {
         res.status(400).json({"error":err.message});
         return;
       }
 
-    console.log(rows_answer)
-    console.log(rows_qna)
-    res.send("Added new answer.")
+      console.log(rows_answer)
+      console.log(rows_qna)
+      res.send("Added new answer.")
     });
   });
 });
@@ -1202,7 +1206,9 @@ app.delete('/delete_answer/:user_id/:answer_id', (req, res) => {
    (excludes topic interests, labs, houses, courses) as a
    JSON object. */
    app.get('/get_all_users', (req, res) => {
-    var sql = "select * from profile"
+    var sql = "select first_name, last_name, \
+      incoming_year, grad_year, is_undergrad, is_grad, is_alum, \
+      is_transfer, pronouns from profile"
       var params = []
       db.all(sql, params, (err, rows) => {
           if (err) {
@@ -1607,6 +1613,20 @@ app.get('/get_all_student_to_faculty', (req, res) => {
         }
         res.send(rows)
       });
+});
+
+
+/* Return true if the user exists in the db,false otherwise. */
+   app.get('/is_user_in_db/:user_id', (req, res) => {
+    var sql = "select count(*) as count from profile where user_id = ?"
+      var params = [req.params.user_id]
+      db.all(sql, params, (err, rows) => {
+          if (err) {
+            res.status(400).json({"error":err.message});
+            return;
+          }
+          res.send(Boolean(rows[0].count))
+        });
 });
 
 /* END Quandary REST API */
