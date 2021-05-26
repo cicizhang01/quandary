@@ -116,6 +116,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 db.run(insert, ['Blank', 'Comp Sci'])
             }
         });
+        // advisor_id is currently unused.
         db.run(`CREATE TABLE profile (
             user_id INTEGER PRIMARY KEY AUTOINCREMENT,
             first_name TEXT NOT NULL,
@@ -864,6 +865,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 (answer_body, answer_creator, is_anon, answer_upvotes)
                 VALUES (?,?,?,?)`
                 db.run(insert, ['This is the answer', 1, 0, 1])
+                db.run(insert, ['This is the second answer', 3, 0, 0])
             }
         });
         db.run(`CREATE TABLE question_topic (
