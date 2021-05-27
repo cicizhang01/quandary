@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '../views/Home.vue'
 import { authGuard } from "../auth/authGuard";
 
 Vue.use(Router)
@@ -11,8 +10,9 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: Home
+      name: 'quandary',
+      component: () => import('../views/Home.vue'),
+      // beforeEnter: authGuard
     },
     {
       path: '/about',
@@ -30,17 +30,10 @@ export default new Router({
       component: () => import('../views/Form.vue')
     },
     {
-      path: '/quandary/:id',
+      path: '/:id',
       name: 'quandarySingle',
       component: () => import('../views/QuandarySingle.vue'),
       beforeEnter: authGuard
-    },
-
-    {
-      path: '/quandary',
-      name: 'quandary',
-      component: () => import('../views/Forum.vue'),
-      beforeEnter: authGuard
-      }
+    }
   ]
 })
