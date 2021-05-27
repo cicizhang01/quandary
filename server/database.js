@@ -144,9 +144,19 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO profile
                 (first_name, last_name, advisor_id, incoming_year, grad_year, is_undergrad, is_grad, is_alum, is_transfer, pronouns)
                 VALUES (?,?,?,?,?,?,?,?,?,?)`
-                db.run(insert, ['Joe','Shmo', 1, 2018, 2022, 1, 0, 0, 0, 'he/him'])
-                db.run(insert, ['Ree','Rar', 1, 2017, 2021, 0, 1, 0, 0, 'she/her'])
-                db.run(insert, ['Kee','Kar', 1, 2016, 2020, 0, 1, 0, 0, 'they/them'])
+                db.run(insert, ["Joe","Shmo",1,2018,2022,1,0,0,0,"he/him"])
+                db.run(insert, ["kee","kar",1,2019,2023,1,0,0,1,"she/her/hers"])
+                db.run(insert, ["ree","rar",1,2021,2025,1,0,0,0,"she/her/hers"])
+                db.run(insert, ["Sandy","Hamster",1,2018,2022,1,0,0,0,"she/her/hers"])
+                db.run(insert, ["Hermila","Boling",2,2021,2024,1,0,0,1,"she/her"])
+                db.run(insert, ["Abe","Tobin",3,2000,2006,0,1,1,0,"they/them"])
+                db.run(insert, ["Shanelle","Heller",4,2015,2025,1,1,1,0,"she/her"])
+                db.run(insert, ["Gregoria","Breaux",5,2019,2022,1,0,0,1,"she/her"])
+                db.run(insert, ["Helaine","Devito",6,2009,2014,1,0,1,0,"he/him"])
+                db.run(insert, ["Delsie","Oliphant",7,2018,2025,0,1,0,0,"she/her"])
+                db.run(insert, ["Yolonda","Mcneal",8,2000,2005,0,1,1,0,"she/her"])
+                db.run(insert, ["Carrol","Bonds",9,2020,2024,1,0,0,0,"he/him"])
+                db.run(insert, ["Charlena","Hawes",10,2017,2021,1,0,1,1,"they/them"])
             }
         });
         db.run(`CREATE TABLE student_course (
@@ -244,8 +254,14 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO student_to_faculty
                 (user_id, division_id, faculty_name)
                 VALUES (?,?,?)`
-                db.run(insert, [1, 2, 'Theodor Agapie'])
-                db.run(insert, [2, 1, 'Ralph Adolphs'])
+                
+                db.run(insert, [1, 3, "Aaron Ames"])
+                db.run(insert, [1, 3, "Animashree Anandkumar"])
+                db.run(insert, [2, 1, "John M. Allman"])
+                db.run(insert, [4, 2, "Geoffrey Blake"])
+                db.run(insert, [6, 4, "Konstantin Batygin"])
+                db.run(insert, [9, 5, "Marina Agranov"])
+                db.run(insert, [10, 6, "Rana Adhikari"])
             }
         });
         
@@ -838,10 +854,19 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO question
-                (question_body, question_creator, is_anon, question_upvotes)
-                VALUES (?,?,?,?)`
-                db.run(insert, ['What is the question?', 1, 1, 1])
-                db.run(insert, ['What is the second question?', 2, 0, 0])
+                (question_id, question_body, question_creator, is_anon, question_upvotes)
+                VALUES (?,?,?,?,?)`
+                
+                db.run(insert, [1, "Is there a joint BS + Masters for CS at Caltech?", 3, 1, 3])
+                db.run(insert, [2, "How much funding does a club get?", 7, 0, 1])
+                db.run(insert, [3, "How similar are houses to how they present themselves during rotation?", 6, 0, 0])
+                db.run(insert, [4, "I'm looking for some work study advice. What kinds of opportunties best fit me? I prefer to work only during weekends.", 6, 1, 2])
+                db.run(insert, [5, "For off-campus SURFs, what is the pay? How do I find opportunties near where I live?", 2, 1, 0])
+                db.run(insert, [6, "Any suggestions for good Thai food in LA?", 1, 0, 0])
+                db.run(insert, [7, "What are good humanities to take as a frosh?", 10, 1, 1])
+                db.run(insert, [8, "What kinds of jobs should I apply for if I'm interested in classes like CS 121, CS 24, and CS 124?", 3, 1, 0])
+                db.run(insert, [9, "What is the library policy on borrowing books?", 5, 0, 1])
+                db.run(insert, [10, "What are some traditions in the houses? As well as pranks?", 9, 1, 4])
             }
         });
         db.run(`CREATE TABLE answer (
@@ -862,10 +887,18 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }else{
                 // Table just created, creating some rows
                 var insert = `INSERT INTO answer
-                (answer_body, answer_creator, is_anon, answer_upvotes)
-                VALUES (?,?,?,?)`
-                db.run(insert, ['This is the answer', 1, 0, 1])
-                db.run(insert, ['This is the second answer', 3, 0, 0])
+                (answer_id, answer_body, answer_creator, is_anon, answer_upvotes)
+                VALUES (?,?,?,?,?)`
+                
+                db.run(insert, [1, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 1_1", 4, 0, 0])
+                db.run(insert, [2, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 1_2", 3, 1, 0])
+                db.run(insert, [3, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 2_1", 2, 0, 0])
+                db.run(insert, [4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 3_1", 1, 0, 0])
+                db.run(insert, [5, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 3_2", 3, 0, 0])
+                db.run(insert, [6, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 3_3", 5, 1, 0])
+                db.run(insert, [7, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 5_1", 6, 1, 0])
+                db.run(insert, [8, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 8_1", 7, 1, 0])
+                db.run(insert, [9, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 10_1", 4, 1, 0])
             }
         });
         db.run(`CREATE TABLE question_topic (
@@ -884,7 +917,20 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO question_topic
                 (question_id, topic_id)
                 VALUES (?,?)`
-                db.run(insert, [1,1])
+
+                db.run(insert, [1, 20])
+                db.run(insert, [2, 53])
+                db.run(insert, [3, 11])
+                db.run(insert, [3, 12])
+                db.run(insert, [4, 44])
+                db.run(insert, [5, 26])
+                db.run(insert, [6, 51])
+                db.run(insert, [7, 47])
+                db.run(insert, [8, 20])
+                db.run(insert, [9, 28])
+                db.run(insert, [9, 33])
+                db.run(insert, [10, 11])
+                db.run(insert, [10, 38])
             }
         });
         db.run(`CREATE TABLE qna (
@@ -902,8 +948,16 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO qna
                 (answer_id, question_id)
                 VALUES (?,?)`
-                db.run(insert, [1,1])
-                db.run(insert, [2,2])
+                
+                db.run(insert, [1, 1])
+                db.run(insert, [2, 1])
+                db.run(insert, [3, 2])
+                db.run(insert, [4, 3])
+                db.run(insert, [5, 3])
+                db.run(insert, [6, 3])
+                db.run(insert, [7, 5])
+                db.run(insert, [8, 8])
+                db.run(insert, [9, 10])
             }
         });
         db.run(`CREATE TABLE user_upvotes_question (
@@ -922,7 +976,19 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO user_upvotes_question
                 (question_id, user_id)
                 VALUES (?,?)`
-                db.run(insert, [1,1])
+                
+                db.run(insert, [1, 4])
+                db.run(insert, [1, 2])
+                db.run(insert, [1, 1])
+                db.run(insert, [2, 6])
+                db.run(insert, [4, 1])
+                db.run(insert, [4, 2])
+                db.run(insert, [7, 9])
+                db.run(insert, [9, 4])
+                db.run(insert, [10, 5])
+                db.run(insert, [10, 6])
+                db.run(insert, [10, 7])
+                db.run(insert, [10, 3])
             }
         });
         db.run(`CREATE TABLE user_upvotes_answer (
@@ -960,9 +1026,54 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO user_topics
                 (user_id, topic_id)
                 VALUES (?,?)`
-                db.run(insert, [1,1])
-                db.run(insert, [2,3])
-                db.run(insert, [3,4])
+                db.run(insert, [1, 1])
+                db.run(insert, [1, 2])
+                db.run(insert, [1, 6])
+                db.run(insert, [1, 20])
+                db.run(insert, [1, 21])
+                db.run(insert, [1, 24])
+
+                db.run(insert, [2, 25])
+                db.run(insert, [2, 26])
+                db.run(insert, [2, 27])
+
+                db.run(insert, [3, 1])
+                db.run(insert, [3, 3])
+                db.run(insert, [3, 16])
+                db.run(insert, [3, 18])
+
+                db.run(insert, [5, 28])
+                db.run(insert, [5, 29])
+                db.run(insert, [5, 31])
+                db.run(insert, [5, 33])
+                db.run(insert, [5, 35])
+
+                db.run(insert, [6, 36])
+                db.run(insert, [6, 37])
+                db.run(insert, [6, 38])
+                db.run(insert, [6, 41])
+                db.run(insert, [6, 42])
+                db.run(insert, [6, 43])
+                db.run(insert, [6, 44])
+
+                db.run(insert, [7, 53])
+                db.run(insert, [7, 65])
+                db.run(insert, [7, 71])
+                db.run(insert, [7, 73])
+                db.run(insert, [7, 111])
+
+                db.run(insert, [8, 53])
+                db.run(insert, [8, 91])
+                db.run(insert, [8, 95])
+                db.run(insert, [8, 108])
+
+                db.run(insert, [9, 53])
+                db.run(insert, [9, 114])
+
+                db.run(insert, [10, 53])
+                db.run(insert, [10, 132])
+                db.run(insert, [10, 135])
+                db.run(insert, [10, 137])
             }
         });
         db.run(`CREATE TABLE house_memberships (
@@ -982,9 +1093,19 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO house_memberships
                 (house, user_id, is_full)
                 VALUES (?,?,?)`
-                db.run(insert, ['Lloyd',1,1])
-                db.run(insert, ['Avery',2,1])
-                db.run(insert, ['Ricketts',3,1])
+          
+                db.run(insert, ["Lloyd", 1, 1])
+                db.run(insert, ["Fleming", 2, 1])
+                db.run(insert, ["Ruddock", 3, 1])
+                db.run(insert, ["Ricketts", 4, 1])
+                db.run(insert, ["Blacker", 5, 1])
+                db.run(insert, ["Rudock", 5, 0])
+                db.run(insert, ["Avery", 6, 1])
+                db.run(insert, ["Avery", 7, 1])
+                db.run(insert, ["Fleming", 8, 1])
+                db.run(insert, ["Page", 8, 0])
+                db.run(insert, ["Lloyd", 9, 1])
+                db.run(insert, ["Dabney", 10, 1])
             }
         });
         db.run(`CREATE TABLE options (
@@ -1008,7 +1129,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 db.run(insert, ['Applied Physics',1,0])
                 db.run(insert, ['Astrophysics',1,1])
                 db.run(insert, ['Bioengineering',1,0])
-                db.run(insert, ['Biology',1,0])
+                db.run(insert, ['Biology',1,1])
                 db.run(insert, ['Business, Economics & Management',1,0])
                 db.run(insert, ['Chemical Engineering',1,0])
                 db.run(insert, ['Chemistry',1,1])
@@ -1055,9 +1176,21 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                 var insert = `INSERT INTO user_option
                 (user_id, option, is_major)
                 VALUES (?,?,?)`
-                db.run(insert, [1,'CS',1])
-                db.run(insert, [2,'ACM',1])
-                db.run(insert, [3,'ACM',1])
+               
+                db.run(insert, [1, "Applied Physics", 1])
+                db.run(insert, [1, "Astrophysics", 0])
+                db.run(insert, [2, "Chemical Engineering", 1])
+                db.run(insert, [3, "CS", 1])
+                db.run(insert, [3, "Information and Data Sciences", 0])
+                db.run(insert, [4, "Mechanical Engineering", 1])
+                db.run(insert, [5, "Materials Science", 1])
+                db.run(insert, [6, "CS", 1])
+                db.run(insert, [7, "Electrical Engineering", 1])
+                db.run(insert, [7, "CS", 0])
+                db.run(insert, [8, "Bioengineering", 1])
+                db.run(insert, [9, "CS", 1])
+                db.run(insert, [9, "Biology", 1])
+                db.run(insert, [10, "Information and Data Sciences", 1])
             }
         });
         
