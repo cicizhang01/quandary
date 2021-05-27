@@ -7,7 +7,7 @@
             <div class="columns">
               <div class="column is-1" id="upvotes">
                 <div>
-                  <button class="button is-white is-medium" v-if="user.upvotes.includes(question.question_id)" v-on:click="onUpdateQuestionCount(question)">
+                  <button class="button is-white is-medium" v-if="user_question_upvotes.includes(question.question_id)" v-on:click="onUpdateQuestionCount(question)">
                     <span class="icon is-small">
                       <i class="fas fa-heart" id="solid-heart"></i>
                     </span>
@@ -26,14 +26,16 @@
               <div class= "column is-11">
                 <h2 class="question-date">{{ displayDate(question.date_modified) }}</h2>
                   <div class = "test">
-                    <router-link :to="`/quandary/${question.question_id}`">
+                    <router-link :to="`/${question.question_id}`">
                       <h1 class="title">{{ question.question_body }}</h1>
                     </router-link>
                   </div>
 
-                  <span class="tag is-primary is-medium" id="question-topic" v-for="topic in topics" v-bind:key="topic">
-                    {{ topic }}
-                  </span>
+                  <div :key="trigger">
+                    <div class="tag is-primary is-medium" id="question-topic" v-for="topic in topics[question.question_id]" :topic="topic" :key="topic.topic_id">
+                      {{ topic.topic_name }}
+                    </div>
+                  </div>
               </div>
             </div>
           </div>
@@ -58,12 +60,16 @@ export default {
     return {
       question: {},
       questions: [],
-      topics: ['Topic 1', 'Topic 2'],
+      topics: {},
+      topic: {},
+      trigger: 0,
+
+      user_question_upvotes: [],
+
       user: {
         user_id: 4, // Replace with some method to find current user's user_id
         first_name: 'Sandy', // Replace with current user's first and last name
         last_name: 'Hamster',
-        upvotes: []
       }
     };
   }, 
@@ -75,7 +81,31 @@ export default {
       QuandaryService.getQuestionsData()
         .then(
           (questions => {
+            questions.forEach(q => {
+              QuandaryService.getQuestionTopics(q.question_id)
+                .then(
+                  (topics => {
+                    this.trigger += 1;
+                    this.topics[q.question_id] = topics; 
+                  }).bind(this)
+                );
+            });
             this.$set(this, "questions", questions);
+          }).bind(this)
+        );
+
+      QuandaryService.getQuestionsData()
+        .then(
+          (questions => {
+            this.$set(this, "questions", questions);
+            this.testing = questions;
+          }).bind(this)
+        );
+
+      QuandaryService.getQuestionUpvotes(this.user.user_id)
+        .then(
+          (upvotes => {
+            this.$set(this, "user_question_upvotes", upvotes);
           }).bind(this)
         );
     },
@@ -106,15 +136,16 @@ export default {
     },
 
     onUpdateQuestionCount(question) {
-      const index = this.user.upvotes.indexOf(question.question_id);
+      const index = this.user_question_upvotes.indexOf(question.question_id);
       if (index > -1) {
-        this.user.upvotes.splice(index, 1);
+        this.user_question_upvotes.splice(index, 1);
         question.question_upvotes -= 1;
       }
       else {
-        this.user.upvotes.push(question.question_id);
+        this.user_question_upvotes.push(question.question_id);
         question.question_upvotes += 1;
       }
+      QuandaryService.updateQuestionCount(this.user.user_id, question.question_id);
     },
   },      
 };
