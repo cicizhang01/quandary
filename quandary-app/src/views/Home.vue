@@ -7,23 +7,28 @@
           <div  id="login-button" class="button is-white is-outlined is-rounded" @click="login"> <strong> Log in </strong> </div>
         </div>
       </div>
+      <div class="form-button">
+        <router-link to="/form">
+          <button class="button is-rounded">
+            Form
+          </button>
+        </router-link>
+      </div>
     </section>
-
-  </div>
-
-  <div class="form-button">
-    <router-link to="/form">
-      <button class="button is-rounded">
-        Form
-      </button>
-    </router-link>
+    <section v-if="$auth.isAuthenticated">
+      <div class = "listing">
+        <Forum />
+      </div>
+    </section>
   </div>
 </div>
 </template>
 <script>
+import Forum from '../views/Forum';
 export default {
   name: 'home',
   components: {
+    Forum
   },
   methods: {
     // Log the user in

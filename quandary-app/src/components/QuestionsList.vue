@@ -26,12 +26,12 @@
               <div class= "column is-11">
                 <h2 class="question-date">{{ displayDate(question.date_modified) }}</h2>
                   <div class = "test">
-                    <router-link :to="`/quandary/${question.question_id}`">
+                    <router-link :to="`/${question.question_id}`">
                       <h1 class="title">{{ question.question_body }}</h1>
                     </router-link>
                   </div>
 
-                  <div>
+                  <div :key="trigger">
                     <div class="tag is-primary is-medium" id="question-topic" v-for="topic in topics[question.question_id]" :topic="topic" :key="topic.topic_id">
                       {{ topic.topic_name }}
                     </div>
@@ -62,6 +62,7 @@ export default {
       questions: [],
       topics: {},
       topic: {},
+      trigger: 0,
 
       user_question_upvotes: [],
 
@@ -84,6 +85,7 @@ export default {
               QuandaryService.getQuestionTopics(q.question_id)
                 .then(
                   (topics => {
+                    this.trigger += 1;
                     this.topics[q.question_id] = topics; 
                   }).bind(this)
                 );

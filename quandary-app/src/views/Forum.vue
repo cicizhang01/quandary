@@ -47,7 +47,7 @@ import QuestionsList from '../components/QuestionsList';
 import QuandaryService from '../services/QuandaryService';
 
 export default {
-  name: 'home',
+  name: 'Forum',
 
   components: {
     QuestionsList
