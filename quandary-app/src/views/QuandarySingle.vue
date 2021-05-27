@@ -340,7 +340,8 @@ export default {
       if (this.comment.body.length != 0) {
         var comment = {
           answer_body: this.comment.body,
-          is_anon: this.comment.is_anon
+          is_anon: this.comment.is_anon,
+          date_created: this.getDateTime()
         };
 
         // Inserts new answer into database and updates answers data object 

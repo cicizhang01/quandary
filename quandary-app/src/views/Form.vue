@@ -185,9 +185,9 @@
             <label class="label is-medium">Are you a current student? *</label>
             <div class="field" :class="hasError('is_alum') ? 'is-invalid': ''">
               <div class="checkbox">
-                <input class="is-checkradio" id="curr-student-yes" type="radio" name="curr-student" value="0" v-model="form_data.is_alum">
+                <input class="is-checkradio" id="curr-student-yes" type="radio" name="curr-student" value="0" v-model="form_data.is_alum" v-on:click="resetStudentLevel(form_data.is_alum, 0)">
                 <label for="curr-student-yes" id="radio-text">Yes</label>
-                <input class="is-checkradio" id="curr-student-no" type="radio" name="curr-student" value="1" v-model="form_data.is_alum">
+                <input class="is-checkradio" id="curr-student-no" type="radio" name="curr-student" value="1" v-model="form_data.is_alum" v-on:click="resetStudentLevel(form_data.is_alum, 1)">
                 <label for="curr-student-no" id="radio-text">No</label>
               </div>
               <div v-if="hasError('is_alum')" class="invalid-feedback">
@@ -214,32 +214,32 @@
 
         <div id="student-status" class="field" v-if="form_data.is_alum === '0'">
           <label class="label is-medium">Are you an undergraduate or graduate student? *</label>
-          <div class="control" :class="hasError('curr_student_level') ? 'is-invalid': ''">
+          <div class="control" :class="hasError('student_level') ? 'is-invalid': ''">
             <div class="checkbox">
-              <input class="is-checkradio" id="level-undergrad" type="radio" name="level" value="0" v-model="form_data.curr_student_level">
+              <input class="is-checkradio" id="level-undergrad" type="radio" name="level" value="0" v-model="form_data.student_level">
               <label for="level-undergrad" id="radio-text">Undergraduate</label>
-              <input class="is-checkradio" id="level-grad" type="radio" name="level" value="1" v-model="form_data.curr_student_level">
+              <input class="is-checkradio" id="level-grad" type="radio" name="level" value="1" v-model="form_data.student_level">
               <label for="level-grad" id="radio-text">Graduate</label>
             </div>
-            <div v-if="hasError('curr_student_level')" class="invalid-feedback">
-              <p id="radio-error" class="help is-danger" v-if="!$v.form_data.curr_student_level.required">Required</p>
+            <div v-if="hasError('student_level')" class="invalid-feedback">
+              <p id="radio-error" class="help is-danger" v-if="!$v.form_data.student_level.required">Required</p>
             </div>
           </div>
         </div>
 
         <div id="student-status" class="field" v-if="form_data.is_alum === '1'">
           <label class="label is-medium">Were you an undergraduate student, graduate student, or both? *</label>
-          <div class="control" :class="hasError('alum_student_level') ? 'is-invalid': ''">
+          <div class="control" :class="hasError('student_level') ? 'is-invalid': ''">
             <div class="checkbox">
-              <input class="is-checkradio" id="level-undergrad" type="radio" name="level" value="0" v-model="form_data.alum_student_level">
+              <input class="is-checkradio" id="level-undergrad" type="radio" name="level" value="0" v-model="form_data.student_level">
               <label for="level-undergrad" id="radio-text">Undergraduate</label>
-              <input class="is-checkradio" id="level-grad" type="radio" name="level" value="1" v-model="form_data.alum_student_level">
+              <input class="is-checkradio" id="level-grad" type="radio" name="level" value="1" v-model="form_data.student_level">
               <label for="level-grad" id="radio-text">Graduate</label>
-              <input class="is-checkradio" id="level-both" type="radio" name="level" value="2" v-model="form_data.alum_student_level">
+              <input class="is-checkradio" id="level-both" type="radio" name="level" value="2" v-model="form_data.student_level">
               <label for="level-both" id="radio-text">Both</label>
             </div>
-            <div v-if="hasError('alum_student_level')" class="invalid-feedback">
-              <p id="radio-error" class="help is-danger" v-if="!$v.form_data.alum_student_level.required">Required</p>
+            <div v-if="hasError('student_level')" class="invalid-feedback">
+              <p id="radio-error" class="help is-danger" v-if="!$v.form_data.student_level.required">Required</p>
             </div>
           </div>
         </div>
@@ -255,7 +255,7 @@
           <div v-for="topic in topics" :key="topic.topic_id" class="column is-half">
             {{ getSubTopics(subtopics, topic.topic_id) }}
             <div class="header">
-              <input class="is-checkradio" :id="topic.topic_name" type="checkbox" name="checkbox" :checked="topic_interests.includes(topic.topic_id)" v-on:click="onClickTopic(topic_interests, topic.topic_id)">
+              <input class="is-checkradio" :id="topic.topic_name" type="checkbox" name="checkbox" :checked="topic_interests.includes(topic.topic_id)" v-on:click="onClickTopicInterests(topic_interests, subtopic_interests, subtopics, topic.topic_id)">
               <label :for="topic.topic_name" id="header-text"><b>{{ topic.topic_name }}</b></label>
             </div>
 
@@ -263,14 +263,14 @@
               <div v-for="subtopic in subtopics[topic.topic_id]" :key="subtopic.topic_id" class="subtopics">
                 {{ getSubTopics(subsubtopics, subtopic.topic_id) }}
                 <div class="subheader">
-                  <input class="is-checkradio is-circle" :id="subtopic.topic_name" type="checkbox" name="checkbox" :checked="topic_interests.includes(subtopic.topic_id)" v-on:click="onClickTopic(topic_interests, subtopic.topic_id)">
+                  <input class="is-checkradio is-circle" :id="subtopic.topic_name" type="checkbox" name="checkbox" :checked="subtopic_interests.includes(subtopic.topic_id)" v-on:click="onClickSubtopicInterests(subtopic_interests, subsubtopic_interests, subsubtopics, subtopic.topic_id)">
                   <label :for="subtopic.topic_name" id="subheader-text">{{ subtopic.topic_name }}</label>
                 </div>
 
-                <div class="column" v-show="topic_interests.includes(subtopic.topic_id) && subsubtopics[subtopic.topic_id].length != 0">
+                <div class="column" v-show="subtopic_interests.includes(subtopic.topic_id) && subsubtopics[subtopic.topic_id].length != 0">
                   <div v-for="subsubtopic in subsubtopics[subtopic.topic_id]" :key="subsubtopic.topic_id" class="subtopics">
                     <div class="subsubheader">
-                      <input class="is-checkradio is-circle" :id="subsubtopic.topic_name" type="checkbox" name="checkbox" :checked="topic_interests.includes(subsubtopic.topic_id)" v-on:click="onClickTopic(topic_interests, subsubtopic.topic_id)">
+                      <input class="is-checkradio is-circle" :id="subsubtopic.topic_name" type="checkbox" name="checkbox" :checked="subsubtopic_interests.includes(subsubtopic.topic_id)" v-on:click="onClickInterest(subsubtopic_interests, subsubtopic.topic_id)">
                       <label :for="subsubtopic.topic_name" id="subsubheader-text">{{ subsubtopic.topic_name }}</label>
                     </div>
                   </div>
@@ -281,7 +281,7 @@
         </div>
       </tab-content>
 
-      <tab-content title="Finishing Up"> 
+      <tab-content title="Other Interests"> 
         <h1 class="subtitle">
           Select any faculty you're interested in following.
         </h1>
@@ -289,14 +289,14 @@
           <div v-for="division in divisions" :key="division.division_id" class="column is-half">
             {{ getFaculty(faculties, division.division_id) }}
             <div class="header">
-              <input class="is-checkradio" :id="division.division_name" type="checkbox" name="checkbox" :checked="division_interests.includes(division.division_id)" v-on:click="onClickTopic(division_interests, division.division_id)">
+              <input class="is-checkradio" :id="division.division_name" type="checkbox" name="checkbox" :checked="division_interests.includes(division.division_id)" v-on:click="onClickFacultyInterests(division_interests, faculty_interests, faculties, division.division_id)">
               <label :for="division.division_name" id="header-text"><b>{{ getDivisionName(division.division_name) }}</b></label>
             </div>
 
             <div class="column" v-show="division_interests.includes(division.division_id)">
               <div v-for="faculty in faculties[division.division_id]" :key="faculty.faculty_name" class="subtopics">
                 <div class="subheader">
-                  <input class="is-checkradio is-circle" :id="faculty.faculty_name" type="checkbox" name="checkbox" :checked="faculty_interests.includes(faculty.faculty_name)" v-on:click="onClickTopic(faculty_interests, faculty.faculty_name)">
+                  <input class="is-checkradio is-circle" :id="faculty.faculty_name" type="checkbox" name="checkbox" :checked="faculty_interests.includes(faculty.faculty_name)" v-on:click="onClickInterest(faculty_interests, faculty.faculty_name)">
                   <label :for="faculty.faculty_name" id="subheader-text">{{ faculty.faculty_name }}</label>
                 </div>
               </div>
@@ -311,14 +311,14 @@
           <div v-for="department in departments" :key="department" class="column is-half">
             {{ getCourses(courses, department) }}
             <div class="header">
-              <input class="is-checkradio" :id="department" type="checkbox" name="checkbox" :checked="department_interests.includes(department)" v-on:click="onClickTopic(department_interests, department)">
+              <input class="is-checkradio" :id="department" type="checkbox" name="checkbox" :checked="department_interests.includes(department)" v-on:click="onClickCourseInterests(department_interests, course_interests, courses, department)">
               <label :for="department" id="header-text"><b>{{ department }}</b></label>
             </div>
 
             <div class="column" v-show="department_interests.includes(department)">
               <div v-for="course in courses[department]" :key="course.course_id" class="subtopics">
                 <div class="subheader">
-                  <input class="is-checkradio is-circle" :id="course.course_id" type="checkbox" name="checkbox" :checked="course_interests.includes(course.course_id)" v-on:click="onClickTopic(course_interests, course.course_id)">
+                  <input class="is-checkradio is-circle" :id="course.course_id" type="checkbox" name="checkbox" :checked="course_interests.includes(course.course_id)" v-on:click="onClickInterest(course_interests, course.course_id)">
                   <label :for="course.course_id" id="subheader-text">{{ getCourseName(course) }}</label>
                 </div>
               </div>
@@ -346,7 +346,9 @@ export default {
     mixins: [ValidationHelper],
     data() {
       return {
-        topic_interests: [], // List of topic_id's that the user is interested in
+        topic_interests: [], // List of topic topic_id's that the user is interested in
+        subtopic_interests: [], // List of subtopic topic_id's that the user is interested in 
+        subsubtopic_interests: [], // List of subsubtopic topic_id's that the user is interested in
         
         division_interests: [], // List of division_id's that the user is interested in 
         faculty_interests: [], // List of faculty_name's that the user is interested in (related to divisions)
@@ -375,8 +377,7 @@ export default {
             grad_year: null,
             
             // Used to distinguish if a user was an undergrad, grad, or both
-            curr_student_level: null,
-            alum_student_level: null,
+            student_level: null,
 
             is_alum: null,
             is_transfer: null,
@@ -391,10 +392,10 @@ export default {
             courses: null
         },
 
-        // 
+        // Validation rules
         validation_rules: [
           {first_name: {required}, last_name: {required}, pronouns: {required}},
-          {major: {}, minor: {}, incoming_year: {required}, grad_year: {required}, is_alum: {required}, is_transfer: {required}, studentLevel: {required}},
+          {major: {}, minor: {}, incoming_year: {required}, grad_year: {required}, is_alum: {required}, is_transfer: {required}, student_level: {required}},
           {},
           {}
         ]
@@ -426,15 +427,88 @@ export default {
           }).bind(this)
         );
       },
-      onClickTopic: function (arr, topicId) {
-        if (arr.includes(topicId)) {
-          const index = arr.indexOf(topicId);
+      onClickInterest: function (arr, id) {
+        if (arr.includes(id)) {
+          const index = arr.indexOf(id);
           if (index > -1) {
             arr.splice(index, 1);
           }
         }
         else {
-          arr.push(topicId);
+          arr.push(id);
+        }
+      },
+      onClickTopicInterests: function (parent, child, child_dict, id) {
+        if (parent.includes(id)) {
+          const index = parent.indexOf(id);
+          if (index > -1) {
+            parent.splice(index, 1);
+            
+            const vm = this;
+            child_dict[id].forEach(function(item) {
+              const idx = child.indexOf(item.topic_id);
+              if (idx > -1) {
+                vm.onClickSubtopicInterests(child, vm.subsubtopic_interests, vm.subsubtopics, item.topic_id)
+              }
+            })
+          }
+        }
+        else {
+          parent.push(id);
+        }
+      },
+      onClickSubtopicInterests: function (parent, child, child_dict, id) {
+        if (parent.includes(id)) {
+          const index = parent.indexOf(id);
+          if (index > -1) {
+            parent.splice(index, 1);
+
+            child_dict[id].forEach(function(item) {
+              const idx = child.indexOf(item.topic_id);
+              if (idx > -1) {
+                child.splice(idx, 1);
+              }
+            })
+          }
+        }
+        else {
+          parent.push(id);
+        }
+      },
+      onClickFacultyInterests: function (parent, child, child_dict, id) {
+        if (parent.includes(id)) {
+          const index = parent.indexOf(id);
+          if (index > -1) {
+            parent.splice(index, 1);
+
+            child_dict[id].forEach(function(item) {
+              const idx = child.indexOf(item.faculty_name);
+              if (idx > -1) {
+                child.splice(idx, 1);
+              }
+            })
+          }
+        }
+        else {
+          parent.push(id);
+        }
+      },
+      onClickCourseInterests: function (parent, child, child_dict, id) {
+        if (parent.includes(id)) {
+          const index = parent.indexOf(id);
+          if (index > -1) {
+            parent.splice(index, 1);
+
+            child_dict[id].forEach(function(item) {
+              const idx = child.indexOf(item.course_id);
+              if (idx > -1) {
+                child.splice(idx, 1);
+              }
+            })
+          }
+        }
+        else {
+          parent.push(id);
         }
       },
       getSubTopics(arr, topicId) {
@@ -473,6 +547,13 @@ export default {
           );
         }
       },
+      resetStudentLevel(prev, curr) {
+        if (prev != null && curr != null) {
+          if (prev != curr) {
+            this.form_data.student_level = null;
+          }
+        }
+      },
       setStudentLevel(student_level, data) {
         if (student_level == 0) {
           data.is_undergrad = 1;
@@ -491,7 +572,6 @@ export default {
         var user_data = {
           first_name: this.form_data.first_name,
           last_name: this.form_data.last_name,
-          advisor_id: 1,
           incoming_year: this.form_data.incoming_year,
           grad_year: this.form_data.grad_year,
           is_undergrad: null,
@@ -501,7 +581,7 @@ export default {
           pronouns: this.form_data.pronouns,
 
           // user_topics table
-          topic_ids: this.topic_interests,
+          topic_ids: this.topic_interests.concat(this.subtopic_interests, this.subsubtopic_interests),
 
           // student_to_faculty table
           division_ids: this.division_interests,
@@ -565,6 +645,9 @@ export default {
             user_data.is_fulls.push(0)
           }
         } 
+
+        // Add new user to database
+        QuandaryService.addFullUser(user_data);
 
         alert("Form submitted!");
         this.$refs.formwizard.changeStatus();
