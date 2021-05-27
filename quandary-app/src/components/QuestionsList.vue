@@ -7,7 +7,11 @@
             <div class="columns">
               <div class="column is-1" id="upvotes">
                 <div>
+<<<<<<< HEAD
                   <button class="button is-white is-medium" v-if="user_question_upvotes.includes(question.question_id)" v-on:click="onUpdateQuestionCount(question)">
+=======
+                  <button class="button is-white is-medium" v-if="user.upvotes.includes(question.question_id)" v-on:click="onUpdateQuestionCount(question)">
+>>>>>>> origin/main
                     <span class="icon is-small">
                       <i class="fas fa-heart" id="solid-heart"></i>
                     </span>
