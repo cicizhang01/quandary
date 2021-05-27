@@ -15,9 +15,9 @@
               <div class="comment-label is-grouped">
                 Ask as
                 <div class="select" id="comment-username">
-                  <select>
-                    <option value=0> {{ this.$auth.user.nickname }} </option>
-                    <option value=1>Anonymous</option>
+                  <select v-model="comment.is_anon">
+                    <option value=0>{{ displayName(user.first_name, user.last_name, 0) }}</option>
+                    <option value=1>{{ displayName(user.first_name, user.last_name, 1) }}</option>
                   </select>
                 </div>
               </div>
@@ -30,23 +30,24 @@
           </div>
 
           <div class="question-box has-addons">
-                  <textarea class="textarea has-fixed-size" placeholder="Ask your question"></textarea>
+                  <textarea class="textarea has-fixed-size" placeholder="Ask your question" v-model="comment.body"></textarea>
           </div>
         </div>
       </h1>
     </div>
 
     <div class = "listing">
-      <QuestionsList />
+      <QuestionsList :key="addedKey" />
     </div>
   </div>
 </template>
 
 <script>
 import QuestionsList from '../components/QuestionsList';
+import QuandaryService from '../services/QuandaryService';
 
 export default {
-  name: 'home',
+  name: 'Forum',
 
   components: {
     QuestionsList
@@ -54,7 +55,20 @@ export default {
 
   data() {
     return {
-      isHidden: true
+      isHidden: true,
+      addedKey: 0,
+      user: {
+        user_id: 4, // Replace with some method to find current user's user_id
+        first_name: 'Sandy', // Replace with current user's first and last name
+        last_name: 'Hamster',
+      },
+      comment: {
+        body: '',
+        is_anon: "0"
+      },
+      comment_edit: {
+        is_anon: 0
+      },
     }
   },
 
@@ -62,6 +76,26 @@ export default {
     // Log the user in
     login() {
       this.$auth.loginWithRedirect();
+    },
+    
+    displayName(firstName, lastName, isAnon) {
+      if (isAnon == 1) {
+        return 'Anonymous';
+      }
+      return firstName + " " + lastName;
+    },
+
+    onSubmit() {
+      if (this.comment.body.length != 0) {
+        var comment = {
+          question_body: this.comment.body,
+          is_anon: this.comment.is_anon
+        };
+
+        QuandaryService.addQuestion(this.user.user_id, comment)
+      }
+      this.comment.body = "";
+      this.addedKey += 1;
     }
   }
 
