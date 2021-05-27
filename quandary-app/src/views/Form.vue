@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <section class="main">
+  <div v-if="!$auth.loading">
+    <section v-if="!$auth.isAuthenticated" class="main">
       <div class="main-body">
         <div class="container">
           <h1 class="title">
@@ -40,8 +40,8 @@
               <span class="select is-light">
                 <select :class="hasError('pronouns') ? 'is-invalid': ''" v-model="form_data.pronouns">
                   <option selected></option>
-                  <option>she/her/hers</option>
-                  <option>he/him/his</option>
+                  <option>she/her</option>
+                  <option>he/him</option>
                   <option>they/them</option>
                 </select>
                 <div v-if="hasError('pronouns')" class="invalid-feedback">
@@ -649,7 +649,7 @@ export default {
         // Add new user to database
         QuandaryService.addFullUser(user_data);
 
-        alert("Form submitted!");
+        this.$router.push({ name: 'quandary' });
         this.$refs.formwizard.changeStatus();
       },
       reset() {
