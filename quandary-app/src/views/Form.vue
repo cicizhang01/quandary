@@ -1,333 +1,335 @@
 <template>
   <div v-if="!$auth.loading">
-    <section v-if="!$auth.isAuthenticated" class="main">
-      <div class="main-body">
-        <div class="container">
-          <h1 class="title">
-            Welcome to Quandary!
-          </h1>
-          <h2 class="subtitle">
-            Fill out your profile details below.
-          </h2>
+    <div v-if="$auth.isAuthenticated">
+      <section class="main">
+        <div class="main-body">
+          <div class="container">
+            <h1 class="title">
+              Welcome to Quandary!
+            </h1>
+            <h2 class="subtitle">
+              Fill out your profile details below.
+            </h2>
+          </div>
         </div>
-      </div>
-    </section>
-    <form-wizard ref="formwizard" class="form" @onComplete="onComplete" @onNextStep="nextStep" @onPreviousStep="previousStep" @onReset="reset">
-      <tab-content title="General Info" :selected="true">
-          <div id="first-row" class="field is-horizontal is-grouped is-left-aligned">
-            <div class="field">
-              <label class="label is-medium">First Name *</label>
-              <div class="control">
-                <input class="input is-light" type="text" :class="hasError('first_name') ? 'is-invalid': ''" placeholder="e.g Jane" v-model="form_data.first_name">
-                <div v-if="hasError('first_name')" class="invalid-feedback">
-                    <p class="help is-danger" v-if="!$v.form_data.first_name.required">Please provide a valid first name.</p>
+      </section>
+      <form-wizard ref="formwizard" class="form" @onComplete="onComplete" @onNextStep="nextStep" @onPreviousStep="previousStep" @onReset="reset">
+        <tab-content title="General Info" :selected="true">
+            <div id="first-row" class="field is-horizontal is-grouped is-left-aligned">
+              <div class="field">
+                <label class="label is-medium">First Name *</label>
+                <div class="control">
+                  <input class="input is-light" type="text" :class="hasError('first_name') ? 'is-invalid': ''" placeholder="e.g Jane" v-model="form_data.first_name">
+                  <div v-if="hasError('first_name')" class="invalid-feedback">
+                      <p class="help is-danger" v-if="!$v.form_data.first_name.required">Please provide a valid first name.</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div id="last-name" class="field">
-              <label class="label is-medium">Last Name *</label>
-              <div class="control">
-                <input class="input is-light" type="text" :class="hasError('last_name') ? 'is-invalid': ''" placeholder="e.g Doe" v-model="form_data.last_name">
-                <div v-if="hasError('last_name')" class="invalid-feedback">
-                    <p class="help is-danger" v-if="!$v.form_data.last_name.required">Please provide a valid last name.</p>
+              
+              <div id="last-name" class="field">
+                <label class="label is-medium">Last Name *</label>
+                <div class="control">
+                  <input class="input is-light" type="text" :class="hasError('last_name') ? 'is-invalid': ''" placeholder="e.g Doe" v-model="form_data.last_name">
+                  <div v-if="hasError('last_name')" class="invalid-feedback">
+                      <p class="help is-danger" v-if="!$v.form_data.last_name.required">Please provide a valid last name.</p>
+                  </div>
                 </div>
+              </div>
+
+              <div class="field">
+                <label class="label is-medium">Pronouns *</label>
+                <span class="select is-light">
+                  <select :class="hasError('pronouns') ? 'is-invalid': ''" v-model="form_data.pronouns">
+                    <option selected></option>
+                    <option>she/her</option>
+                    <option>he/him</option>
+                    <option>they/them</option>
+                  </select>
+                  <div v-if="hasError('pronouns')" class="invalid-feedback">
+                      <p class="help is-danger" v-if="!$v.form_data.pronouns.required">Please choose a pronoun.</p>
+                  </div>
+                </span>
               </div>
             </div>
 
-            <div class="field">
-              <label class="label is-medium">Pronouns *</label>
-              <span class="select is-light">
-                <select :class="hasError('pronouns') ? 'is-invalid': ''" v-model="form_data.pronouns">
+            
+          <div id="required"> (*) Required </div>
+        </tab-content>
+
+        <tab-content title="Caltech Info"> 
+          <div class="field is-grouped is-grouped-left-aligned" id="majors-minors">
+            <div id="multiple-select" class="field">
+              <label class="label is-medium">Major</label>
+              <span class="select is-multiple is-light">
+                <select multiple v-model="form_data.major">
                   <option selected></option>
-                  <option>she/her</option>
-                  <option>he/him</option>
-                  <option>they/them</option>
+                  <option>ACM</option>
+                  <option>Applied Physics</option>
+                  <option>Astrophysics</option>
+                  <option>Bioengineering</option>
+                  <option>Biology</option>
+                  <option>Business, Economics & Management</option>
+                  <option>Chemical Engineering</option>
+                  <option>Chemistry</option>
+                  <option>Computational and Neural Systems</option>
+                  <option>Computer Science</option>
+                  <option>Economics</option>
+                  <option>Electrical Engineering</option>
+                  <option>Engineering and Applied Science</option>
+                  <option>English</option>
+                  <option>Geobiology</option>
+                  <option>Geochemistry</option>
+                  <option>Geology</option>
+                  <option>Geophysics</option>
+                  <option>History</option>
+                  <option>History and Philosophy of Science</option>
+                  <option>Information and Data Sciences</option>
+                  <option>Materials Science</option>
+                  <option>Mathematics</option>
+                  <option>Mechanical Engineering</option>
+                  <option>Philosophy</option>
+                  <option>Physics</option>
+                  <option>Planetary Science</option>
+                  <option>Political Science</option>
                 </select>
-                <div v-if="hasError('pronouns')" class="invalid-feedback">
-                    <p class="help is-danger" v-if="!$v.form_data.pronouns.required">Please choose a pronoun.</p>
+              </span>
+            </div>
+
+            <div class="field">
+              <label class="label is-medium">Minor</label>
+              <span class="select is-multiple is-light">
+                <select multiple v-model="form_data.minor">
+                  <option selected></option>
+                  <option>Aerospace</option>
+                  <option>Chemistry</option>
+                  <option>Computer Science</option>
+                  <option>Control and Dynamical Systems</option>
+                  <option>English</option>
+                  <option>Environmental Science and Engineering</option>
+                  <option>Geological and Planetary Systems</option>
+                  <option>History</option>
+                  <option>History and Philosophy of Science</option>
+                  <option>Information and Data Sciences</option>
+                  <option>Philosophy</option>
+                  <option>Structural Mechanics</option>
+                </select>
+              </span>
+            </div>
+          </div>
+
+          <div class="field is-grouped is-grouped-left-aligned" id="majors-minors">
+            <div id="multiple-select">
+              <label class="label is-medium">House (Full Membership)</label>
+              <span class="select is-multiple is-light">
+                <select multiple class="house" v-model="form_data.house_full">
+                  <option selected></option>
+                  <option>Avery</option>
+                  <option>Blacker</option>
+                  <option>Dabney</option>
+                  <option>Fleming</option>
+                  <option>Lloyd</option>
+                  <option>Page</option>
+                  <option>Ricketts</option>
+                  <option>Ruddock</option>
+                </select>
+              </span>
+            </div>
+
+            <div id="multiple-select">
+              <label class="label is-medium">House (Social Membership)</label>
+              <span class="select is-multiple is-light">
+                <select multiple class="house" v-model="form_data.house_social">
+                  <option selected></option>
+                  <option>Avery</option>
+                  <option>Blacker</option>
+                  <option>Dabney</option>
+                  <option>Fleming</option>
+                  <option>Lloyd</option>
+                  <option>Page</option>
+                  <option>Ricketts</option>
+                  <option>Ruddock</option>
+                </select>
+              </span>
+            </div>
+          </div>
+            
+          <div class="field is-horizontal is-grouped is-grouped-left-aligned">
+            <div id="incoming-year" class="field">
+              <label class="label is-medium">Incoming Year *</label>
+              <span class="select is-light">
+                <select id="year" :class="hasError('incoming_year') ? 'is-invalid': ''" v-model="form_data.incoming_year">
+                  <option selected></option>
+                  <option v-for="n in 61" :key="n"> {{ n + 1979 }} </option>
+                </select>
+                <div v-if="hasError('incoming_year')" class="invalid-feedback">
+                  <p class="help is-danger" v-if="!$v.form_data.incoming_year.required">Required</p>
+                </div>
+              </span>
+            </div>
+            
+            <div id="grad-year" class="field">
+              <label class="label is-medium">Graduation Year *</label>
+              <span class="select is-light">
+                <select id="year" :class="hasError('grad_year') ? 'is-invalid': ''" v-model="form_data.grad_year">
+                  <option selected></option>
+                  <option v-for="n in 61" :key="n"> {{ n + 1979 }} </option>
+                </select>
+                <div v-if="hasError('grad_year')" class="invalid-feedback">
+                  <p class="help is-danger" v-if="!$v.form_data.grad_year.required">Required</p>
                 </div>
               </span>
             </div>
           </div>
 
-          
-        <div id="required"> (*) Required </div>
-      </tab-content>
-
-      <tab-content title="Caltech Info"> 
-        <div class="field is-grouped is-grouped-left-aligned" id="majors-minors">
-          <div id="multiple-select" class="field">
-            <label class="label is-medium">Major</label>
-            <span class="select is-multiple is-light">
-              <select multiple v-model="form_data.major">
-                <option selected></option>
-                <option>ACM</option>
-                <option>Applied Physics</option>
-                <option>Astrophysics</option>
-                <option>Bioengineering</option>
-                <option>Biology</option>
-                <option>Business, Economics & Management</option>
-                <option>Chemical Engineering</option>
-                <option>Chemistry</option>
-                <option>Computational and Neural Systems</option>
-                <option>Computer Science</option>
-                <option>Economics</option>
-                <option>Electrical Engineering</option>
-                <option>Engineering and Applied Science</option>
-                <option>English</option>
-                <option>Geobiology</option>
-                <option>Geochemistry</option>
-                <option>Geology</option>
-                <option>Geophysics</option>
-                <option>History</option>
-                <option>History and Philosophy of Science</option>
-                <option>Information and Data Sciences</option>
-                <option>Materials Science</option>
-                <option>Mathematics</option>
-                <option>Mechanical Engineering</option>
-                <option>Philosophy</option>
-                <option>Physics</option>
-                <option>Planetary Science</option>
-                <option>Political Science</option>
-              </select>
-            </span>
-          </div>
-
-          <div class="field">
-            <label class="label is-medium">Minor</label>
-            <span class="select is-multiple is-light">
-              <select multiple v-model="form_data.minor">
-                <option selected></option>
-                <option>Aerospace</option>
-                <option>Chemistry</option>
-                <option>Computer Science</option>
-                <option>Control and Dynamical Systems</option>
-                <option>English</option>
-                <option>Environmental Science and Engineering</option>
-                <option>Geological and Planetary Systems</option>
-                <option>History</option>
-                <option>History and Philosophy of Science</option>
-                <option>Information and Data Sciences</option>
-                <option>Philosophy</option>
-                <option>Structural Mechanics</option>
-              </select>
-            </span>
-          </div>
-        </div>
-
-        <div class="field is-grouped is-grouped-left-aligned" id="majors-minors">
-          <div id="multiple-select">
-            <label class="label is-medium">House (Full Membership)</label>
-            <span class="select is-multiple is-light">
-              <select multiple class="house" v-model="form_data.house_full">
-                <option selected></option>
-                <option>Avery</option>
-                <option>Blacker</option>
-                <option>Dabney</option>
-                <option>Fleming</option>
-                <option>Lloyd</option>
-                <option>Page</option>
-                <option>Ricketts</option>
-                <option>Ruddock</option>
-              </select>
-            </span>
-          </div>
-
-          <div id="multiple-select">
-            <label class="label is-medium">House (Social Membership)</label>
-            <span class="select is-multiple is-light">
-              <select multiple class="house" v-model="form_data.house_social">
-                <option selected></option>
-                <option>Avery</option>
-                <option>Blacker</option>
-                <option>Dabney</option>
-                <option>Fleming</option>
-                <option>Lloyd</option>
-                <option>Page</option>
-                <option>Ricketts</option>
-                <option>Ruddock</option>
-              </select>
-            </span>
-          </div>
-        </div>
-          
-        <div class="field is-horizontal is-grouped is-grouped-left-aligned">
-          <div id="incoming-year" class="field">
-            <label class="label is-medium">Incoming Year *</label>
-            <span class="select is-light">
-              <select id="year" :class="hasError('incoming_year') ? 'is-invalid': ''" v-model="form_data.incoming_year">
-                <option selected></option>
-                <option v-for="n in 61" :key="n"> {{ n + 1979 }} </option>
-              </select>
-              <div v-if="hasError('incoming_year')" class="invalid-feedback">
-                <p class="help is-danger" v-if="!$v.form_data.incoming_year.required">Required</p>
-              </div>
-            </span>
-          </div>
-          
-          <div id="grad-year" class="field">
-            <label class="label is-medium">Graduation Year *</label>
-            <span class="select is-light">
-              <select id="year" :class="hasError('grad_year') ? 'is-invalid': ''" v-model="form_data.grad_year">
-                <option selected></option>
-                <option v-for="n in 61" :key="n"> {{ n + 1979 }} </option>
-              </select>
-              <div v-if="hasError('grad_year')" class="invalid-feedback">
-                <p class="help is-danger" v-if="!$v.form_data.grad_year.required">Required</p>
-              </div>
-            </span>
-          </div>
-        </div>
-
-        <div class="field is-horizontal is-grouped is-grouped-left-aligned">
-          <div id="student-status" class="field">
-            <label class="label is-medium">Are you a current student? *</label>
-            <div class="field" :class="hasError('is_alum') ? 'is-invalid': ''">
-              <div class="checkbox">
-                <input class="is-checkradio" id="curr-student-yes" type="radio" name="curr-student" value="0" v-model="form_data.is_alum" v-on:click="resetStudentLevel(form_data.is_alum, 0)">
-                <label for="curr-student-yes" id="radio-text">Yes</label>
-                <input class="is-checkradio" id="curr-student-no" type="radio" name="curr-student" value="1" v-model="form_data.is_alum" v-on:click="resetStudentLevel(form_data.is_alum, 1)">
-                <label for="curr-student-no" id="radio-text">No</label>
-              </div>
-              <div v-if="hasError('is_alum')" class="invalid-feedback">
-                <p class="help is-danger" v-if="!$v.form_data.is_alum.required">Required</p>
-              </div>
-            </div>
-          </div>
-
-          <div id="student-status" class="field">
-            <label class="label is-medium">Are / were you a transfer student? *</label>
-            <div class="control" :class="hasError('is_transfer') ? 'is-invalid': ''">
-              <div class="checkbox">
-                <input class="is-checkradio" id="transfer-yes" type="radio" name="transfer" value="1" v-model="form_data.is_transfer">
-                <label for="transfer-yes" id="radio-text">Yes</label>
-                <input class="is-checkradio" id="transfer-no" type="radio" name="transfer" value="0" v-model="form_data.is_transfer">
-                <label for="transfer-no" id="radio-text">No</label>
-              </div>
-              <div v-if="hasError('is_transfer')" class="invalid-feedback">
-                <p class="help is-danger" v-if="!$v.form_data.is_transfer.required">Required</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="student-status" class="field" v-if="form_data.is_alum === '0'">
-          <label class="label is-medium">Are you an undergraduate or graduate student? *</label>
-          <div class="control" :class="hasError('student_level') ? 'is-invalid': ''">
-            <div class="checkbox">
-              <input class="is-checkradio" id="level-undergrad" type="radio" name="level" value="0" v-model="form_data.student_level">
-              <label for="level-undergrad" id="radio-text">Undergraduate</label>
-              <input class="is-checkradio" id="level-grad" type="radio" name="level" value="1" v-model="form_data.student_level">
-              <label for="level-grad" id="radio-text">Graduate</label>
-            </div>
-            <div v-if="hasError('student_level')" class="invalid-feedback">
-              <p id="radio-error" class="help is-danger" v-if="!$v.form_data.student_level.required">Required</p>
-            </div>
-          </div>
-        </div>
-
-        <div id="student-status" class="field" v-if="form_data.is_alum === '1'">
-          <label class="label is-medium">Were you an undergraduate student, graduate student, or both? *</label>
-          <div class="control" :class="hasError('student_level') ? 'is-invalid': ''">
-            <div class="checkbox">
-              <input class="is-checkradio" id="level-undergrad" type="radio" name="level" value="0" v-model="form_data.student_level">
-              <label for="level-undergrad" id="radio-text">Undergraduate</label>
-              <input class="is-checkradio" id="level-grad" type="radio" name="level" value="1" v-model="form_data.student_level">
-              <label for="level-grad" id="radio-text">Graduate</label>
-              <input class="is-checkradio" id="level-both" type="radio" name="level" value="2" v-model="form_data.student_level">
-              <label for="level-both" id="radio-text">Both</label>
-            </div>
-            <div v-if="hasError('student_level')" class="invalid-feedback">
-              <p id="radio-error" class="help is-danger" v-if="!$v.form_data.student_level.required">Required</p>
-            </div>
-          </div>
-        </div>
-
-        <div id="required"> (*) Required </div>
-      </tab-content>
-
-      <tab-content title="Topic Interests">
-        <h1 class="subtitle">
-          Select any topics you're interested in following.
-        </h1>
-        <div class="columns is-multiline">
-          <div v-for="topic in topics" :key="topic.topic_id" class="column is-half">
-            {{ getSubTopics(subtopics, topic.topic_id) }}
-            <div class="header">
-              <input class="is-checkradio" :id="topic.topic_name" type="checkbox" name="checkbox" :checked="topic_interests.includes(topic.topic_id)" v-on:click="onClickTopicInterests(topic_interests, subtopic_interests, subtopics, topic.topic_id)">
-              <label :for="topic.topic_name" id="header-text"><b>{{ topic.topic_name }}</b></label>
-            </div>
-
-            <div class="column" v-show="topic_interests.includes(topic.topic_id)">
-              <div v-for="subtopic in subtopics[topic.topic_id]" :key="subtopic.topic_id" class="subtopics">
-                {{ getSubTopics(subsubtopics, subtopic.topic_id) }}
-                <div class="subheader">
-                  <input class="is-checkradio is-circle" :id="subtopic.topic_name" type="checkbox" name="checkbox" :checked="subtopic_interests.includes(subtopic.topic_id)" v-on:click="onClickSubtopicInterests(subtopic_interests, subsubtopic_interests, subsubtopics, subtopic.topic_id)">
-                  <label :for="subtopic.topic_name" id="subheader-text">{{ subtopic.topic_name }}</label>
+          <div class="field is-horizontal is-grouped is-grouped-left-aligned">
+            <div id="student-status" class="field">
+              <label class="label is-medium">Are you a current student? *</label>
+              <div class="field" :class="hasError('is_alum') ? 'is-invalid': ''">
+                <div class="checkbox">
+                  <input class="is-checkradio" id="curr-student-yes" type="radio" name="curr-student" value="0" v-model="form_data.is_alum" v-on:click="resetStudentLevel(form_data.is_alum, 0)">
+                  <label for="curr-student-yes" id="radio-text">Yes</label>
+                  <input class="is-checkradio" id="curr-student-no" type="radio" name="curr-student" value="1" v-model="form_data.is_alum" v-on:click="resetStudentLevel(form_data.is_alum, 1)">
+                  <label for="curr-student-no" id="radio-text">No</label>
                 </div>
+                <div v-if="hasError('is_alum')" class="invalid-feedback">
+                  <p class="help is-danger" v-if="!$v.form_data.is_alum.required">Required</p>
+                </div>
+              </div>
+            </div>
 
-                <div class="column" v-show="subtopic_interests.includes(subtopic.topic_id) && subsubtopics[subtopic.topic_id].length != 0">
-                  <div v-for="subsubtopic in subsubtopics[subtopic.topic_id]" :key="subsubtopic.topic_id" class="subtopics">
-                    <div class="subsubheader">
-                      <input class="is-checkradio is-circle" :id="subsubtopic.topic_name" type="checkbox" name="checkbox" :checked="subsubtopic_interests.includes(subsubtopic.topic_id)" v-on:click="onClickInterest(subsubtopic_interests, subsubtopic.topic_id)">
-                      <label :for="subsubtopic.topic_name" id="subsubheader-text">{{ subsubtopic.topic_name }}</label>
+            <div id="student-status" class="field">
+              <label class="label is-medium">Are / were you a transfer student? *</label>
+              <div class="control" :class="hasError('is_transfer') ? 'is-invalid': ''">
+                <div class="checkbox">
+                  <input class="is-checkradio" id="transfer-yes" type="radio" name="transfer" value="1" v-model="form_data.is_transfer">
+                  <label for="transfer-yes" id="radio-text">Yes</label>
+                  <input class="is-checkradio" id="transfer-no" type="radio" name="transfer" value="0" v-model="form_data.is_transfer">
+                  <label for="transfer-no" id="radio-text">No</label>
+                </div>
+                <div v-if="hasError('is_transfer')" class="invalid-feedback">
+                  <p class="help is-danger" v-if="!$v.form_data.is_transfer.required">Required</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="student-status" class="field" v-if="form_data.is_alum === '0'">
+            <label class="label is-medium">Are you an undergraduate or graduate student? *</label>
+            <div class="control" :class="hasError('student_level') ? 'is-invalid': ''">
+              <div class="checkbox">
+                <input class="is-checkradio" id="level-undergrad" type="radio" name="level" value="0" v-model="form_data.student_level">
+                <label for="level-undergrad" id="radio-text">Undergraduate</label>
+                <input class="is-checkradio" id="level-grad" type="radio" name="level" value="1" v-model="form_data.student_level">
+                <label for="level-grad" id="radio-text">Graduate</label>
+              </div>
+              <div v-if="hasError('student_level')" class="invalid-feedback">
+                <p id="radio-error" class="help is-danger" v-if="!$v.form_data.student_level.required">Required</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="student-status" class="field" v-if="form_data.is_alum === '1'">
+            <label class="label is-medium">Were you an undergraduate student, graduate student, or both? *</label>
+            <div class="control" :class="hasError('student_level') ? 'is-invalid': ''">
+              <div class="checkbox">
+                <input class="is-checkradio" id="level-undergrad" type="radio" name="level" value="0" v-model="form_data.student_level">
+                <label for="level-undergrad" id="radio-text">Undergraduate</label>
+                <input class="is-checkradio" id="level-grad" type="radio" name="level" value="1" v-model="form_data.student_level">
+                <label for="level-grad" id="radio-text">Graduate</label>
+                <input class="is-checkradio" id="level-both" type="radio" name="level" value="2" v-model="form_data.student_level">
+                <label for="level-both" id="radio-text">Both</label>
+              </div>
+              <div v-if="hasError('student_level')" class="invalid-feedback">
+                <p id="radio-error" class="help is-danger" v-if="!$v.form_data.student_level.required">Required</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="required"> (*) Required </div>
+        </tab-content>
+
+        <tab-content title="Topic Interests">
+          <h1 class="subtitle">
+            Select any topics you're interested in following.
+          </h1>
+          <div class="columns is-multiline">
+            <div v-for="topic in topics" :key="topic.topic_id" class="column is-half">
+              {{ getSubTopics(subtopics, topic.topic_id) }}
+              <div class="header">
+                <input class="is-checkradio" :id="topic.topic_name" type="checkbox" name="checkbox" :checked="topic_interests.includes(topic.topic_id)" v-on:click="onClickTopicInterests(topic_interests, subtopic_interests, subtopics, topic.topic_id)">
+                <label :for="topic.topic_name" id="header-text"><b>{{ topic.topic_name }}</b></label>
+              </div>
+
+              <div class="column" v-show="topic_interests.includes(topic.topic_id)">
+                <div v-for="subtopic in subtopics[topic.topic_id]" :key="subtopic.topic_id" class="subtopics">
+                  {{ getSubTopics(subsubtopics, subtopic.topic_id) }}
+                  <div class="subheader">
+                    <input class="is-checkradio is-circle" :id="subtopic.topic_name" type="checkbox" name="checkbox" :checked="subtopic_interests.includes(subtopic.topic_id)" v-on:click="onClickSubtopicInterests(subtopic_interests, subsubtopic_interests, subsubtopics, subtopic.topic_id)">
+                    <label :for="subtopic.topic_name" id="subheader-text">{{ subtopic.topic_name }}</label>
+                  </div>
+
+                  <div class="column" v-show="subtopic_interests.includes(subtopic.topic_id) && subsubtopics[subtopic.topic_id].length != 0">
+                    <div v-for="subsubtopic in subsubtopics[subtopic.topic_id]" :key="subsubtopic.topic_id" class="subtopics">
+                      <div class="subsubheader">
+                        <input class="is-checkradio is-circle" :id="subsubtopic.topic_name" type="checkbox" name="checkbox" :checked="subsubtopic_interests.includes(subsubtopic.topic_id)" v-on:click="onClickInterest(subsubtopic_interests, subsubtopic.topic_id)">
+                        <label :for="subsubtopic.topic_name" id="subsubheader-text">{{ subsubtopic.topic_name }}</label>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </tab-content>
+        </tab-content>
 
-      <tab-content title="Other Interests"> 
-        <h1 class="subtitle">
-          Select any faculty you're interested in following.
-        </h1>
-        <div class="columns is-multiline">
-          <div v-for="division in divisions" :key="division.division_id" class="column is-half">
-            {{ getFaculty(faculties, division.division_id) }}
-            <div class="header">
-              <input class="is-checkradio" :id="division.division_name" type="checkbox" name="checkbox" :checked="division_interests.includes(division.division_id)" v-on:click="onClickFacultyInterests(division_interests, faculty_interests, faculties, division.division_id)">
-              <label :for="division.division_name" id="header-text"><b>{{ getDivisionName(division.division_name) }}</b></label>
-            </div>
+        <tab-content title="Other Interests"> 
+          <h1 class="subtitle">
+            Select any faculty you're interested in following.
+          </h1>
+          <div class="columns is-multiline">
+            <div v-for="division in divisions" :key="division.division_id" class="column is-half">
+              {{ getFaculty(faculties, division.division_id) }}
+              <div class="header">
+                <input class="is-checkradio" :id="division.division_name" type="checkbox" name="checkbox" :checked="division_interests.includes(division.division_id)" v-on:click="onClickFacultyInterests(division_interests, faculty_interests, faculties, division.division_id)">
+                <label :for="division.division_name" id="header-text"><b>{{ getDivisionName(division.division_name) }}</b></label>
+              </div>
 
-            <div class="column" v-show="division_interests.includes(division.division_id)">
-              <div v-for="faculty in faculties[division.division_id]" :key="faculty.faculty_name" class="subtopics">
-                <div class="subheader">
-                  <input class="is-checkradio is-circle" :id="faculty.faculty_name" type="checkbox" name="checkbox" :checked="faculty_interests.includes(faculty.faculty_name)" v-on:click="onClickInterest(faculty_interests, faculty.faculty_name)">
-                  <label :for="faculty.faculty_name" id="subheader-text">{{ faculty.faculty_name }}</label>
+              <div class="column" v-show="division_interests.includes(division.division_id)">
+                <div v-for="faculty in faculties[division.division_id]" :key="faculty.faculty_name" class="subtopics">
+                  <div class="subheader">
+                    <input class="is-checkradio is-circle" :id="faculty.faculty_name" type="checkbox" name="checkbox" :checked="faculty_interests.includes(faculty.faculty_name)" v-on:click="onClickInterest(faculty_interests, faculty.faculty_name)">
+                    <label :for="faculty.faculty_name" id="subheader-text">{{ faculty.faculty_name }}</label>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <h1 class="subtitle" id="courses">
-          Select any courses you're interested in following.
-        </h1>
-        <div class="columns is-multiline">
-          <div v-for="department in departments" :key="department" class="column is-half">
-            {{ getCourses(courses, department) }}
-            <div class="header">
-              <input class="is-checkradio" :id="department" type="checkbox" name="checkbox" :checked="department_interests.includes(department)" v-on:click="onClickCourseInterests(department_interests, course_interests, courses, department)">
-              <label :for="department" id="header-text"><b>{{ department }}</b></label>
-            </div>
+          <h1 class="subtitle" id="courses">
+            Select any courses you're interested in following.
+          </h1>
+          <div class="columns is-multiline">
+            <div v-for="department in departments" :key="department" class="column is-half">
+              {{ getCourses(courses, department) }}
+              <div class="header">
+                <input class="is-checkradio" :id="department" type="checkbox" name="checkbox" :checked="department_interests.includes(department)" v-on:click="onClickCourseInterests(department_interests, course_interests, courses, department)">
+                <label :for="department" id="header-text"><b>{{ department }}</b></label>
+              </div>
 
-            <div class="column" v-show="department_interests.includes(department)">
-              <div v-for="course in courses[department]" :key="course.course_id" class="subtopics">
-                <div class="subheader">
-                  <input class="is-checkradio is-circle" :id="course.course_id" type="checkbox" name="checkbox" :checked="course_interests.includes(course.course_id)" v-on:click="onClickInterest(course_interests, course.course_id)">
-                  <label :for="course.course_id" id="subheader-text">{{ getCourseName(course) }}</label>
+              <div class="column" v-show="department_interests.includes(department)">
+                <div v-for="course in courses[department]" :key="course.course_id" class="subtopics">
+                  <div class="subheader">
+                    <input class="is-checkradio is-circle" :id="course.course_id" type="checkbox" name="checkbox" :checked="course_interests.includes(course.course_id)" v-on:click="onClickInterest(course_interests, course.course_id)">
+                    <label :for="course.course_id" id="subheader-text">{{ getCourseName(course) }}</label>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-      </tab-content>
-    </form-wizard>
+        </tab-content>
+      </form-wizard>
+    </div>
   </div>
 </template>
 
