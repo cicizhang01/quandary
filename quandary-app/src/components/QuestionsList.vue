@@ -23,19 +23,65 @@
                 </div>
               </div>
                         
-              <div class= "column is-11">
-                <h2 class="question-date">{{ displayDate(question.date_modified) }}</h2>
-                  <div class = "test">
-                    <router-link :to="`/${question.question_id}`">
-                      <h1 class="title">{{ question.question_body }}</h1>
-                    </router-link>
-                  </div>
+              <div class="column is-11">
+                <div class="columns">
+                  <div class="columns is-11">
+                    <div>
+                    
+                      <div class="question-date">
+                        {{ displayDate(question.date_modified) }}
+                      </div>
+                  
+                
+                      <div class = "test">
+                        <router-link :to="`/${question.question_id}`">
+                          <h1 class="title">{{ question.question_body }}</h1>
+                        </router-link>
+                      </div>
 
-                  <div :key="trigger">
-                    <div class="tag is-primary is-medium" id="question-topic" v-for="topic in topics[question.question_id]" :topic="topic" :key="topic.topic_id">
-                      {{ topic.topic_name }}
+                      <div :key="trigger">
+                        <div class="tag is-primary is-medium" id="question-topic" v-for="topic in topics[question.question_id]" :topic="topic" :key="topic.topic_id">
+                          {{ topic.topic_name }}
+                        </div>
+                      </div>
                     </div>
                   </div>
+
+                  <div class="columns is-1">
+                    <section v-show="question.user_id == user.user_id"> 
+                      <div class="dropdown is-pulled-right is-hoverable">
+                        <div class="dropdown-trigger">
+                          <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu">
+                            <span class="icon is-small">
+                              <i class="fas fa-ellipsis-v" ></i>
+                            </span>
+                          </button>
+                        </div>
+
+                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                          <div class="dropdown-content">
+                            <div class="dropdown-item">
+                              <button class="button is-white" >
+                                <span class="icon is-small">
+                                  <i class="fas fa-pencil-alt"></i>
+                                </span>
+                                <span class="dropdown-text"> Edit </span>
+                              </button>
+                            </div>
+                            <div class="dropdown-item">
+                              <button class="button is-white" >
+                                <span class="icon is-small">
+                                  <i class="far fa-trash-alt"></i>
+                                </span>
+                                <span class="dropdown-text"> Delete </span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
