@@ -1,8 +1,7 @@
 <template>
 <nav class="navbar is-transparent" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
-    <a class="navbar-item" href="/">
-      <img src="../../images/cat.png">
+    <a class="navbar-logo" href="/" id="logo">
     </a>
     <!-- Navbar burger: hamburger menu that only appears on mobile devices -->
     <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -74,6 +73,7 @@ export default {
     margin-bottom: 25px;
     margin-left: 25px;
     margin-right: 25px;
+    height: 80px;
     a {
       font-weight: bold;
       color: $dark;
@@ -82,8 +82,18 @@ export default {
       }
     }
   }
+  .navbar-logo {
+    background-image: url('../../images/quandary.png');
+    background-size: 50px;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 50px;
+    padding: 0 3rem;
+  }
   .navbar-end {
-    padding-top: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   .menu-item {
     font-size: medium;
