@@ -155,7 +155,7 @@
                         <button class="button is-pulled-right is-primary is-outlined" v-on:click="onSubmitEdit(answer)">Submit</button>
                       </div>
                       <div class="column is-2">
-                        <button class="button is-pulled-right is-dark is-outlined" v-on:click="onCancelEdit()">Cancel</button>
+                        <button class="button is-pulled-right is-dark is-outlined" v-on:click="onCancelEdit(answer)">Cancel</button>
                       </div>
                     </div>
                     <div class="edit-comment-box has-addons">
@@ -225,6 +225,7 @@ export default {
         is_anon: 0
       },
       comment_edit: {
+        body: '',
         is_anon: 0
       },
       question: {},
@@ -378,6 +379,9 @@ export default {
       if (this.edit == null) {
         this.edit = answer.answer_id;
       }
+
+      // Store previous
+      this.comment_edit.body = answer.answer_body;
     },
     onSubmitEdit(answer) {
       this.edit = null;
@@ -396,8 +400,9 @@ export default {
         }
       );
     },
-    onCancelEdit() {
+    onCancelEdit(answer) {
       this.edit = null;
+      answer.answer_body = this.comment_edit.body
     },
     onDeleteAnswer(answer) {
       // Deletes answer from database and updates answers data object 
