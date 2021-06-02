@@ -96,6 +96,16 @@ export default {
     // Returns the updated answers for a specific question
     return this.getQuestionAnswers(questionId);
   },
+  async updateQuestion(userId, questionId, question) {
+    await axios.put("http://localhost:8000/update_question/" + userId + "/" + questionId, question);
+
+    return this.getQuestionsData();
+  },
+  async deleteQuestion(userId, questionId){
+    await axios.delete("http://localhost:8000/delete_question/" + userId + "/" + questionId);
+
+    return this.getQuestionsData();
+  },
   async updateQuestionCount(userId, questionId) {
     await axios.put("http://localhost:8000/update_question_upvote/" + questionId + "/" + userId);
 

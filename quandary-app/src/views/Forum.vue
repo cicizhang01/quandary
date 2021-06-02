@@ -89,14 +89,27 @@ export default {
       if (this.comment.body.length != 0) {
         var comment = {
           question_body: this.comment.body,
-          is_anon: this.comment.is_anon
+          is_anon: this.comment.is_anon,
+          date_created: this.getDateTime(),
         };
 
         QuandaryService.addQuestion(this.user.user_id, comment)
       }
       this.comment.body = "";
       this.addedKey += 1;
-    }
+    },
+
+    getDateTime() {
+      var time = new Date();
+      var month = ('0' + (time.getMonth() + 1)).slice(-2);
+      var date = ('0' + time.getDate()).slice(-2);
+      var year = time.getFullYear();
+      var hour = ('0' + time.getHours()).slice(-2);
+      var minutes = ('0' + time.getMinutes()).slice(-2);
+      var seconds = ('0' + time.getSeconds()).slice(-2);
+            
+      return year + "-" + month + "-" + date + " " + hour + ":" + minutes + ":" + seconds;
+    },
   }
 
 }
