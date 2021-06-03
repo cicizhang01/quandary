@@ -84,10 +84,10 @@ export default {
   }
   .navbar-logo {
     background-image: url('../../images/quandary.png');
-    background-size: 50px;
+    background-size: 3.5rem;
     background-position: center;
     background-repeat: no-repeat;
-    width: 50px;
+    // width: 50px;
     padding: 0 3rem;
   }
   .navbar-end {
