@@ -31,9 +31,6 @@
             <a class="navbar-item" @click="profile">
               <span class="menu-item">Profile</span>
             </a>
-            <a class="navbar-item">
-              <span class="menu-item">Settings</span>
-            </a>
             <hr class="navbar-divider">
             <a class="navbar-item">
               <div class="button is-dark is-rounded is-outlined" @click="logout">Log out</div>
