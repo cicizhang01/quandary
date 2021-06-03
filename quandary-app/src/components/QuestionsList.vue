@@ -69,7 +69,9 @@
 
                 <div :key="trigger">
                   <div class="tag is-primary is-medium" id="question-topic" v-for="topic in topics[question.question_id]" :topic="topic" :key="topic.topic_id">
-                    {{ topic.topic_name }}
+                    <router-link :to="`/topic/${topic.topic_id}`">
+                      {{ topic.topic_name }}
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -134,6 +136,10 @@ export default {
       topics: {},
       topic: {},
       trigger: 0,
+      filtering: {
+        "topic_ids": [],
+      },
+      filtered: false,
 
       edit: null, // question_id of current question being edited
       edited_text: null,
@@ -149,7 +155,16 @@ export default {
     };
   }, 
   created() {
-    this.getData();
+    var currTop = this.$route.params.topic;
+    if (!currTop){
+      this.getData();
+    }
+    else {
+      this.filtering.topic_ids.push(currTop);
+      this.filtered = true
+      this.getFilteredData();
+    }
+    this.getUpvotes();
   },
   methods : {
     async getData() {
@@ -169,14 +184,46 @@ export default {
           }).bind(this)
         );
 
-      QuandaryService.getQuestionsData()
+      QuandaryService.getQuestionUpvotes(this.user.user_id)
+        .then(
+          (upvotes => {
+            this.$set(this, "user_question_upvotes", upvotes);
+          }).bind(this)
+        );
+    },
+
+    getFilteredData() {
+      QuandaryService.getQuestionsFilteredData(this.filtering)
         .then(
           (questions => {
-            this.$set(this, "questions", questions);
-            this.testing = questions;
+            questions.forEach(q => {
+              QuandaryService.getQuestionTopics(q.question_id)
+                .then(
+                  (topics => {
+                    this.trigger += 1;
+                    this.topics[q.question_id] = topics; 
+                  }).bind(this)
+                );
+            });
           }).bind(this)
         );
 
+      QuandaryService.getQuestionsFilteredData(this.filtering)
+        .then(
+          (questions => {
+            questions.forEach(q => {
+              QuandaryService.getQuestion(q.question_id)
+                .then(
+                  (full_q => {
+                    this.questions.push(full_q[0])
+                  }).bind(this)
+                );
+            });
+          }).bind(this)
+        );
+    },
+
+    getUpvotes() {
       QuandaryService.getQuestionUpvotes(this.user.user_id)
         .then(
           (upvotes => {
@@ -246,7 +293,14 @@ export default {
         is_anon: this.is_anon
       };
 
-      QuandaryService.updateQuestion(this.user.user_id, question.question_id, edit)
+      var filter;
+      if (this.filtered) {
+        filter = this.filtering;
+      }
+      else {
+        filter = null;
+      }
+      QuandaryService.updateQuestion(this.user.user_id, question.question_id, edit, filter)
       .then(
         questions => {
           this.questions = questions;
@@ -255,7 +309,14 @@ export default {
     },
 
     onDeleteQuestion(question) {
-      QuandaryService.deleteQuestion(this.user.user_id, question.question_id)
+      var filter;
+      if (this.filtered) {
+        filter = this.filtering;
+      }
+      else {
+        filter = null;
+      }
+      QuandaryService.deleteQuestion(this.user.user_id, question.question_id, filter)
       .then(
         questions => {
           this.$set(this, "questions", questions);

@@ -57,6 +57,10 @@ export default {
     return {
       isHidden: true,
       addedKey: 0,
+      filtered: false,
+      filtering: {
+        "topic_ids": [],
+      },
       user: {
         user_id: 4, // Replace with some method to find current user's user_id
         first_name: 'Sandy', // Replace with current user's first and last name
@@ -72,6 +76,13 @@ export default {
     }
   },
 
+  created() {
+    var currTop = this.$route.params.topic;
+    if (currTop) {
+      this.filtered = true;
+      this.filtering.topic_ids.push(currTop);
+    }
+  },
   methods: {
     // Log the user in
     login() {
@@ -93,7 +104,13 @@ export default {
           date_created: this.getDateTime(),
         };
 
-        QuandaryService.addQuestion(this.user.user_id, comment)
+        if (this.filtered) {
+          QuandaryService.addQuestion(this.user.user_id, comment, this.filtering)
+        }
+        else {
+          QuandaryService.addQuestion(this.user.user_id, comment, null)
+        }
+        
       }
       this.comment.body = "";
       this.addedKey += 1;
