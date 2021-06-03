@@ -26,7 +26,7 @@
               {{ displayName(question[0].first_name, question[0].last_name, question[0].is_anon) }} <span class="date">| {{ displayDate(question[0].date_modified) }}</span>
             </h2>
             <span class="tag is-primary is-medium" id="question-topic" v-for="topic in topics" v-bind:key="topic">
-              <a :href="'/topic/' + topic.topic_name">{{ topic.topic_name }}</a>
+              <a :href="'/topic/' + topic.topic_id">{{ topic.topic_name }}</a>
             </span>
           </div>
 

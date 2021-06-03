@@ -87,7 +87,6 @@ export default {
     background-size: 3.5rem;
     background-position: center;
     background-repeat: no-repeat;
-    // width: 50px;
     padding: 0 3rem;
   }
   .navbar-end {
