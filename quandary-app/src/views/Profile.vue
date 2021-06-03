@@ -154,7 +154,7 @@ export default {
   #general-info {
     padding: 2rem 0 2rem 0;
     .image {
-      padding: 0 2rem 0 0;
+      margin-right: 2.5rem;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -171,6 +171,7 @@ export default {
     }
   }
   #interests {
+    padding: 2rem 0 2rem 0;
     .field {
       padding-bottom: 1rem;
     }
