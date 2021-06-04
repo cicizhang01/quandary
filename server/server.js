@@ -1253,7 +1253,7 @@ app.get('/get_question_topics/:question_id', (req, res) => {
 /* Get all questions associated with 1 or more of the topics in the
    list of topic_ids.
    Returns list of JSON objects each having question_id. */
-app.get("/get_questions_by_topics", (req, res) => {
+app.put("/get_questions_by_topics", (req, res) => {
   var topic_ids = req.body.topic_ids;
 
   var sql_topics ='select distinct question_id from question_topic natural join topic \

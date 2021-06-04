@@ -69,21 +69,18 @@
 
                 <div :key="trigger">
                   <div class="tag is-primary is-medium" id="question-topic" v-for="topic in topics[question.question_id]" :topic="topic" :key="topic.topic_id">
-                    <!-- <router-link :to="`/topic/${topic.topic_id}`"> -->
-                      <!-- {{ topic.topic_name }} -->
                       <a :href="'/topic/' + topic.topic_id">{{ topic.topic_name }}</a>
-                    <!-- </router-link> -->
                   </div>
                 </div>
               </div>
 
               <div class="columns is-1">
                 <section v-show="question.user_id == user.user_id"> 
-                  <div class="dropdown is-right is-hoverable">
+                  <div class="dropdown is-right is-hoverable" id="user-options">
                     <div class="dropdown-trigger">
                       <button class="button is-white" aria-haspopup="true" aria-controls="dropdown-menu">
                         <span class="icon is-small">
-                          <i class="fas fa-ellipsis-v" ></i>
+                          <i class="fas fa-ellipsis-v"></i>
                         </span>
                       </button>
                     </div>
@@ -382,18 +379,23 @@ a {
   }
 }
 .comment {
-    padding: 1.25rem 0;
-    padding-bottom: 0.4rem;
-    .comment-label {
-      color: $light-gray;
-      display: flex;
-      align-items: center;
-      #comment-username {
-        margin-left: 0.75rem;
-      }
-    }
-    .question-box {
-      margin-top: 1rem;
+  padding: 1.25rem 0;
+  padding-bottom: 0.4rem;
+  .comment-label {
+    color: $light-gray;
+    display: flex;
+    align-items: center;
+    #comment-username {
+      margin-left: 0.75rem;
     }
   }
+  .question-box {
+    margin-top: 1rem;
+  }
+}
+#user-options {
+  // margin: 100rem 100rem;
+  // padding: 0 0;
+  margin-top: 25px
+}
 </style>
