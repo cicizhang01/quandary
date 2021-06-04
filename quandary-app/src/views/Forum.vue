@@ -37,7 +37,7 @@
     </div>
 
     <div class = "listing">
-      <QuestionsList :key="addedKey" />
+      <QuestionsList :key="$route" />
     </div>
   </div>
 </template>
@@ -56,7 +56,6 @@ export default {
   data() {
     return {
       isHidden: true,
-      addedKey: 0,
       filtered: false,
       filtering: {
         "topic_ids": [],

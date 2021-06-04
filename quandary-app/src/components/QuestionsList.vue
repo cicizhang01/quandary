@@ -69,9 +69,10 @@
 
                 <div :key="trigger">
                   <div class="tag is-primary is-medium" id="question-topic" v-for="topic in topics[question.question_id]" :topic="topic" :key="topic.topic_id">
-                    <router-link :to="`/topic/${topic.topic_id}`">
-                      {{ topic.topic_name }}
-                    </router-link>
+                    <!-- <router-link :to="`/topic/${topic.topic_id}`"> -->
+                      <!-- {{ topic.topic_name }} -->
+                      <a :href="'/topic/' + topic.topic_id">{{ topic.topic_name }}</a>
+                    <!-- </router-link> -->
                   </div>
                 </div>
               </div>
@@ -362,6 +363,9 @@ export default {
 }
 #question-topic {
   margin: -1rem 0.75rem 0 0;
+}
+a {
+  color: white;
 }
 #upvotes {
   display: flex;
