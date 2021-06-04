@@ -30,10 +30,18 @@ export default new Router({
       component: () => import('../views/Form.vue')
     },
     {
+      path: '/topic/:topic',
+      name: 'quandary_topic',
+      component: () => import('../views/Home.vue'),
+    },
+    {
       path: '/:id',
       name: 'quandarySingle',
       component: () => import('../views/QuandarySingle.vue'),
       beforeEnter: authGuard
+    },
+    {
+      path: '/'
     }
   ]
 })

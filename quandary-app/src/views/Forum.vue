@@ -37,7 +37,7 @@
     </div>
 
     <div class = "listing">
-      <QuestionsList :key="addedKey" />
+      <QuestionsList :key="$route" />
     </div>
   </div>
 </template>
@@ -56,7 +56,10 @@ export default {
   data() {
     return {
       isHidden: true,
-      addedKey: 0,
+      filtered: false,
+      filtering: {
+        "topic_ids": [],
+      },
       user: {
         user_id: 4, // Replace with some method to find current user's user_id
         first_name: 'Sandy', // Replace with current user's first and last name
@@ -72,6 +75,13 @@ export default {
     }
   },
 
+  created() {
+    var currTop = this.$route.params.topic;
+    if (currTop) {
+      this.filtered = true;
+      this.filtering.topic_ids.push(currTop);
+    }
+  },
   methods: {
     // Log the user in
     login() {
@@ -89,14 +99,33 @@ export default {
       if (this.comment.body.length != 0) {
         var comment = {
           question_body: this.comment.body,
-          is_anon: this.comment.is_anon
+          is_anon: this.comment.is_anon,
+          date_created: this.getDateTime(),
         };
 
-        QuandaryService.addQuestion(this.user.user_id, comment)
+        if (this.filtered) {
+          QuandaryService.addQuestion(this.user.user_id, comment, this.filtering)
+        }
+        else {
+          QuandaryService.addQuestion(this.user.user_id, comment, null)
+        }
+        
       }
       this.comment.body = "";
       this.addedKey += 1;
-    }
+    },
+
+    getDateTime() {
+      var time = new Date();
+      var month = ('0' + (time.getMonth() + 1)).slice(-2);
+      var date = ('0' + time.getDate()).slice(-2);
+      var year = time.getFullYear();
+      var hour = ('0' + time.getHours()).slice(-2);
+      var minutes = ('0' + time.getMinutes()).slice(-2);
+      var seconds = ('0' + time.getSeconds()).slice(-2);
+            
+      return year + "-" + month + "-" + date + " " + hour + ":" + minutes + ":" + seconds;
+    },
   }
 
 }
