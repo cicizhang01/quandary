@@ -36,8 +36,8 @@
       </h1>
     </div>
 
-    <div class = "listing">
-      <QuestionsList :key="$route" />
+    <div class = "listing" :key="addedKey">
+      <QuestionsList :key="$route"  />
     </div>
   </div>
 </template>
@@ -72,6 +72,7 @@ export default {
       comment_edit: {
         is_anon: 0
       },
+      addedKey: 0,
     }
   },
 
