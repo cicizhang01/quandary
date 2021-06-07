@@ -12,10 +12,10 @@
 
         <div>
           Name
-          <label class="label is-medium">{{ user.first_name }} {{ user.last_name }}</label>
+          <label class="label is-medium">{{ profile_data.first_name }} {{ profile_data.last_name }}</label>
 
           Pronouns
-          <label class="label is-medium">she/her</label>
+          <label class="label is-medium">{{ profile_data.pronouns }}</label>
         </div>
 
       </div>
@@ -25,38 +25,38 @@
       <div class="field is-grouped is-grouped-left-aligned" id="caltech-info">
         <div>
         Student Level
-          <label class="label is-medium">Undergraduate</label>
+          <label class="label is-medium">{{ getStudentLevel()}}</label>
 
           <div class="field is-grouped is-grouped-left-aligned">
             <p class="multiple">
               Incoming Year
-              <label class="label is-medium">2018</label>
+              <label class="label is-medium">{{ profile_data.incoming_year }}</label>
             </p>
 
             <p class="multiple">
               Graduating Year
-              <label class="label is-medium">2022</label>
+              <label class="label is-medium">{{ profile_data.grad_year }}</label>
             </p>
           </div>
 
           Major
           <div class="field is-grouped is-grouped-multiline">
-            <span class="tag is-medium" v-if="majors.length == 0" id="list">
+            <span class="tag is-medium" v-if="profile_data.majors.length == 0" id="list">
               None
             </span>
 
-            <span class="tag is-primary is-medium" v-else id="list" v-for="major in majors" v-bind:key="major">
+            <span class="tag is-primary is-medium" v-else id="list" v-for="major in profile_data.majors" v-bind:key="major">
               {{ major }}
             </span>
           </div>
 
           Minor
           <div class="field is-grouped is-grouped-multiline">
-            <span class="tag is-medium" v-if="minors.length == 0" id="list">
+            <span class="tag is-medium" v-if="profile_data.minors.length == 0" id="list">
               None
             </span>
 
-            <span class="tag is-primary is-medium" v-else id="list" v-for="minor in minors" v-bind:key="minor">
+            <span class="tag is-primary is-medium" v-else id="list" v-for="minor in profile_data.minors" v-bind:key="minor">
               {{ minor }}
             </span>
           </div>
@@ -112,11 +112,20 @@ export default {
     return {
       user: {
         user_id: 3, // Replace with some method to find current user's user_id
-        first_name: 'Sandy', // Replace with current user's first and last name
-        last_name: 'Hamster',
       },
-      majors: [],
-      minors: [],
+      profile_data: {  
+        first_name: 'Sandy', 
+        last_name: 'Hamster',
+        pronouns: 'she/her',
+        incoming_year: 2018,
+        grad_year: 2022,
+        is_undergrad: 1,
+        is_grad: 0,
+        is_alum: 0,
+        is_transfer: 0,
+        majors: ['Computer Science'],
+        minors: ['IDS'],
+      },
       topics: [],
       faculties: [],
       courses: []
@@ -127,6 +136,14 @@ export default {
   },
   methods: {
     async getProfileData() {
+      // Get user profile data
+      // QuandaryService.getUserInfo(this.user.user_id)
+      // .then(
+      //   (profile_data => {
+      //     this.$set(this, "profile_data", profile_data);
+      //   }).bind(this)
+      // );
+
       // Get topics
       QuandaryService.getUserTopics(this.user.user_id)
       .then(
@@ -135,6 +152,14 @@ export default {
         }).bind(this)
       );
 
+      // Get faculty
+      // QuandaryService.getUserFaculty(this.user.user_id)
+      // .then(
+      //   (faculties => {
+      //     this.$set(this, "faculties", faculties);
+      //   }).bind(this)
+      // );
+
       // Get courses
       QuandaryService.getUserCourses(this.user.user_id)
       .then(
@@ -142,6 +167,39 @@ export default {
           this.$set(this, "courses", courses);
         }).bind(this)
       );
+    },
+    getStudentLevel() {
+      var result = '';
+
+      if (this.profile_data.is_alum == 1) {
+        result = 'Alumni';
+        var arr = [];
+
+        if (this.profile_data.is_undergrad) {
+          arr.push('Undergraduate');
+        } 
+        if (this.profile_data.is_grad) {
+          arr.push('Graduate');
+        } 
+        if (this.profile_data.is_transfer) {
+          arr.push('Transfer');
+        } 
+
+        return result + ' (' + arr.join('/') + ')';
+      }
+      else {
+        if (this.profile_data.is_undergrad) {
+          result = 'Undergraduate';
+        } 
+        else if (this.profile_data.is_grad) {
+          result = 'Graduate';
+        } 
+        if (this.profile_data.is_transfer) {
+          result += ' (Transfer)';
+        } 
+      }
+
+      return result;
     }
   }
 }
