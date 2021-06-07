@@ -901,8 +901,6 @@ app.get('/get_user_courses/:user_id', (req, res) => {
     }
     // Return list of courses
     res.json(courses);
-
-    //res.json(rows)
   })
 });
 
@@ -921,18 +919,55 @@ app.get('/get_user_options/:user_id', (req, res) => {
     
     /* Convert rows into a list of options. */
     var i;
-    options = [];
+    minors = [];
+    majors = [];
     for (i = 0; i < rows.length; i++){
       if(rows[i].is_major == 0){
-        options.push(rows[i].option + " " + "Minor")
+        minors.push(rows[i].option)
       }
       else{
-        options.push(rows[i].option + " " + "Major")
+        majors.push(rows[i].option)
       }
     }
-    res.json(options);
+    res.json({"Major(s)" : majors, "Minor(s)" : minors})
   })
 });
+
+
+
+/* Get all faculty connections for an existing user.
+   Returns a list of objects with faculty_name and division. */
+app.get('/get_user_faculty_connections/:user_id', (req, res) => {
+  var sql = "select faculty_name, division_id from student_to_faculty \
+    where user_id = ? order by division_id"
+  var params = [req.params.user_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    res.json(rows);
+  })
+});
+
+
+/* Get user profile(first_name, last_name, incoming_year, grad_year, 
+  is_undergrad, is_grad, is_alum, is_transfer, pronouns), given user_id. */
+app.get('/get_user_profile/:user_id', (req, res) => {
+  var sql = "select first_name, last_name, incoming_year, grad_year, \
+    is_undergrad, is_grad, is_alum, is_transfer, pronouns \
+    from profile where user_id = ?"
+  var params = [req.params.user_id]
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      res.status(400).json({"error":err.message});
+      return;
+    }
+    
+    res.json(rows);
+  })
+});
+
 
 
 /* Get a list of question_ids upvoted by the user_id. */
