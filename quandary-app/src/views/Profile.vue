@@ -127,7 +127,7 @@ export default {
       options : {
         majors: ['Computer Science'],
         minors: ['IDS'],
-      }
+      },
       topics: [],
       faculties: [],
       courses: []
