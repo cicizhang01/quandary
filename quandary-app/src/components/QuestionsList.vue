@@ -286,7 +286,7 @@ export default {
       this.edit = null;
 
       var edit = {
-        question_body: question.question_body,
+        question_body: this.edited_text,
         date_modified: this.getDateTime(),
         is_anon: this.is_anon
       };
