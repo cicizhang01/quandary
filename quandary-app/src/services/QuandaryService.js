@@ -75,7 +75,6 @@ export default {
     let res = await axios.get("http://localhost:8000/get_upvoted_answers/" + userId);
     return res.data;
   },
-<<<<<<< HEAD
   async getUserTopics(userId) {
     let res = await axios.get("http://localhost:8000/get_user_topics/" + userId);
     return res.data;
@@ -84,10 +83,7 @@ export default {
     let res = await axios.get("http://localhost:8000/get_user_courses/" + userId);
     return res.data;
   },
-  async addQuestion(userId, question) {
-=======
   async addQuestion(userId, question, filtered) {
->>>>>>> main
     await axios.put("http://localhost:8000/add_question/" + userId, question);
     if (filtered) {
       return this.getQuestionsFilteredData(filtered);

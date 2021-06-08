@@ -41,22 +41,22 @@
 
           Major
           <div class="field is-grouped is-grouped-multiline">
-            <span class="tag is-medium" v-if="profile_data.majors.length == 0" id="list">
+            <span class="tag is-medium" v-if="options.majors.length == 0" id="list">
               None
             </span>
 
-            <span class="tag is-primary is-medium" v-else id="list" v-for="major in profile_data.majors" v-bind:key="major">
+            <span class="tag is-primary is-medium" v-else id="list" v-for="major in options.majors" v-bind:key="major">
               {{ major }}
             </span>
           </div>
 
           Minor
           <div class="field is-grouped is-grouped-multiline">
-            <span class="tag is-medium" v-if="profile_data.minors.length == 0" id="list">
+            <span class="tag is-medium" v-if="options.minors.length == 0" id="list">
               None
             </span>
 
-            <span class="tag is-primary is-medium" v-else id="list" v-for="minor in profile_data.minors" v-bind:key="minor">
+            <span class="tag is-primary is-medium" v-else id="list" v-for="minor in options.minors" v-bind:key="minor">
               {{ minor }}
             </span>
           </div>
@@ -84,7 +84,7 @@
           </span>
 
           <span class="tag is-primary is-medium" v-else id="list" v-for="faculty in faculties" v-bind:key="faculty">
-            {{ faculty }}
+            {{ faculty.faculty_name }}
           </span>
         </div>
         
@@ -122,10 +122,12 @@ export default {
         is_undergrad: 1,
         is_grad: 0,
         is_alum: 0,
-        is_transfer: 0,
+        is_transfer: 0
+      },
+      options : {
         majors: ['Computer Science'],
         minors: ['IDS'],
-      },
+      }
       topics: [],
       faculties: [],
       courses: []
