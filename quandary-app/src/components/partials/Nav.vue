@@ -29,10 +29,10 @@
           
           <div class="navbar-dropdown is-right is-boxed">
             <a class="navbar-item" @click="profile">
+              <figure class="image is-24x24">
+                <img class="is-rounded" :src="$auth.user.picture">
+              </figure>
               <span class="menu-item">Profile</span>
-            </a>
-            <a class="navbar-item">
-              <span class="menu-item">Settings</span>
             </a>
             <hr class="navbar-divider">
             <a class="navbar-item">
@@ -96,5 +96,8 @@ export default {
   }
   .menu-item {
     font-size: medium;
+  }
+  .image {
+    margin-right: 0.5rem;
   }
 </style>
