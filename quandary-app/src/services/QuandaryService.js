@@ -53,6 +53,10 @@ export default {
     let res = await axios.get("http://localhost:8000/get_all_questions");
     return res.data;
   },
+  async getQuestionsFilteredData(filtering) {
+    let res = await axios.put("http://localhost:8000/get_questions_by_topics", filtering);
+    return res.data;
+  },
   async getQuestionTopics(questionId) {
     let res = await axios.get("http://localhost:8000/get_question_topics/" + questionId);
     return res.data;
@@ -71,6 +75,7 @@ export default {
     let res = await axios.get("http://localhost:8000/get_upvoted_answers/" + userId);
     return res.data;
   },
+<<<<<<< HEAD
   async getUserTopics(userId) {
     let res = await axios.get("http://localhost:8000/get_user_topics/" + userId);
     return res.data;
@@ -80,7 +85,13 @@ export default {
     return res.data;
   },
   async addQuestion(userId, question) {
+=======
+  async addQuestion(userId, question, filtered) {
+>>>>>>> main
     await axios.put("http://localhost:8000/add_question/" + userId, question);
+    if (filtered) {
+      return this.getQuestionsFilteredData(filtered);
+    }
     return this.getQuestionsData();
   },
   async addFullUser(userData) {
@@ -103,6 +114,20 @@ export default {
 
     // Returns the updated answers for a specific question
     return this.getQuestionAnswers(questionId);
+  },
+  async updateQuestion(userId, questionId, question, filtered) {
+    await axios.put("http://localhost:8000/update_question/" + userId + "/" + questionId, question);
+    if (filtered) {
+      return this.getQuestionsFilteredData(filtered);
+    }
+    return this.getQuestionsData();
+  },
+  async deleteQuestion(userId, questionId, filtered){
+    await axios.delete("http://localhost:8000/delete_question/" + userId + "/" + questionId);
+    if (filtered) {
+      return this.getQuestionsFilteredData(filtered);
+    }
+    return this.getQuestionsData();
   },
   async updateQuestionCount(userId, questionId) {
     await axios.put("http://localhost:8000/update_question_upvote/" + questionId + "/" + userId);
