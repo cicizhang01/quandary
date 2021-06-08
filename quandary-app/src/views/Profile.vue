@@ -41,22 +41,22 @@
 
           Major
           <div class="field is-grouped is-grouped-multiline">
-            <span class="tag is-medium" v-if="options.majors.length == 0" id="list">
+            <span class="tag is-medium" v-if="majors.length == 0" id="list">
               None
             </span>
 
-            <span class="tag is-primary is-medium" v-else id="list" v-for="major in options.majors" v-bind:key="major">
+            <span class="tag is-primary is-medium" v-else id="list" v-for="major in majors" v-bind:key="major">
               {{ major }}
             </span>
           </div>
 
           Minor
           <div class="field is-grouped is-grouped-multiline">
-            <span class="tag is-medium" v-if="options.minors.length == 0" id="list">
+            <span class="tag is-medium" v-if="minors.length == 0" id="list">
               None
             </span>
 
-            <span class="tag is-primary is-medium" v-else id="list" v-for="minor in options.minors" v-bind:key="minor">
+            <span class="tag is-primary is-medium" v-else id="list" v-for="minor in minors" v-bind:key="minor">
               {{ minor }}
             </span>
           </div>
@@ -111,23 +111,10 @@ export default {
   data() {
     return {
       user: {
-        user_id: 3, // Replace with some method to find current user's user_id
+        user_id: 4, // Replace with some method to find current user's user_id
       },
-      profile_info: {  
-        first_name: 'Sandy', 
-        last_name: 'Hamster',
-        pronouns: 'she/her',
-        incoming_year: 2018,
-        grad_year: 2022,
-        is_undergrad: 1,
-        is_grad: 0,
-        is_alum: 0,
-        is_transfer: 0
-      },
-      options : {
-        majors: ['Computer Science'],
-        minors: ['IDS'],
-      },
+      profile_info: [],
+      options : {},
       topics: [],
       faculties: [],
       courses: []
@@ -136,23 +123,31 @@ export default {
   created() {
     this.getProfileData();
   },
+  computed: {
+    majors() {
+      return this.options["Major(s)"];
+    },
+    minors() {
+      return this.options["Minor(s)"];
+    }
+  },
   methods: {
     async getProfileData() {
       // Get user profile info
-      // QuandaryService.getUserInfo(this.user.user_id)
-      // .then(
-      //   (profile_info => {
-      //     this.$set(this, "profile_info", profile_info);
-      //   }).bind(this)
-      // );
+      QuandaryService.getUserInfo(this.user.user_id)
+      .then(
+        (profile_info => {
+          this.$set(this, "profile_info", profile_info[0]);
+        }).bind(this)
+      );
 
       // Get options
-      // QuandaryService.getUserOptions(this.user.user_id)
-      // .then(
-      //   (options => {
-      //     this.$set(this, "options", options);
-      //   }).bind(this)
-      // );
+      QuandaryService.getUserOptions(this.user.user_id)
+      .then(
+        (options => {
+          this.$set(this, "options", options);
+        }).bind(this)
+      );
 
       // Get topics
       QuandaryService.getUserTopics(this.user.user_id)
@@ -163,12 +158,12 @@ export default {
       );
 
       // Get faculty
-      // QuandaryService.getUserFaculty(this.user.user_id)
-      // .then(
-      //   (faculties => {
-      //     this.$set(this, "faculties", faculties);
-      //   }).bind(this)
-      // );
+      QuandaryService.getUserFaculty(this.user.user_id)
+      .then(
+        (faculties => {
+          this.$set(this, "faculties", faculties);
+        }).bind(this)
+      );
 
       // Get courses
       QuandaryService.getUserCourses(this.user.user_id)
