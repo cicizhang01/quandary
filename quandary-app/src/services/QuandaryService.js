@@ -75,8 +75,20 @@ export default {
     let res = await axios.get("http://localhost:8000/get_upvoted_answers/" + userId);
     return res.data;
   },
+  async getUserInfo(userId) {
+    let res = await axios.get("http://localhost:8000/get_user_profile/" + userId);
+    return res.data;
+  },
+  async getUserOptions(userId) {
+    let res = await axios.get("http://localhost:8000/get_user_options/" + userId);
+    return res.data;
+  },
   async getUserTopics(userId) {
     let res = await axios.get("http://localhost:8000/get_user_topics/" + userId);
+    return res.data;
+  },
+  async getUserFaculty(userId) {
+    let res = await axios.get("http://localhost:8000/get_user_faculty_connections/" + userId);
     return res.data;
   },
   async getUserCourses(userId) {

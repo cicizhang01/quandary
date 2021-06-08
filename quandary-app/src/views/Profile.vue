@@ -12,10 +12,10 @@
 
         <div>
           Name
-          <label class="label is-medium">{{ profile_data.first_name }} {{ profile_data.last_name }}</label>
+          <label class="label is-medium">{{ profile_info.first_name }} {{ profile_info.last_name }}</label>
 
           Pronouns
-          <label class="label is-medium">{{ profile_data.pronouns }}</label>
+          <label class="label is-medium">{{ profile_info.pronouns }}</label>
         </div>
 
       </div>
@@ -30,12 +30,12 @@
           <div class="field is-grouped is-grouped-left-aligned">
             <p class="multiple">
               Incoming Year
-              <label class="label is-medium">{{ profile_data.incoming_year }}</label>
+              <label class="label is-medium">{{ profile_info.incoming_year }}</label>
             </p>
 
             <p class="multiple">
               Graduating Year
-              <label class="label is-medium">{{ profile_data.grad_year }}</label>
+              <label class="label is-medium">{{ profile_info.grad_year }}</label>
             </p>
           </div>
 
@@ -113,7 +113,7 @@ export default {
       user: {
         user_id: 3, // Replace with some method to find current user's user_id
       },
-      profile_data: {  
+      profile_info: {  
         first_name: 'Sandy', 
         last_name: 'Hamster',
         pronouns: 'she/her',
@@ -138,11 +138,19 @@ export default {
   },
   methods: {
     async getProfileData() {
-      // Get user profile data
+      // Get user profile info
       // QuandaryService.getUserInfo(this.user.user_id)
       // .then(
-      //   (profile_data => {
-      //     this.$set(this, "profile_data", profile_data);
+      //   (profile_info => {
+      //     this.$set(this, "profile_info", profile_info);
+      //   }).bind(this)
+      // );
+
+      // Get options
+      // QuandaryService.getUserOptions(this.user.user_id)
+      // .then(
+      //   (options => {
+      //     this.$set(this, "options", options);
       //   }).bind(this)
       // );
 
@@ -173,30 +181,30 @@ export default {
     getStudentLevel() {
       var result = '';
 
-      if (this.profile_data.is_alum == 1) {
+      if (this.profile_info.is_alum == 1) {
         result = 'Alumni';
         var arr = [];
 
-        if (this.profile_data.is_undergrad) {
+        if (this.profile_info.is_undergrad) {
           arr.push('Undergraduate');
         } 
-        if (this.profile_data.is_grad) {
+        if (this.profile_info.is_grad) {
           arr.push('Graduate');
         } 
-        if (this.profile_data.is_transfer) {
+        if (this.profile_info.is_transfer) {
           arr.push('Transfer');
         } 
 
         return result + ' (' + arr.join('/') + ')';
       }
       else {
-        if (this.profile_data.is_undergrad) {
+        if (this.profile_info.is_undergrad) {
           result = 'Undergraduate';
         } 
-        else if (this.profile_data.is_grad) {
+        else if (this.profile_info.is_grad) {
           result = 'Graduate';
         } 
-        if (this.profile_data.is_transfer) {
+        if (this.profile_info.is_transfer) {
           result += ' (Transfer)';
         } 
       }
